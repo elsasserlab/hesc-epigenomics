@@ -1,5 +1,5 @@
 ---
-title: "Home"
+title: "hESC Quantitative Epigenomics publication data"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
@@ -8,4 +8,4 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+Supplementary code and analysis for publication.
