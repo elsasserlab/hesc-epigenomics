@@ -12,7 +12,7 @@ navbar:
   right:
   - icon: fa-github
     text: Source code
-    href: https://github.com/cnluzon/hesc-epigenomics
+    href: https://github.com/elsasserlab/hesc-epigenomics
 output:
   workflowr::wflow_html:
     toc: yes
