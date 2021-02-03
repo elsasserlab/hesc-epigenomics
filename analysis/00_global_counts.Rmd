@@ -1,0 +1,138 @@
+---
+title: "hESC data global read counts"
+author: "Carmen Navarro"
+date: "2021-02-03"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+params:
+  datadir: /home/carmen/work/publications/hesc-epigenomics/data
+  fontsize: 14
+---
+
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+library(wigglescout)
+library(ggplot2)
+library(reshape2)
+library(dplyr)
+
+knitr::opts_chunk$set(dev = c('png', 'svg'))
+```
+
+
+# Summary
+
+This is a report on global read counts for Hu2 data.
+
+**Pipeline version**: https://github.com/NBISweden/minute/tree/8c7646949abae12ef5bd9295f20fa6eeb7182533 .
+
+**Mapping stats summary**: `data/meta/Kumar_2020_stats_summary.csv`, `data/meta/Kumar_2020_scalinginfo.csv`.
+
+INRC stands for Input Normalized Read Counts. Each sample number of mapped reads
+is divided by the corresponding number of reads in the Input. This can be done
+because of the multiplexed nature of MINUTE-ChIP protocol.
+
+In the following plots, the value shown is the log2 enrichment over the 
+reference INRC value per sample, which is the matched untreated Naïve sample
+(pooled). Each dot represents one replicate.
+
+## Helper functions
+
+```{r helper-functions}
+#' Calculate INRC from a mapped read counts table, and append such values
+#' to it.
+#'
+#' @param counts Counts table. Corresponding file is provided as part of the 
+#'   included metadata.
+#' @param selector Counts column used. Final_mapped represents the final number
+#'   of reads after deduplication and blacklisting.
+
+#' @return A table including INRC and INRC norm to naive reference
+calculate_inrc <- function(counts, selector = "final_mapped") {
+  counts$condition <- paste(counts$celltype, counts$treatment, sep="_")
+  
+  inputs <- counts[counts$ip == "Input", c("library", selector)]
+  colnames(inputs) <- c("library", "input_reads")
+  
+  non_inputs <- counts[counts$ip != "Input",]
+  counts <- merge(non_inputs, inputs, by.x="input", by.y="library")
+  counts$inrc <- counts[, selector] / counts[, "input_reads"]
+  
+  references <- counts[grepl("_Ni_pooled", counts$library), c("ip", "inrc")]
+  colnames(references) <- c("ip", "ref_inrc")
+  
+  counts <- merge(counts, references, by="ip")
+  counts$norm_to_naive <- log2(counts$inrc / counts$ref_inrc)
+  
+  id_vars <- c("ip", "treatment", "celltype", "condition", "replicate", "norm_to_naive")
+  inrc <- counts[, c(id_vars)]
+  
+  inrc$condition <- factor(inrc$condition, levels = c("Naive_Untreated", "Primed_Untreated", "Naive_EZH2i", "Primed_EZH2i"))
+  
+  inrc
+}
+
+#' Barplot INRC pooled vs replicates per condition
+#'
+#' @param inrc Table with the INRC values
+#' @param ip Which IP to plot
+#' @param colors Corresponding colors
+inrc_barplot <- function(inrc, ip, colors) {
+  inrc <- inrc[inrc$ip == ip, ]
+  
+  max_v <- max(abs(inrc$norm_to_naive))
+  
+  aesthetics <- aes(x = .data[["condition"]],
+                    y = .data[["norm_to_naive"]],
+                    color = .data[["condition"]])
+  
+  ggplot(inrc[inrc$replicate!='pooled',], aesthetics) +
+  geom_point() +
+  geom_bar(data=inrc[inrc$replicate=='pooled',],
+           stat='identity', alpha=0.6, aes(fill=condition)) +
+  scale_fill_manual(values = colors) +
+  scale_color_manual(values = colors) +
+  labs(x = "", y = 'log2(INRC vs Naïve)', title = paste(ip, "MINUTE-ChIP")) +
+  theme_classic(base_size=params$fontsize) +
+  theme(axis.text.x = element_text(angle=45, hjust=1)) + ylim(-max_v, max_v)
+}
+
+colors_list <- c("Naive_EZH2i"="#5F9EA0",
+                 "Naive_Untreated"="#278b8b",
+                 "Primed_EZH2i"="#f47770",
+                 "Primed_Untreated"="#f44b34")
+
+```
+
+# Global read counts levels
+
+## H2AUb levels
+
+```{r h2aub-inrc-barplot}
+counts_file <- file.path(params$datadir, "meta", "Kumar_2020_stats_summary.csv")
+counts <- read.table(counts_file, sep="\t", header = T, na.strings = "NA", stringsAsFactors = F)
+
+inrc <- calculate_inrc(counts) 
+ip <- "H2Aub"
+
+inrc_barplot(inrc, "H2Aub", colors_list)
+```
+
+## H3K27m3 levels
+
+```{r h3k27m3-inrc-barplot}
+inrc_barplot(inrc, "H3K27m3", colors_list)
+```
+
+## H3K4m3 levels
+
+```{r h3k4m3-inrc-barplot}
+inrc_barplot(inrc, "H3K4m3", colors_list)
+```
+
+## H3 levels
+
+```{r h3-inrc-barplot}
+inrc_barplot(inrc, "H3", colors_list)
+```
