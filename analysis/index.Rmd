@@ -12,5 +12,7 @@ Supplementary code and analysis for publication.
 
 Analyses:
 
-* [Global read counts](00_global_counts.html). Read counts per sample normalized
+* [Global read counts](global_counts.html). Read counts per sample normalized
 to input levels.
+* [Bivalent chromatin](bivalent_chromatin.html). Histone marks on
+bivalent-chromatin annotated regions.
