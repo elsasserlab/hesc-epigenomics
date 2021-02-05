@@ -1,0 +1,516 @@
+---
+title: "RNA-seq analysis on public data"
+author: "Carmen Navarro"
+date: "2021-02-05"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+bibliography: /home/carmen/work/publications/hesc-epigenomics/data/meta/biblio.bib
+params:
+  datadir: ./data
+  rnaseqdir: ./data/rnaseq/
+---
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+library(wigglescout)
+library(ggplot2)
+library(knitr)
+library(ggvenn)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+library(org.Hs.eg.db)
+library(rtracklayer)
+library(GenomicRanges)
+library(purrr)
+library(xfun)
+library(tidyr)
+library(gprofiler2)
+
+source("./code/globals.R")
+```
+
+# Summary
+
+**Data**: Used public data from [@collier2017]: H9 embryonic stem cells in Naïve and Primed state, three biological replicates.
+
+```{r sample-table, results="asis", echo=FALSE}
+samples_file <- file.path(params$datadir, "meta", "Kumar_2020_public_data_plus_layout.csv")
+
+samples <- read.table(samples_file, header = T, sep=",")
+# 
+samples <- samples[samples$dataset_id == "Collier_2017", ]
+kable(samples, caption="Sample info")
+```
+
+# Primary analysis
+
+RNA-seq data was analysed by a standard RNA-seq pipeline v2.0, available on nf-core [@ewels2019nf] with mostly default settings. For more information about the specific steps involved in this analysis, refer to the repository documentation: <https://nf-co.re/rnaseq/2.0>.
+
+## Reference genome
+
+Due to some difficulties in using `hg38` with iGenomes, and since the rest of the analysis has been done on such reference (more specifically, GRCh38.p12). An annotation was downloaded from Ensembl and used as matching custom `--fasta` and `--gtf` parameters:
+
+<ftp://ftp.ensembl.org/pub/release-95/gtf/homo_sapiens/Homo_sapiens.GRCh38.95.gtf.gz>
+
+<ftp://ftp.ensembl.org/pub/release-95/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa.gz>
+
+## Running environment
+
+RNA-seq analysis was run on Uppmax HPC environment using standard parameters: `nextflow run nf-core/rnaseq -profile uppmax -revision 2.0 --public_data_ids ids_file.txt`. `ids_file.txt` contained only the GSM ids as plain text.
+
+This run would produce the corresponding FASTQ files and then a further run with the generated `samplesheet_grouped.tsv` file, the pipeline was run.
+
+## Note on pipeline version
+
+There is a newer RNA-seq version: <https://github.com/nf-core/rnaseq/releases/tag/3.0>. This affects the quantification, so it may be the case that results are better using Salmon instead of featureCounts. However at this point there is a problem with Singularity on Uppmax and this version cannot be easily run. If necessary, I will re-do this analysis in the future, once these problems are solved.
+
+# Downstream analysis
+
+## Helper functions
+
+```{r helper, warning=FALSE}
+color_list <- c(Naive=global_palette$teal,
+                Primed=global_palette$coral)
+
+#' Subset a stringtie output table intro high/med/low expr genes
+#'
+#' @param counts Counts table.
+#' @param min_length Gene length cutoff.
+#' @param group_size Number of genes per group.
+#' @param min_cutoff Minimum threshold to consider.
+#' @param field Which field to use (default = TPM).
+#'
+#' @return Named list top, bottom, med
+categorize_genes <- function(counts, min_length, group_size, min_cutoff = 0, field = "TPM") {
+  counts$length <- (counts$End - counts$Start)
+
+  # Filter by gene length
+  counts <- counts[counts$length > min_length, ]
+  
+  # Count as "low" genes that have something, instead of none?
+  counts <- counts[counts[, field] > min_cutoff, ]
+  
+  # Sort by corresponding column
+  counts <- counts[order(counts[, field], decreasing = TRUE), ]
+  
+  total <- nrow(counts)
+  
+  top <- counts[1:group_size, ]
+  bottom <- counts[(total-group_size+1):total, ]
+  med <- counts[((total/2)-(group_size/2)):((total/2)+(group_size/2)-1),]
+  
+  list(top = top, bottom = bottom, med = med)
+}
+
+#' Make a venn diagram out ouf a list of selected gene counts
+#'
+#' @param lists List of lists of three (top, med, bottom) gene counts.
+#' @param field Which group to select (top, med, bottom)-
+#' @param title Plot title
+#' @param color Base color
+
+#' @return ggplot object
+genes_venn <- function(lists, field, title, color) {
+  field_list <- list(r1 = lists[[1]][[field]]$Gene.Name, 
+                     r2 = lists[[2]][[field]]$Gene.Name,
+                     r3 = lists[[3]][[field]]$Gene.Name)
+  
+  clist <- rep(color, 3)
+  ggvenn(field_list, fill_color = clist, fill_alpha = 0.5, text_size = 5, stroke_color = "#ffffff") + 
+    ggtitle(title)
+}
+
+#' Intersect per category
+#'
+#' @param group_list List of lists of three (top, med, bottom) gene counts.
+#' @param category Which group to select (top, med, bottom).
+#'
+#' @return Gene names that intersect
+intersect_3 <- function(group_list, category) {
+  intersect(intersect(group_list[[1]][[category]]$Gene.Name,
+                      group_list[[2]][[category]]$Gene.Name),
+            group_list[[3]][[category]]$Gene.Name)
+}
+
+#' Subset a named granges by name
+#'
+#' @param names Names list
+#' @param granges GRanges to subset.
+#'
+#' @return GRanges
+select_genes <- function(names, granges) {
+  sort(granges[granges$name %in% names, ])
+}
+
+#' Export gene sets out of a list of selected gene counts
+#'
+#' @param group_list List of lists of three (top, med, bottom) gene counts.
+#' @param prefix File name prefix
+export_gene_sets <- function(group_list, prefix) {
+  merged <- map(c("top", "med", "bottom"),
+                   intersect_3,
+                   group_list=group_list)
+  
+  out_files <- paste0(file.path("./output/Collier_2017/"),
+                      paste(prefix,
+                            c("top.bed", "med.bed", "bottom.bed"), sep="_"))
+  
+  genes_all <- genes_hg38()
+  
+  ranges_list <- map(merged, select_genes, granges=genes_all)
+  
+  file_list <- map2(ranges_list, out_files, export)
+}
+
+```
+
+## Gene counts
+
+Gene counts output file from `featureCounts` are used.
+
+```{r counts-example, results="asis"}
+counts_file <- file.path(params$rnaseqdir,
+                         "Collier_2017_featurecounts.tsv")
+
+counts <- read.table(counts_file, sep = "\t", header = T)
+kable(head(counts))
+```
+
+### Counts distribution
+
+```{r counts-hist}
+
+counts_long <- pivot_longer(counts,
+                            cols = -c(Geneid, gene_name),
+                            names_to = c("sample", "replicate"),
+                            names_sep = "_",
+                            values_to = "count",
+                            names_ptypes = list(sample = factor(),
+                                                replicate = factor()))
+
+color_scale <- scale_color_manual(name = "sample",
+                                  values = unlist(color_list))
+
+
+ggplot(counts_long,
+       aes(x = interaction(sample, replicate, lex.order =T),
+           y = count, color = sample)) + 
+  labs(x = "Sample", y = "counts",
+     title = "featureCounts distribution per sample") +
+  geom_boxplot() +  
+  color_scale + 
+  theme_default()
+
+```
+
+Log scaled + 1:
+
+```{r counts-hist-log}
+library(tidyr)
+counts_long <- pivot_longer(counts,
+                            cols = -c(Geneid, gene_name),
+                            names_to = c("sample", "replicate"),
+                            names_sep = "_",
+                            values_to = "count",
+                            names_ptypes = list(sample = factor(),
+                                                replicate = factor()))
+
+color_scale <- scale_color_manual(name = "sample",
+                                  values = unlist(color_list))
+
+
+ggplot(counts_long,
+       aes(x = interaction(sample, replicate, lex.order =T),
+           y = log10(count+1), color = sample)) + 
+  geom_boxplot() +  
+  color_scale + 
+  labs(x = "Sample", y = "log10(counts + 1)",
+       title = "featureCounts distribution per sample") +
+  theme_default()
+
+```
+
+As expected, there are many zero values in all the distributions, and long tails since there is no upper limit in RNA-seq data.
+
+## Stringtie output
+
+`stringtie` [@kovaka2019transcriptome] <https://ccb.jhu.edu/software/stringtie/>) is a tool for quantitation of full-length transcripts (taking variants into account) per gene.
+
+This output is also provided as standard output for RNA-seq pipeline v2.0.
+
+```{r results="asis"}
+stringtie_files <- list(
+  naive = list.files(params$rnaseqdir,
+                     pattern = "Naive.*gene_abundance.txt", full.names = T),
+  primed = list.files(params$rnaseqdir,
+                      pattern = "Primed.*gene_abundance.txt", full.names = T)
+)
+
+kable(head(read.csv(stringtie_files$primed[1], header = T, sep = "\t")))
+```
+
+### Gene expression groups
+
+To get sets of high - med -low expressed:
+
+1\. Remove genes that are shorter than 10kb.
+
+2\. Take top 5000, around-median 5000 and lowest 5000 genes.
+
+In this case, we have 3 biological replicates per condition.
+
+So one possible approach is do this per replicate and see how they intersect.
+
+```{r categorize-genes}
+
+counts_naive <- lapply(stringtie_files$naive,
+                       read.csv,
+                       header = T,
+                       sep = "\t")
+
+min_length_cutoff <- 10000
+group_size <- 5000
+min_expr_cutoff <- 5
+deciding_stat <- "TPM"
+
+# Set a cutoff for the low expressed genes, so there is still some signal
+# In there. When intersecting otherwise, I get few overlap.
+groups_naive <- lapply(counts_naive,
+                       categorize_genes,
+                       min_length = min_length_cutoff,
+                       group_size = group_size,
+                       min_cutoff = min_expr_cutoff,
+                       field = deciding_stat)
+
+
+counts_primed <- lapply(stringtie_files$primed,
+                        read.csv,
+                        header = T,
+                        sep = "\t")
+
+groups_primed <- lapply(counts_primed,
+                        categorize_genes,
+                        min_length = min_length_cutoff,
+                        group_size = group_size,
+                        min_cutoff = min_expr_cutoff,
+                        field = deciding_stat)
+
+
+c <- color_list[["Naive"]]
+```
+
+#### Naïve expressed gene groups
+
+Top expressed genes:
+
+```{r top-naive-genes-venn-replicates, fig.width = 8, fig.height = 8}
+groups <- groups_naive
+
+genes_venn(groups,
+           "top",
+           "Naïve top 5k expressed genes across replicates",
+           color = c)
+```
+
+Medium expressed genes:
+
+```{r med-naive-genes-venn-replicates, fig.width = 8, fig.height = 8}
+genes_venn(groups,
+           "med",
+           "Naïve med 5k expressed genes across replicates",
+           color = c)
+```
+
+Low expressed genes:
+
+```{r low-naive-genes-venn-replicates, fig.width = 8, fig.height = 8}
+genes_venn(groups,
+           "bottom",
+           "Naïve bottom 5k expressed genes across replicates",
+           color = c)
+```
+
+#### Primed expressed gene groups
+
+```{r top-primed-genes-venn-replicates, fig.width = 8, fig.height = 8}
+c <- color_list[["Primed"]]
+
+groups <- groups_primed
+
+genes_venn(groups,
+           "top",
+           "Primed top 5k expressed genes across replicates",
+           color = c)
+```
+
+```{r med-primed-genes-venn-replicates, fig.width = 8, fig.height = 8}
+genes_venn(groups,
+           "med",
+           "Primed med 5k expressed genes across replicates",
+           color = c)
+```
+
+```{r bottom-primed-genes-venn-replicates, fig.width = 8, fig.height = 8}
+genes_venn(groups,
+           "bottom",
+           "Primed low 5k expressed genes across replicates",
+           color = c)
+```
+
+I assume here there should be some overlap
+
+```{r naive-vs-primed-venn, fig.width = 8, fig.height = 8}
+
+naive_top_genes <- intersect(intersect(groups_naive[[1]]$top$Gene.Name, 
+                             groups_naive[[2]]$top$Gene.Name),
+                             groups_naive[[3]]$top$Gene.Name)
+
+primed_top_genes <- intersect(intersect(groups_primed[[1]]$top$Gene.Name, 
+                              groups_primed[[2]]$top$Gene.Name),
+                              groups_primed[[3]]$top$Gene.Name)
+
+field_list <- list(naive=naive_top_genes,
+                   primed=primed_top_genes)
+
+ggvenn(field_list, fill_color = c(color_list[["Naive"]], color_list[["Primed"]]), fill_alpha = 0.5, text_size = 5, stroke_color = "#ffffff") + 
+    ggtitle("Naive vs primed top expressed genes")
+
+```
+
+## Gene set enrichment
+
+There seems to be some overlap in the Naïve-only vs Primed-only and our groups, when looking at functional annotation, at least. Being more stringent in the top expressed genes:
+
+```{r smaller-gene-groups}
+
+min_length_cutoff <- 10000
+group_size <- 2000
+min_expr_cutoff <- 5
+deciding_stat <- "TPM"
+
+# Set a cutoff for the low expressed genes, so there is still some signal
+# In there. When intersecting otherwise, I get few overlap.
+groups_naive <- lapply(counts_naive,
+                       categorize_genes,
+                       min_length = min_length_cutoff,
+                       group_size = group_size,
+                       min_cutoff = min_expr_cutoff,
+                       field = deciding_stat)
+
+
+counts_primed <- lapply(stringtie_files$primed,
+                        read.csv,
+                        header = T,
+                        sep = "\t")
+
+groups_primed <- lapply(counts_primed,
+                        categorize_genes,
+                        min_length = min_length_cutoff,
+                        group_size = group_size,
+                        min_cutoff = min_expr_cutoff,
+                        field = deciding_stat)
+```
+
+Still quite some overlap among the highest expressed genes:
+
+```{r smaller-top-groups-venn, fig.width = 8, fig.height = 8}
+
+naive_top_genes <- intersect(intersect(groups_naive[[1]]$top$Gene.Name, 
+                             groups_naive[[2]]$top$Gene.Name),
+                             groups_naive[[3]]$top$Gene.Name)
+
+primed_top_genes <- intersect(intersect(groups_primed[[1]]$top$Gene.Name, 
+                              groups_primed[[2]]$top$Gene.Name),
+                              groups_primed[[3]]$top$Gene.Name)
+
+field_list <- list(naive=naive_top_genes,
+                   primed=primed_top_genes)
+
+ggvenn(field_list, fill_color = c(color_list[["Naive"]], color_list[["Primed"]]), fill_alpha = 0.5, text_size = 5, stroke_color = "#ffffff") + 
+    ggtitle("Naive vs primed top expressed genes")
+
+```
+
+Gene enrichment analysis
+
+```{r go-enrichment, fig.width = 8, fig.height = 8}
+naive_only <- setdiff(naive_top_genes, primed_top_genes)
+primed_only <- setdiff(primed_top_genes, naive_top_genes)
+both <- intersect(naive_top_genes, primed_top_genes)
+
+genes <- list(naive_only = naive_only,
+              primed_only = primed_only,
+              shared = both)
+
+# Do a gprofiler analysis
+gostres <- gost(query = genes, 
+                organism = "hsapiens", ordered_query = FALSE, 
+                multi_query = FALSE, significant = TRUE, exclude_iea = FALSE, 
+                measure_underrepresentation = FALSE, evcodes = FALSE, 
+                user_threshold = 0.05, correction_method = "g_SCS", 
+                domain_scope = "annotated", custom_bg = NULL, 
+                numeric_ns = "", sources = NULL, as_short_link = FALSE)
+
+gostplot(gostres, capped = TRUE, interactive = TRUE)
+```
+
+This is a bit too much at the moment, we can probably refine this.
+
+## Annotation of gene groups 
+
+Now I annotate the intersection of these sets in the reference genome, to be able to look at chromatin marks there.
+
+```{r annotate-groups}
+genes_hg38 <- function() {
+  # This matches gene IDs to symbols
+  x <- org.Hs.egSYMBOL
+  
+  # Get the gene names that are mapped to an entrez gene identifier
+  mapped_genes <- mappedkeys(x)
+  # Convert to a list
+  xx <- as.list(x[mapped_genes])
+  
+  # Apparently there are some pathway crap that puts NAs in the list
+  xx <- xx[!is.na(xx)]
+  
+  gene_id_to_name <- unlist(xx)
+  
+  genes <- genes(TxDb.Hsapiens.UCSC.hg38.knownGene)
+  genes$name <- gene_id_to_name[genes$gene_id]
+  genes
+}
+
+min_length_cutoff <- 10000
+group_size <- 5000
+min_expr_cutoff <- 5
+deciding_stat <- "TPM"
+
+# Set a cutoff for the low expressed genes, so there is still some signal
+# In there. When intersecting otherwise, I get few overlap.
+groups_naive <- lapply(counts_naive,
+                       categorize_genes,
+                       min_length = min_length_cutoff,
+                       group_size = group_size,
+                       min_cutoff = min_expr_cutoff,
+                       field = deciding_stat)
+
+export_gene_sets(groups_naive, "Naive")
+
+groups_naive <- lapply(counts_primed,
+                       categorize_genes,
+                       min_length = min_length_cutoff,
+                       group_size = group_size,
+                       min_cutoff = min_expr_cutoff,
+                       field = deciding_stat)
+
+export_gene_sets(groups_naive, "Primed")
+
+
+```
+
+### Download the BED files
+
+```{r download-files, echo=FALSE}
+xfun::embed_dir(file.path("./output/Collier_2017"))
+```
+
+## Bibliography

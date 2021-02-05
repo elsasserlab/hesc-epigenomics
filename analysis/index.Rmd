@@ -16,3 +16,5 @@ Analyses:
 to input levels.
 * [Bivalent chromatin](bivalent_chromatin.html). Histone marks on
 bivalent-chromatin annotated regions.
+* [Public RNA-seq analysis](rna_seq_collier_2017.html). Gene expression analysis
+on RNA-seq public data.
