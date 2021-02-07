@@ -16,8 +16,10 @@ library(wigglescout)
 library(ggplot2)
 library(reshape2)
 library(dplyr)
+library(knitr)
 
 knitr::opts_chunk$set(dev = c('png', 'svg'))
+source("./code/embed_functions.R")
 ```
 
 
@@ -27,7 +29,7 @@ This is a report on global read counts for Hu2 data.
 
 **Pipeline version**: https://github.com/NBISweden/minute/tree/8c7646949abae12ef5bd9295f20fa6eeb7182533 .
 
-**Mapping stats summary**: `data/meta/Kumar_2020_stats_summary.csv`, `data/meta/Kumar_2020_scalinginfo.csv`.
+**Mapping stats summary**: `data/meta/Kumar_2020_stats_summary.csv`.
 
 INRC stands for Input Normalized Read Counts. Each sample number of mapped reads
 is divided by the corresponding number of reads in the Input. This can be done
@@ -119,11 +121,15 @@ ip <- "H2Aub"
 inrc_barplot(inrc, "H2Aub", colors_list)
 ```
 
+You can download data values here: `r embed_last_plot_data(name="H2AUb_global.tsv")`.
+
 ## H3K27m3 levels
 
 ```{r h3k27m3-inrc-barplot}
 inrc_barplot(inrc, "H3K27m3", colors_list)
 ```
+
+You can download data values here: `r embed_last_plot_data(name="H3K27m3_global.tsv")`.
 
 ## H3K4m3 levels
 
@@ -131,8 +137,4 @@ inrc_barplot(inrc, "H3K27m3", colors_list)
 inrc_barplot(inrc, "H3K4m3", colors_list)
 ```
 
-## H3 levels
-
-```{r h3-inrc-barplot}
-inrc_barplot(inrc, "H3", colors_list)
-```
+You can download data values here: `r embed_last_plot_data(name="H3K4m3_global.tsv")`.
