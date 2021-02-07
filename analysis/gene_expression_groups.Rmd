@@ -1,0 +1,477 @@
+---
+title: "Histone marks at gene groups per expression level"
+author: "Carmen Navarro"
+date: "2021-02-07"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+params:
+  bwdir: ./data/bw/Kumar_2020/hu2
+  genesdir: ./output/Collier_2017
+  styles: ./data/meta/style_info.csv
+---
+
+# Summary
+
+Here we look at our histone marks in gene groups separated by expression levels
+(high-med-low) per cell type. These groups were calculated using RNA-seq data
+from [@collier2017]. For more details,
+see corresponding [analysis](rna_seq_collier_2017.html) report.
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+library(wigglescout)
+library(ggplot2)
+library(knitr)
+library(ggvenn)
+library(rtracklayer)
+library(GenomicRanges)
+library(purrr)
+library(xfun)
+library(cowplot)
+
+source("./code/globals.R")
+
+knitr::opts_chunk$set(dev = c('png', 'svg'))
+```
+
+
+# Helper functions
+
+```{r helper-functions}
+colors_list <- c("Naive_EZH2i"="#5F9EA0",
+                 "Naive_Untreated"="#278b8b",
+                 "Primed_EZH2i"="#f47770",
+                 "Primed_Untreated"="#f44b34")
+
+style_info <- read.table(params$styles, header = T, sep = "\t")
+rownames(style_info) <- style_info$bw
+
+# Clean unnecesary labels in a grid
+remove_extra_captions <- function(plot_list) {
+  for (i in 2:length(plot_list)) {
+    plot_list[[i]] <- plot_list[[i]] + theme(legend.position = "none") + ggtitle("")
+  }
+  plot_list
+}
+
+set_global_y_axis <- function(plot_list, limits) {
+  for (i in 1:length(plot_list)) {
+    plot_list[[i]] <- plot_list[[i]] + ylim(limits)
+  }
+  plot_list
+}
+
+```
+
+
+# H3K27m3
+
+## Highly expressed genes
+
+```{r h3k27m3-profile-top, fig.width=11, fig.height=7}
+bedfiles <- list.files(params$genesdir, full.names = T, pattern = "top")
+bwfiles <- list.files(params$bwdir, full.names = T)
+
+bwinput <- bwfiles[grepl("IN.*pooled", bwfiles)]
+bwsignal <- bwfiles[grepl("H3K27m3.*pooled.hg38.scaled", bwfiles)]
+
+colors <- as.character(style_info[basename(c(bwsignal, bwinput)), "color_cond"])
+labels <- style_info[basename(c(bwsignal, bwinput)), "label"]
+
+up <- 10000
+dw <- 10000
+bs <- 500
+md <- "stretch"
+global_lims <- c(0, 1.5)
+
+this_plot <- partial(plot_bw_profile, bwfiles = c(bwsignal, bwinput),
+                     bin_size = bs,
+                     mode = md,
+                     upstream = up,
+                     downstream = dw,
+                     colors = colors,
+                     labels = labels)
+
+plots <- purrr::map(bedfiles, this_plot)
+plots[[1]] <- plots[[1]] + ylim(global_lims) + theme(legend.position = "none") + ggtitle("H3K27m3 @Top genes")
+plots[[2]] <- plots[[2]] + ylim(global_lims) + ylab("") + ggtitle("")
+
+plot_grid(plotlist=plots, nrow=1)
+```
+
+### Norm to input
+```{r h3k27m3-profile-top-norm, fig.width=11, fig.height=7}
+
+colors <- as.character(style_info[basename(bwsignal), "color_cond"])
+labels <- style_info[basename(bwsignal), "label"]
+
+global_lims <- c(0, 1.2)
+
+this_plot <- partial(plot_bw_profile, bwfiles = bwsignal, bg_bwfiles = bwinput,
+                     bin_size = bs,
+                     mode = md,
+                     upstream = up,
+                     downstream = dw,
+                     colors = colors,
+                     labels = labels)
+
+plots <- purrr::map(bedfiles, this_plot)
+plots[[1]] <- plots[[1]] + ylim(global_lims) + theme(legend.position = "none") + ggtitle("H3K27m3 @Top genes")
+plots[[2]] <- plots[[2]] + ylim(global_lims) + ylab("") + ggtitle("")
+
+plot_grid(plotlist=plots, nrow=1)
+```
+
+As shown in the previous report, there is some overlap between these groups of
+genes:
+
+```{r top-overlap-genes, fig.width = 8, fig.height = 8}
+naive_top <- import(bedfiles[[1]])
+primed_top <- import(bedfiles[[2]])
+
+field_list <- list(naive=naive_top$name,
+                   primed=primed_top$name)
+
+ggvenn(field_list, fill_color = c(colors_list[["Naive_Untreated"]], colors_list[["Primed_Untreated"]]), fill_alpha = 0.5, text_size = 5, stroke_color = "#ffffff") + 
+    ggtitle("Naive vs primed top expressed genes")
+
+```
+
+### Naive-only vs primed-only
+
+```{r h3k27m3-profile-naive-only-vs-primed-only, fig.width=11, fig.height=11}
+
+naive_only_top <- setdiff(naive_top, primed_top)
+primed_only_top <- setdiff(primed_top, naive_top)
+both <- intersect(naive_top, primed_top)
+
+colors <- as.character(style_info[basename(c(bwsignal, bwinput)), "color_cond"])
+labels <- style_info[basename(c(bwsignal, bwinput)), "label"]
+
+global_lims <- c(0, 2)
+
+this_plot <- partial(plot_bw_profile, bwfiles = c(bwsignal, bwinput),
+                     bin_size = bs,
+                     mode = md,
+                     upstream = up,
+                     downstream = dw,
+                     colors = colors,
+                     labels = labels)
+
+
+plots <- purrr::map(list(naive_only_top, primed_only_top, both), this_plot)
+plots[[1]] <- plots[[1]] + ylim(global_lims) + theme(legend.position = "none") + ggtitle("Naive-only")
+plots[[2]] <- plots[[2]] + ylim(global_lims) + ylab("") + theme(legend.position = "none") + ggtitle("Primed-only")
+plots[[3]] <- plots[[3]] + ylim(global_lims) + ylab("") + ggtitle("Both")
+
+plot_grid(plotlist=plots, ncol=2)
+
+```
+
+#### Norm to input
+```{r h3k27m3-profile-naive-only-vs-primed-only-norm, fig.width=11, fig.height=11}
+
+colors <- as.character(style_info[basename(bwsignal), "color_cond"])
+labels <- style_info[basename(bwsignal), "label"]
+
+global_lims <- c(0, 2)
+
+this_plot <- partial(plot_bw_profile, bwfiles = bwsignal, bg_bwfiles = bwinput,
+                     bin_size = bs,
+                     mode = md,
+                     upstream = up,
+                     downstream = dw,
+                     colors = colors,
+                     labels = labels)
+
+
+plots <- purrr::map(list(naive_only_top, primed_only_top, both), this_plot)
+plots[[1]] <- plots[[1]] + ylim(global_lims) + theme(legend.position = "none") + ggtitle("Naive-only")
+plots[[2]] <- plots[[2]] + ylim(global_lims) + ylab("") + theme(legend.position = "none") + ggtitle("Primed-only")
+plots[[3]] <- plots[[3]] + ylim(global_lims) + ylab("") + ggtitle("Both")
+
+plot_grid(plotlist=plots, ncol=2)
+
+```
+
+
+## High-med-low expressed genes
+
+```{r h3k27m3-profile-groups-panel, fig.width=11, fig.height=16}
+bedfiles_top <- list.files(params$genesdir, full.names = T, pattern = "_top")
+bedfiles_med <- list.files(params$genesdir, full.names = T, pattern = "_med")
+bedfiles_bottom <- list.files(params$genesdir, full.names = T, pattern = "_bottom")
+
+# Ensures proper order
+bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
+bwsignal <- bwfiles[grepl("H3K27m3.*pooled.hg38.scaled", bwfiles)]
+
+colors <- as.character(style_info[basename(c(bwsignal, bwinput)), "color_cond"])
+labels <- style_info[basename(c(bwsignal, bwinput)), "label"]
+
+up <- 10000
+dw <- 10000
+bs <- 500
+md <- "stretch"
+global_lims <- c(0, 2.5)
+
+this_plot <- partial(plot_bw_profile, bwfiles = c(bwsignal, bwinput),
+                     bin_size = bs,
+                     mode = md,
+                     upstream = up,
+                     downstream = dw,
+                     colors = colors,
+                     labels = labels,
+                     verbose = FALSE) # Plot gets too crowded
+
+plots <- purrr::map(bedfiles, this_plot)
+
+plots <- remove_extra_captions(plots)
+plots <- set_global_y_axis(plots, global_lims)
+
+plots[[1]] <- plots[[1]] + ggtitle("H3K27m3 per gene class: Naive")
+plots[[2]] <- plots[[2]] + ggtitle("- Primed" )
+
+plot_grid(plotlist=plots, nrow=3)
+```
+
+
+## Boxplots
+
+```{r h3k27m3-boxplots-tss-groups-panel, fig.width=11, fig.height=16}
+bedfiles_top <- list.files(params$genesdir, full.names = T, pattern = "_top")
+bedfiles_med <- list.files(params$genesdir, full.names = T, pattern = "_med")
+bedfiles_bottom <- list.files(params$genesdir, full.names = T, pattern = "_bottom")
+
+# Ensures proper order
+bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
+bwsignal <- bwfiles[grepl("H3K27m3.*pooled.hg38.scaled", bwfiles)]
+
+colors <- as.character(style_info[basename(c(bwsignal, bwinput)), "color_cond"])
+labels <- style_info[basename(c(bwsignal, bwinput)), "label"]
+
+# Use tss for this
+tss_window <- 2500
+
+bed_ranges <- lapply(bedfiles, import)
+tss_ranges <- lapply(bed_ranges, promoters, upstream = tss_window, downstream = tss_window)
+
+
+this_plot <- partial(bw_loci, bwfiles = c(bwsignal, bwinput))
+# 
+plots <- purrr::map(tss_ranges, this_plot)
+names(plots) <- basename(bedfiles)
+
+# Pivot 1 item:
+library(tidyr)
+
+pivot_bed <- function(granges, loci_name) {
+  bin_ids <- c("seqnames", "start", "end", "width", "strand")
+  pivoted <- pivot_longer(data = data.frame(granges),
+                             cols = contains("pooled.hg38"),
+                             names_pattern = "(.*)_pooled.hg38.*",
+                             names_to = "sample",
+                             values_to = "value")
+  pivoted[["group"]] <- loci_name
+  pivoted
+}
+
+pivoted_list <- map2(plots, names(plots), pivot_bed)
+all_vals <- do.call(rbind, pivoted_list)
+
+
+ggplot(all_vals, aes(x = sample, y = value, color = sample, group = sample)) + geom_boxplot() + facet_wrap(group ~ .)  + theme_default() + theme(axis.text.x = element_text(angle=45, hjust = 1)) + scale_color_manual(name = "sample", values = colors)
+```
+
+
+# H3K4m3
+
+## Highly expressed genes
+
+```{r h3k4m3-profile-top, fig.width=11, fig.height=7}
+bedfiles <- list.files(params$genesdir, full.names = T, pattern = "top")
+bwfiles <- list.files(params$bwdir, full.names = T)
+
+bwinput <- bwfiles[grepl("IN.*pooled", bwfiles)]
+bwsignal <- bwfiles[grepl("H3K4m3.*pooled.hg38.scaled", bwfiles)]
+
+colors <- as.character(style_info[basename(c(bwsignal, bwinput)), "color_cond"])
+labels <- style_info[basename(c(bwsignal, bwinput)), "label"]
+
+up <- 10000
+dw <- 10000
+bs <- 500
+md <- "stretch"
+global_lims <- c(0, 115)
+
+this_plot <- partial(plot_bw_profile, bwfiles = c(bwsignal, bwinput),
+                     bin_size = bs,
+                     mode = md,
+                     upstream = up,
+                     downstream = dw,
+                     colors = colors,
+                     labels = labels)
+
+plots <- purrr::map(bedfiles, this_plot)
+plots[[1]] <- plots[[1]] + ylim(global_lims) + theme(legend.position = "none") + ggtitle("H3K4m3 @Top genes")
+plots[[2]] <- plots[[2]] + ylim(global_lims) + ylab("") + ggtitle("")
+
+plot_grid(plotlist=plots, nrow=1)
+```
+
+### Norm to input
+```{r h3k4m3-profile-top-norm, fig.width=11, fig.height=7}
+
+colors <- as.character(style_info[basename(bwsignal), "color_cond"])
+labels <- style_info[basename(bwsignal), "label"]
+
+this_plot <- partial(plot_bw_profile, bwfiles = bwsignal, bg_bwfiles = bwinput,
+                     bin_size = bs,
+                     mode = md,
+                     upstream = up,
+                     downstream = dw,
+                     colors = colors,
+                     labels = labels)
+
+plots <- purrr::map(bedfiles, this_plot)
+plots[[1]] <- plots[[1]] + ylim(global_lims) + theme(legend.position = "none") + ggtitle("H3K4m3 @Top genes")
+plots[[2]] <- plots[[2]] + ylim(global_lims) + ylab("") + ggtitle("")
+
+plot_grid(plotlist=plots, nrow=1)
+```
+
+### Naive-only vs primed-only
+
+```{r h3k4m3-profile-naive-only-vs-primed-only, fig.width=11, fig.height=11}
+
+naive_only_top <- setdiff(naive_top, primed_top)
+primed_only_top <- setdiff(primed_top, naive_top)
+both <- intersect(naive_top, primed_top)
+
+colors <- as.character(style_info[basename(c(bwsignal, bwinput)), "color_cond"])
+labels <- style_info[basename(c(bwsignal, bwinput)), "label"]
+
+this_plot <- partial(plot_bw_profile, bwfiles = c(bwsignal, bwinput),
+                     bin_size = bs,
+                     mode = md,
+                     upstream = up,
+                     downstream = dw,
+                     colors = colors,
+                     labels = labels)
+
+
+plots <- purrr::map(list(naive_only_top, primed_only_top, both), this_plot)
+plots[[1]] <- plots[[1]] + ylim(global_lims) + theme(legend.position = "none") + ggtitle("Naive-only")
+plots[[2]] <- plots[[2]] + ylim(global_lims) + ylab("") + theme(legend.position = "none") + ggtitle("Primed-only")
+plots[[3]] <- plots[[3]] + ylim(global_lims) + ylab("") + ggtitle("Both")
+
+plot_grid(plotlist=plots, ncol=2)
+
+```
+
+Norm to input:
+```{r h3k4m3-profile-naive-only-vs-primed-only-norm, fig.width=11, fig.height=11}
+
+colors <- as.character(style_info[basename(bwsignal), "color_cond"])
+labels <- style_info[basename(bwsignal), "label"]
+
+this_plot <- partial(plot_bw_profile, bwfiles = bwsignal, bg_bwfiles = bwinput,
+                     bin_size = bs,
+                     mode = md,
+                     upstream = up,
+                     downstream = dw,
+                     colors = colors,
+                     labels = labels)
+
+
+plots <- purrr::map(list(naive_only_top, primed_only_top, both), this_plot)
+plots[[1]] <- plots[[1]] + ylim(global_lims) + theme(legend.position = "none") + ggtitle("Naive-only")
+plots[[2]] <- plots[[2]] + ylim(global_lims) + ylab("") + theme(legend.position = "none") + ggtitle("Primed-only")
+plots[[3]] <- plots[[3]] + ylim(global_lims) + ylab("") + ggtitle("Both")
+
+plot_grid(plotlist=plots, ncol=2)
+
+```
+
+
+## High-med-low expressed genes
+
+```{r h3k4m3-profile-groups-panel, fig.width=11, fig.height=16}
+bedfiles_top <- list.files(params$genesdir, full.names = T, pattern = "_top")
+bedfiles_med <- list.files(params$genesdir, full.names = T, pattern = "_med")
+bedfiles_bottom <- list.files(params$genesdir, full.names = T, pattern = "_bottom")
+
+# Ensures proper order
+bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
+bwsignal <- bwfiles[grepl("H3K4m3.*pooled.hg38.scaled", bwfiles)]
+
+colors <- as.character(style_info[basename(c(bwsignal, bwinput)), "color_cond"])
+labels <- style_info[basename(c(bwsignal, bwinput)), "label"]
+
+up <- 10000
+dw <- 10000
+bs <- 500
+md <- "stretch"
+global_lims <- c(0, 115)
+
+this_plot <- partial(plot_bw_profile, bwfiles = c(bwsignal, bwinput),
+                     bin_size = bs,
+                     mode = md,
+                     upstream = up,
+                     downstream = dw,
+                     colors = colors,
+                     labels = labels,
+                     verbose = FALSE) # Plot gets too crowded
+
+plots <- purrr::map(bedfiles, this_plot)
+
+plots <- remove_extra_captions(plots)
+plots <- set_global_y_axis(plots, global_lims)
+
+plots[[1]] <- plots[[1]] + ggtitle("H3K4m3 per gene class: Naive")
+plots[[2]] <- plots[[2]] + ggtitle("Primed" )
+
+plot_grid(plotlist=plots, nrow=3)
+```
+
+# H2AUb
+
+## High-med-low expressed genes
+
+```{r h2aub-profile-groups-panel, fig.width=11, fig.height=16}
+bedfiles_top <- list.files(params$genesdir, full.names = T, pattern = "_top")
+bedfiles_med <- list.files(params$genesdir, full.names = T, pattern = "_med")
+bedfiles_bottom <- list.files(params$genesdir, full.names = T, pattern = "_bottom")
+
+# Ensures proper order
+bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
+bwsignal <- bwfiles[grepl("H2A.*pooled.hg38.scaled", bwfiles)]
+
+colors <- as.character(style_info[basename(c(bwsignal, bwinput)), "color_cond"])
+labels <- style_info[basename(c(bwsignal, bwinput)), "label"]
+
+up <- 10000
+dw <- 10000
+bs <- 500
+md <- "stretch"
+global_lims <- c(0, 3)
+
+this_plot <- partial(plot_bw_profile, bwfiles = c(bwsignal, bwinput),
+                     bin_size = bs,
+                     mode = md,
+                     upstream = up,
+                     downstream = dw,
+                     colors = colors,
+                     labels = labels,
+                     verbose = FALSE) # Plot gets too crowded
+
+plots <- purrr::map(bedfiles, this_plot)
+
+plots <- remove_extra_captions(plots)
+plots <- set_global_y_axis(plots, global_lims)
+
+plots[[1]] <- plots[[1]] + ggtitle("H2AUb per gene class: Naive")
+plots[[2]] <- plots[[2]] + ggtitle("Primed" )
+
+plot_grid(plotlist=plots, nrow=3)
+```
