@@ -22,10 +22,14 @@ library(rtracklayer)
 library(GenomicRanges)
 library(purrr)
 library(xfun)
+library(cowplot)
 library(tidyr)
 library(gprofiler2)
+library(EnsDb.Hsapiens.v86)
 
 source("./code/globals.R")
+
+knitr::opts_chunk$set(dev = c('png', 'svg'))
 ```
 
 # Summary
@@ -141,6 +145,61 @@ select_genes <- function(names, granges) {
   sort(granges[granges$name %in% names, ])
 }
 
+#' Get GRanges with gene symbols for hg38
+#'
+#' @return A GRanges where name field is Gene symbol
+genes_hg38 <- function() {
+  # This matches gene IDs to symbols
+  x <- org.Hs.egSYMBOL
+  
+  # Get the gene names that are mapped to an entrez gene identifier
+  mapped_genes <- mappedkeys(x)
+  # Convert to a list
+  xx <- as.list(x[mapped_genes])
+  
+  # Apparently there are some pathway crap that puts NAs in the list
+  xx <- xx[!is.na(xx)]
+  
+  gene_id_to_name <- unlist(xx)
+  
+  genes <- genes(TxDb.Hsapiens.UCSC.hg38.knownGene)
+  genes$name <- gene_id_to_name[genes$gene_id]
+  genes
+}
+
+#' Get GRanges with gene symbols for hg38
+#'
+#' @return A GRanges where name field is Gene symbol
+genes_hg38_ensembl <- function() {
+  # This matches gene IDs to symbols
+  edb <- EnsDb.Hsapiens.v86
+  genes(edb)
+}
+
+
+#' Export gene sets out of a list of selected gene counts
+#'
+#' @param group_list List of lists of three (top, med, bottom) gene counts.
+#' @param prefix File name prefix
+export_gene_sets_ensembl <- function(group_list, prefix) {
+  merged <- map(c("top", "med", "bottom"),
+                   intersect_3,
+                   group_list=group_list)
+  
+  out_files <- paste0(file.path("./output/Collier_2017/ensembl/",
+                      paste(prefix,
+                            c("top.bed", "med.bed", "bottom.bed"), sep="_")))
+  
+  genes_all <- genes_hg38_ensembl()
+  genes_all <- genes_all[, "gene_name"] 
+  names(mcols(genes_all)) <- "name"
+  
+  ranges_list <- map(merged, select_genes, granges=genes_all)
+  
+  file_list <- map2(ranges_list, out_files, export)
+}
+
+
 #' Export gene sets out of a list of selected gene counts
 #'
 #' @param group_list List of lists of three (top, med, bottom) gene counts.
@@ -155,7 +214,7 @@ export_gene_sets <- function(group_list, prefix) {
                             c("top.bed", "med.bed", "bottom.bed"), sep="_"))
   
   genes_all <- genes_hg38()
-  
+
   ranges_list <- map(merged, select_genes, granges=genes_all)
   
   file_list <- map2(ranges_list, out_files, export)
@@ -269,8 +328,8 @@ counts_naive <- lapply(stringtie_files$naive,
 
 min_length_cutoff <- 10000
 group_size <- 5000
-min_expr_cutoff <- 5
-deciding_stat <- "TPM"
+min_expr_cutoff <- 0
+deciding_stat <- "FPKM"
 
 # Set a cutoff for the low expressed genes, so there is still some signal
 # In there. When intersecting otherwise, I get few overlap.
@@ -376,6 +435,7 @@ ggvenn(field_list, fill_color = c(color_list[["Naive"]], color_list[["Primed"]])
 
 ```
 
+
 ## Gene set enrichment
 
 There seems to be some overlap in the Naïve-only vs Primed-only and our groups, when looking at functional annotation, at least. Being more stringent in the top expressed genes:
@@ -384,7 +444,7 @@ There seems to be some overlap in the Naïve-only vs Primed-only and our groups,
 
 min_length_cutoff <- 10000
 group_size <- 2000
-min_expr_cutoff <- 5
+min_expr_cutoff <- 0
 deciding_stat <- "TPM"
 
 # Set a cutoff for the low expressed genes, so there is still some signal
@@ -460,28 +520,9 @@ This is a bit too much at the moment, we can probably refine this.
 Now I annotate the intersection of these sets in the reference genome, to be able to look at chromatin marks there.
 
 ```{r annotate-groups}
-genes_hg38 <- function() {
-  # This matches gene IDs to symbols
-  x <- org.Hs.egSYMBOL
-  
-  # Get the gene names that are mapped to an entrez gene identifier
-  mapped_genes <- mappedkeys(x)
-  # Convert to a list
-  xx <- as.list(x[mapped_genes])
-  
-  # Apparently there are some pathway crap that puts NAs in the list
-  xx <- xx[!is.na(xx)]
-  
-  gene_id_to_name <- unlist(xx)
-  
-  genes <- genes(TxDb.Hsapiens.UCSC.hg38.knownGene)
-  genes$name <- gene_id_to_name[genes$gene_id]
-  genes
-}
-
 min_length_cutoff <- 10000
 group_size <- 5000
-min_expr_cutoff <- 5
+min_expr_cutoff <- 0
 deciding_stat <- "TPM"
 
 # Set a cutoff for the low expressed genes, so there is still some signal
@@ -494,6 +535,7 @@ groups_naive <- lapply(counts_naive,
                        field = deciding_stat)
 
 export_gene_sets(groups_naive, "Naive")
+export_gene_sets_ensembl(groups_naive, "Naive")
 
 groups_naive <- lapply(counts_primed,
                        categorize_genes,
@@ -503,7 +545,7 @@ groups_naive <- lapply(counts_primed,
                        field = deciding_stat)
 
 export_gene_sets(groups_naive, "Primed")
-
+export_gene_sets_ensembl(groups_naive, "Primed")
 
 ```
 
@@ -512,5 +554,93 @@ export_gene_sets(groups_naive, "Primed")
 ```{r download-files, echo=FALSE}
 xfun::embed_dir(file.path("./output/Collier_2017"))
 ```
+
+
+### RNA-seq bigwig signal at selected groups
+
+This is sort of a validation of the groups I get:
+
+```{r rnaseq-boxplot-groups-panel, fig.width=11, fig.height=16, warning = F}
+export_dir <- "./output/Collier_2017/ensembl/"
+bedfiles_top <- list.files(export_dir, full.names = T, pattern = "_top")
+bedfiles_med <- list.files(export_dir, full.names = T, pattern = "_med")
+bedfiles_bottom <- list.files(export_dir, full.names = T, pattern = "_bottom")
+
+# Ensures proper order
+bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
+bwsignal <- list.files(file.path(params$datadir, "bw/Collier_2017"), full.names = T)
+
+colors <- c(rep(color_list[["Naive"]], 3), rep(color_list[["Primed"]], 3))
+# labels <- style_info[basename(c(bwsignal, bwinput)), "label"]
+
+# Use tss for this
+tss_window <- 2500
+
+bed_ranges <- lapply(bedfiles, import)
+tss_ranges <- lapply(bed_ranges, promoters, upstream = tss_window, downstream = tss_window)
+
+this_plot <- partial(bw_loci, bwfiles = bwsignal)
+# 
+plots <- purrr::map(tss_ranges, this_plot)
+names(plots) <- basename(bedfiles)
+
+# Pivot 1 item:
+library(tidyr)
+
+pivot_bed <- function(granges, loci_name) {
+  bin_ids <- c("seqnames", "start", "end", "width", "strand")
+  pivoted <- pivot_longer(data = data.frame(granges),
+                             cols = contains("_R"),
+                             names_to = "sample",
+                             values_to = "value")
+  pivoted[["group"]] <- loci_name
+  pivoted
+}
+
+pivoted_list <- map2(plots, names(plots), pivot_bed)
+all_vals <- do.call(rbind, pivoted_list)
+
+ggplot(all_vals, aes(x = sample, y = log2(value), color = sample, group = sample)) + geom_boxplot() + facet_wrap(group ~ .)  + theme_default() + theme(axis.text.x = element_text(angle=45, hjust = 1)) + scale_color_manual(name = "sample", values = colors)
+```
+
+Profile is not very informative, I think.
+
+```{r rnaseq-profile-groups-panel, fig.width=11, fig.height=16, warning = F}
+export_dir <- "./output/Collier_2017/ensembl/"
+bedfiles_top <- list.files(export_dir, full.names = T, pattern = "_top")
+bedfiles_med <- list.files(export_dir, full.names = T, pattern = "_med")
+bedfiles_bottom <- list.files(export_dir, full.names = T, pattern = "_bottom")
+
+# Ensures proper order
+bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
+bwsignal <- list.files(file.path(params$datadir, "bw/Collier_2017"), full.names = T)
+
+# colors <- as.character(style_info[basename(c(bwsignal, bwinput)), "color_cond"])
+# labels <- style_info[basename(c(bwsignal, bwinput)), "label"]
+
+colors <- c(rep(color_list[["Naive"]], 3), rep(color_list[["Primed"]], 3))
+
+up <- 12000
+dw <- 12000
+bs <- 1000
+md <- "stretch"
+
+this_plot <- partial(plot_bw_profile, bwfiles = bwsignal,
+                     bin_size = bs,
+                     mode = md,
+                     upstream = up,
+                     downstream = dw,
+                     colors = colors,
+                     verbose = TRUE)
+
+plots <- purrr::map(bedfiles, this_plot)
+
+plots[[1]] <- plots[[1]] + ggtitle("RNA-seq per gene class: Naive")
+plots[[2]] <- plots[[2]] + ggtitle("- Primed")
+
+plot_grid(plotlist=plots, nrow=3)
+```
+
+
 
 ## Bibliography
