@@ -18,3 +18,6 @@ to input levels.
 bivalent-chromatin annotated regions.
 * [Public RNA-seq analysis](rna_seq_collier_2017.html). Gene expression analysis
 on RNA-seq public data.
+* [Gene groups](gene_expression_groups.html). Gene expression analysis
+on groups (high-med-low expressed genes) obtained from
+[Public RNA-seq data](rna_seq_collier_2017.html).
