@@ -44,3 +44,13 @@ embed_last_plot_data <- function(name = "data.tsv", include_preview = F) {
     link
   }
 }
+
+embed_df <- function(df, name = "data.tsv") {
+  paste0("<a download='",
+         name,
+         "' href=",
+         encode_data(df),
+         ">",
+         "download plot data",
+         "</a>")
+}

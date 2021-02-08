@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Carmen Navarro" />
+
+<meta name="date" content="2021-02-08" />
+
+<title>Histone mark density per chromosome</title>
+
+<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/lumen.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">hesc-epigenomics</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/elsasserlab/hesc-epigenomics">
+    <span class="fas fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Histone mark density per chromosome</h1>
+<h4 class="author">Carmen Navarro</h4>
+<h4 class="date">2021-02-08</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2021-02-08
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>hesc-epigenomics/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210202code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20210202)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210202code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210202)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreeeb488560703d8e610082c71cdf7ff5a180d1204dtargetblankeb48856a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/eb488560703d8e610082c71cdf7ff5a180d1204d" target="_blank">eb48856</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreeeb488560703d8e610082c71cdf7ff5a180d1204dtargetblankeb48856a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/eb488560703d8e610082c71cdf7ff5a180d1204d" target="_blank">eb48856</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    data/bed/
+    Ignored:    data/bw
+    Ignored:    data/meta/
+    Ignored:    data/peaks
+    Ignored:    data/rnaseq/
+
+Unstaged changes:
+    Modified:   code/embed_functions.R
+    Modified:   code/globals.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/x_chromosome.Rmd</code>) and HTML (<code>docs/x_chromosome.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/eb488560703d8e610082c71cdf7ff5a180d1204d/analysis/x_chromosome.Rmd" target="_blank">eb48856</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-08
+</td>
+<td>
+wflow_publish(“analysis/”)
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="summary" class="section level1">
+<h1>Summary</h1>
+<p>Here we look to scaled global levels of coverage per chromosome.</p>
+</div>
+<div id="helper-functions" class="section level1">
+<h1>Helper functions</h1>
+<p>Extra functions used to cleanup the relevant code. Click <code>code</code> to see the source.</p>
+<pre class="r"><code>#&#39; Summarize stats per chromosome on a scaled bigWig file
+#&#39;
+#&#39; @param bwfile BigWig file to summarize
+#&#39; @param chromosomes Array of chromosome names to include.
+#&#39;
+#&#39; @return A data frame with stats per chromosome: mean, chr size, #reads
+#&#39;   (estimated as (score * chr size) / fraglen), %reads.
+scaled_reads_per_chromosome &lt;- function(bwfile, chromosomes, fraglen = 150) {
+  granges &lt;- unlist(summary(BigWigFile(bwfile)))
+  df &lt;- data.frame(granges[seqnames(granges) %in% chromosomes, ])
+  rownames(df) &lt;- df$seqnames
+  
+  # Calculate scaled number of reads as mean x chromosome length / read length
+  df$nreads &lt;- (df$score * df$width) / fraglen
+  
+  # Perc of total
+  df$perc &lt;- (df$nreads / sum(df$nreads)) * 100
+  
+  # Perc size
+  df$size &lt;- df$width / sum(df$width)
+
+  df$group &lt;- basename(bwfile)
+  df[chromosomes, ]
+}
+
+chromosomes &lt;- paste0(&quot;chr&quot;, c(1:22, &quot;X&quot;, &quot;Y&quot;))
+
+# Fix some parameters on treemap function to remove some clutter from nb.
+chr_treeplot &lt;- partial(
+  treemap,
+  index = &quot;seqnames&quot;,
+  vSize = &quot;nreads&quot;,
+  vColor = &quot;score&quot;,
+  type = &quot;value&quot;,
+  mapping = c(0, 3),
+  range = c(0, 3),
+  fontsize.labels = 16,
+  fontsize.legend = 16,
+  fontsize.title = 20
+)</code></pre>
+</div>
+<div id="h3k27me3" class="section level1">
+<h1>H3K27me3</h1>
+<p>H3K27me3 is highly abundant on X chromosome on naïve cells.</p>
+<p>If we take a look at coverage per chromosome for both Naïve and Primed cells:</p>
+<pre class="r fold-show"><code>bw &lt;- file.path(params$bwdir, &quot;H3K27m3_H9_Ni_pooled.hg38.scaled.bw&quot;)
+values &lt;- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+
+
+chr_treeplot(
+  values,
+  palette = c(&quot;#ffffff&quot;, gl_condition_colors[[&quot;Naive_Untreated&quot;]]),
+  fontcolor.labels = &quot;#555555&quot;,
+  border.col = c(&quot;white&quot;),
+  title = &quot;H3K27m3 - Naïve&quot;
+)</code></pre>
+<p><img src="figure/x_chromosome.Rmd/treemap-h3k27m3-naive-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Underlying values can be downloaded here: <a download='data.tsv' href=data:text/csv;base64,c2VxbmFtZXMJbnJlYWRzCXNjb3JlCmNocjEJMjAxMDExNi41MDMzMzMzMwkxLjIxMTEyNTUxNzc4MjM5CmNocjIJMjI3Mzk1Mi45NwkxLjQwODM0ODcxNTYyNTY4CmNocjMJMTg3MjgyMS43CTEuNDE2Njg5NTk0MTQyNjUKY2hyNAkxNzA5MTgzLjM2MzMzMzMzCTEuMzQ3ODMzMjYzODYzNTQKY2hyNQkxNzk5Njc1LjQwNjY2NjY3CTEuNDg3MDIxNTkyNTExOApjaHI2CTE1MTI2NTEuNDgJMS4zMjgzOTQ0OTM3MzEzOQpjaHI3CTE0NTI3OTkuMzczMzMzMzMJMS4zNjc1ODk2NjYwNDA3CmNocjgJMTM4OTUwMS4xNgkxLjQzNjA0MTk3ODUxMjE5CmNocjkJMTEyMDUzMC41ODY2NjY2NwkxLjIxNDQ5NDI0OTgwNTc5CmNocjEwCTExNDk4OTAuMjkJMS4yODkxMzk1MTM0NjUzNgpjaHIxMQkxMjU5ODA1LjIxMzMzMzMzCTEuMzk4ODg1OTgyOTUxCmNocjEyCTExODMyNjYuNDIyODEyNQkxLjMzMTc1NDI4MTgyMTgxCmNocjEzCTk0MDA4NS40MTMzMzMzMzMJMS4yMzMwMTM5NTE2OTMwNQpjaHIxNAk4MDI4NTMuMDk5MTY2NjY3CTEuMTI1MDM1MzMyNTI2NDcKY2hyMTUJNzM0NTg2LjMxMzMzMzMzMwkxLjA4MDM2NzMxNDg2Njc4CmNocjE2CTY0NTE3NS40NDY2NjY2NjcJMS4wNzEyNjUxMDg5NjM0MgpjaHIxNwk1MzYwNDMuMzU3NQkwLjk2NTc1NzU2NjY0MjAwMQpjaHIxOAk3Nzk1NTUuNjk4MTI1CTEuNDU0ODc4MzgwNTMwOTIKY2hyMTkJMjk1Mjg4LjcyCTAuNzU1NjMxMzQ0Njc5NzI5CmNocjIwCTU1ODQ4OC42NjY2NjY2NjcJMS4yOTk5MzYxMTM2OTA0OApjaHIyMQkzNzMwMjEuNDEJMS4xOTc4ODU1MDM0MDUxMwpjaHIyMgkyNDk4MTkuODA4MzMzMzMzCTAuNzM3Mzg4ODQxNTkxOTk4CmNoclgJMjgzMDgxOC4wNAkyLjcyMTIyNzA2MDM4MDU1CmNoclkJMzE2NjIuNjA4NTkzNzUJMC4wODI5OTE1Mzk3OTAxOTU=>download plot data</a>.</p>
+<p>In this and subsequent plots, each rectangle’s size is proportional to the number of read mapped to its corresponding chromosome. Color intensity represents mean coverage per chromosome, and rectangles are ordered according to size. Top-left is the highest value.</p>
+<p>As opposed to primed, where values are very even:</p>
+<pre class="r fold-show"><code>bw &lt;- file.path(params$bwdir, &quot;H3K27m3_H9_Pr_pooled.hg38.scaled.bw&quot;)
+values &lt;- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c(&quot;#ffffff&quot;, gl_condition_colors[[&quot;Primed_Untreated&quot;]]),
+  fontcolor.labels = &quot;#555555&quot;,
+  border.col = c(&quot;white&quot;),
+  title = &quot;H3K27m3 - Primed&quot;
+)</code></pre>
+<p><img src="figure/x_chromosome.Rmd/treemap-h3k27m3-primed-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Underlying values can be downloaded here: <a download='data.tsv' href=data:text/csv;base64,c2VxbmFtZXMJbnJlYWRzCXNjb3JlCmNocjEJNzAyODgwLjQ2CTAuNDIzNDk2MDgwNzcxOTE5CmNocjIJNzM4ODQ2Ljc2CTAuNDU3NTk2OTI0NDgyNjUyCmNocjMJNTQ5NjMzLjk0CTAuNDE1NzY4NzIxMjc1Mjk2CmNocjQJNTMxODI1Ljg5MTY2NjY2NwkwLjQxOTM4ODk1NjU5MTY3NgpjaHI1CTU1MjQ1Ni4yMzMzMzMzMzMJMC40NTY0NzkxNzY2NTY2NDEKY2hyNgk1MDAyOTQuMDMJMC40MzkzNTI5MTM0MDEyMzQKY2hyNwk0NjUxMzUuNjUJMC40Mzc4NTQ0NzU5MzMzMgpjaHI4CTQyMDUyMy4wNTMzMzMzMzMJMC40MzQ2MDgzMTQ3NzAxNjIKY2hyOQk0MjIwMDIuMDI4MzMzMzMzCTAuNDU3Mzg5NTk5OTk0NjMKY2hyMTAJNDI0NDUxLjQJMC40NzU4NTE1NDUxODE0OTEKY2hyMTEJNDA0NzA2LjEJMC40NDkzODUwOTg5OTIyNgpjaHIxMgkzOTA3NDAuNTczMzMzMzMzCTAuNDM5Nzc0NTI3MTc4MTc0CmNocjEzCTI3MzQyMC44NzgxNzcwODMJMC4zNTg2MTgyMTk4OTI1MDQKY2hyMTQJMjc0ODQxLjI5NQkwLjM4NTEzNDE3NzE0MDU5NgpjaHIxNQkyNTc3NDMuODQ1CTAuMzc5MDY3ODEwOTQ1OTA0CmNocjE2CTIzMjUwOC4yMDMzMzMzMzMJMC4zODYwNjIzMTM4NDkxMTkKY2hyMTcJMjIwOTQwLjMyCTAuMzk4MDU1MDg3OTUzMDQKY2hyMTgJMjI4NDUxLjMyCTAuNDI2MzU2ODE3NDQyNTEyCmNocjE5CTE1NjQzMi4wMTMzMzMzMzMJMC40MDAzMDI5MDU1MjkyODcKY2hyMjAJMjA5Mjg4LjIJMC40ODcxMzg0MjQ4MDExMTUKY2hyMjEJMTQ5MTIzLjg5NzUJMC40Nzg4ODIzMTE0MTA4MTgKY2hyMjIJMTE3ODk0LjE5NQkwLjM0Nzk4NjI3MjQzMTUxMQpjaHJYCTQ5MDAwMS40NAkwLjQ3MTAzMTc1MTAwMzQ3OQpjaHJZCTEzMTU1LjYxMDU3MjkxNjcJMC4wMzQ0ODI0NTE5MTQ2NTQ5>download plot data</a>.</p>
+<p>EZH2i-treated cells, in comparison, have H3K27m3 globally removed:</p>
+<pre class="r fold-show"><code>bw &lt;- file.path(params$bwdir, &quot;H3K27m3_H9_Ni-EZH2i_pooled.hg38.scaled.bw&quot;)
+values &lt;- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c(&quot;#ffffff&quot;, gl_condition_colors[[&quot;Naive_Untreated&quot;]]),
+  fontcolor.labels = &quot;#555555&quot;,
+  border.col = &quot;#999999&quot;,
+  title = &quot;H3K27m3 - Naïve-EZH2i&quot;
+)</code></pre>
+<p><img src="figure/x_chromosome.Rmd/treemap-h3k27m3-naive-ezh2i-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Underlying values can be downloaded here: <a download='data.tsv' href=data:text/csv;base64,c2VxbmFtZXMJbnJlYWRzCXNjb3JlCmNocjEJNTY0NTcuNDk4MTI1CTAuMDM0MDE2NDk0MzM1NTAyNgpjaHIyCTYyMTI3LjU1NTk2MzU0MTcJMC4wMzg0NzgwNDQ1MzMyNjc2CmNocjMJNTA0NjcuMTQwNDk0NzkxNwkwLjAzODE3NTY5NjQ4MjUzNTcKY2hyNAk1MTgyNS40Mzg2NDU4MzMzCTAuMDQwODY4NjY5NTc2MTc5NApjaHI1CTUyMTAxLjU3NDM3NQkwLjA0MzA1MDA3NzcwNDI4MTYKY2hyNgk0MTk3OS41MDc5MTY2NjY3CTAuMDM2ODY1OTU4ODE2OTMzNApjaHI3CTQxMTM1LjM4ODc1CTAuMDM4NzIyNzEyNTc1MjM0CmNocjgJMzg0ODguNTAyNDQ3OTE2NwkwLjAzOTc3NzY2MDM1NDk0MTYKY2hyOQkzMTg2NC4zMTQ4NDM3NQkwLjAzNDUzNjM0MTYzMzM0NzkKY2hyMTAJMzI1MDEuMTAwMzY0NTgzMwkwLjAzNjQzNjkxMzIyMTU5NzgKY2hyMTEJMzMzMzguMTAyMDgzMzMzMwkwLjAzNzAxODU4Mjg4MDEwMTkKY2hyMTIJMzI4MDIuNTUzMDcyOTE2NwkwLjAzNjkxODkzODY4MzA2NDcKY2hyMTMJMjYzNDUuMDkJMC4wMzQ1NTQxNjE4NTM2ODU3CmNocjE0CTIzNDU5Ljg4MTQ1ODMzMzMJMC4wMzI4NzQyNTI1NDM3MTMKY2hyMTUJMTk0NTAuMDMyMTg3NQkwLjAyODYwNTQ1OTUxNzkyOTUKY2hyMTYJMTkxMTEuMDg5ODQzNzUJMC4wMzE3MzI1MjE1MTc0NDA5CmNocjE3CTE1MjE2LjI3NDc5MTY2NjcJMC4wMjc0MTQyNjEwMTE4MTc1CmNocjE4CTIwNzIxLjg0OTU4MzMzMzMJMC4wMzg2NzMwMTcyNTMxODMxCmNocjE5CTExOTI0LjgzNDIxODc1CTAuMDMwNTE1MTQ2MzgyMTQ3MwpjaHIyMAkxNTgzNC44NzcyOTE2NjY3CTAuMDM2ODU3MjAwNjQ4NTg2MgpjaHIyMQkxNDU2Ny4xMzYwOTM3NQkwLjA0Njc3OTUxNjM2Mjk2ODkKY2hyMjIJODEzOS42NTYzMDIwODMzMwkwLjAyNDAyNTY4MzgzODI1NTQKY2hyWAk1NjAzOS42NDc4MTI1CTAuMDUzODcwMTU0ODE5ODMxCmNoclkJMTQyOC41OTY2MjEwOTM3NQkwLjAwMzc0NDUyNTEyMjUxNDQ5>download plot data</a>.</p>
+<pre class="r fold-show"><code>bw &lt;- file.path(params$bwdir, &quot;H3K27m3_H9_Pr-EZH2i_pooled.hg38.scaled.bw&quot;)
+values &lt;- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c(&quot;#ffffff&quot;, gl_condition_colors[[&quot;Primed_Untreated&quot;]]),
+  fontcolor.labels = &quot;#555555&quot;,
+  border.col = &quot;#999999&quot;,
+  title = &quot;H3K27m3 - Primed-EZH2i&quot;
+)</code></pre>
+<p><img src="figure/x_chromosome.Rmd/treemap-h3k27m3-primed-ezh2i-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Underlying values can be downloaded here: <a download='data.tsv' href=data:text/csv;base64,c2VxbmFtZXMJbnJlYWRzCXNjb3JlCmNocjEJMTU1MzI5LjI1NjI1CTAuMDkzNTg4MjIwMTgwNTU4MwpjaHIyCTE1NTk3Mi4zNzY2NjY2NjcJMC4wOTY1OTk4NDE0NDMzMjc3CmNocjMJMTI1NzczLjk3OTE2NjY2NwkwLjA5NTE0MTI5ODAyMDY5ODUKY2hyNAkxMjczNTcuNzg0NDc5MTY3CTAuMTAwNDMyMjA3NTc2NzI4CmNocjUJMTE5MzEyLjAyOTE2NjY2NwkwLjA5ODU4NDIwMTg4NDQwODMKY2hyNgkxMDcyMzMuODcJMC4wOTQxNzE2NDc4MjAzNjExCmNocjcJMTA3ODExLjcyNjY2NjY2NwkwLjEwMTQ4ODM0NDQ4NDIzNwpjaHI4CTk2MzA4Ljk1NTgzMzMzMzMJMC4wOTk1MzQ3ODgwNjk4MDExCmNocjkJODQyNTkuMjE3OTE2NjY2NwkwLjA5MTMyNDg5Mjc1MjIyODQKY2hyMTAJOTMyNTQuNjA1CTAuMTA0NTQ3NTM1Njc2NzM0CmNocjExCTg5NTMwLjY4NQkwLjA5OTQxNDc0OTk2Njg3NjgKY2hyMTIJODkwMTQuMDU1CTAuMTAwMTg0NDEwMzc3MTY5CmNocjEzCTYzNDI0LjA1NDE2NjY2NjcJMC4wODMxODY4NDkzNTU2ODM3CmNocjE0CTY1NzE5LjE1MzMzMzMzMzMJMC4wOTIwOTIwMjcyOTY3MzUKY2hyMTUJNTcwNTUuMzc5MTY2NjY2NwkwLjA4MzkxMjIxNzg5NzU2NzYKY2hyMTYJNjAwNzkuMzExMjUJMC4wOTk3NTcxNTk0NTk4MDY0CmNocjE3CTQ1MDI1Ljg5OTg5NTgzMzMJMC4wODExMjA0OTY4OTc5ODkKY2hyMTgJNTM1MDAuMwkwLjA5OTg0NzE2OTM2NzI4NDIKY2hyMTkJNTAzNzYuNjMxMjUJMC4xMjg5MTE2Njg1OTI5MzYKY2hyMjAJNDY2OTUuMTk0MTY2NjY2NwkwLjEwODY4NzU1Nzc4OTM2NQpjaHIyMQk0OTY3Ni4yMTUJMC4xNTk1MjU0NzU1Mjg0MzMKY2hyMjIJMjg1ODEuMDI5Mzc1CTAuMDg0MzYyMTMzOTgzNDU2NgpjaHJYCTIxMjQ1MS41NgkwLjIwNDIyNjgwODYxOTYyNQpjaHJZCTUzMzguNDM4Njk3OTE2NjcJMC4wMTM5OTI2OTU3MTU2Mzcz>download plot data</a>.</p>
+<p>If we look at the rest of the histone marks:</p>
+</div>
+<div id="h3k4me3" class="section level1">
+<h1>H3K4me3</h1>
+<p>H3K4me3 does not show this X-chromosome specificity.</p>
+<pre class="r fold-show"><code>bw &lt;- file.path(params$bwdir, &quot;H3K4m3_H9_Ni_pooled.hg38.scaled.bw&quot;)
+values &lt;- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c(&quot;#ffffff&quot;, gl_condition_colors[[&quot;Naive_Untreated&quot;]]),
+  fontcolor.labels = &quot;#555555&quot;,
+  border.col = c(&quot;white&quot;),
+  title = &quot;H3K4m3 - Naïve&quot;
+)</code></pre>
+<p><img src="figure/x_chromosome.Rmd/treemap-h3k4m3-naive-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Underlying values can be downloaded here: <a download='data.tsv' href=data:text/csv;base64,c2VxbmFtZXMJbnJlYWRzCXNjb3JlCmNocjEJMjcwOTEyNy4yODY2NjY2NwkxLjYzMjI5MDA1OTk4NDg4CmNocjIJMjAxNDIxNS4xMDY2NjY2NwkxLjI0NzQ4MjgxNzc1OTM1CmNocjMJMTYxMjY0Ni43NDMzMzMzMwkxLjIxOTg4MTEzNDYwNDczCmNocjQJMTM4MDQzMy41NDMzMzMzMwkxLjA4ODU4NjY4MzA3NDgKY2hyNQkxNTU0MzA5LjQ0CTEuMjg0MjgyNTM3OTMwNDgKY2hyNgkxNDY1MTIyLjM5MTY2NjY3CTEuMjg2NjU0OTUyMjI1MDYKY2hyNwkxNDc0NzA0LjQ2MTY2NjY3CTEuMzg4MjA5OTc1MzQ3MTYKY2hyOAkxMTEzMjI1LjQzMzMzMzMzCTEuMTUwNTEyNTAwMzM3OTUKY2hyOQkxMTU5ODQ2LjU5MDcyOTE3CTEuMjU3MTA3MTUyNTAzMzQKY2hyMTAJMTIxNjI3OS42MzgzMzMzMwkxLjM2MzU2ODQ2ODA4MzA0CmNocjExCTEzNzA1NzQuMjAxNjY2NjcJMS41MjE4ODM3MTU4NDI3MQpjaHIxMgkxMzk1MzMzLjMwNjY2NjY3CTEuNTcwNDMzMzk1MTMwOTgKY2hyMTMJNjczMjIwLjg3NjY2NjY2NwkwLjg4Mjk5NTAxNDg0NDEzOQpjaHIxNAk5MDgxNjQuOTMzMzMzMzMzCTEuMjcyNjA4NDQ5NTY4MjQKY2hyMTUJODc3Mzg2LjA0CTEuMjkwMzg1MDU0NzMyNTIKY2hyMTYJMTA5MDcyMC4yOQkxLjgxMTA1ODY3NjEzNTgxCmNocjE3CTEzNDc5OTUuNTQ2NjY2NjcJMi40Mjg2MDM3MzI4NDgzMwpjaHIxOAk1MzI3NzAuNzk2NjY2NjY3CTAuOTk0MzA1NzUwOTcxODU2CmNocjE5CTE2MjAwNTguMTQ2NjY2NjcJNC4xNDU2NjAyNzM4NjcxNgpjaHIyMAk3NDYzNzIuMjUzMzMzMzMzCTEuNzM3MjUzMjQxMjQzNwpjaHIyMQk1MTEyMzYuNDQ2NjY2NjY3CTEuNjQxNzM2MTM1OTM0OApjaHIyMgk1NjIyNjguODgzMzMzMzMzCTEuNjU5NjM5NDE0OTQ2NTUKY2hyWAkxMjQwMDA5LjA5NjY2NjY3CTEuMTkyMDAzOTU4MzIxMzEKY2hyWQk2MDQ0MC43ODg5NTgzMzMzCTAuMTU4NDIyNjQzMTI5MTcy>download plot data</a>.</p>
+<pre class="r fold-show"><code>bw &lt;- file.path(params$bwdir, &quot;H3K4m3_H9_Pr_pooled.hg38.scaled.bw&quot;)
+values &lt;- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c(&quot;#ffffff&quot;, gl_condition_colors[[&quot;Primed_Untreated&quot;]]),
+  fontcolor.labels = &quot;#555555&quot;,
+  border.col = c(&quot;white&quot;),
+  title = &quot;H3K4m3 - Primed&quot;
+)</code></pre>
+<p><img src="figure/x_chromosome.Rmd/treemap-h3k4m3-primed-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Underlying values can be downloaded here: <a download='data.tsv' href=data:text/csv;base64,c2VxbmFtZXMJbnJlYWRzCXNjb3JlCmNocjEJMjMyNDQxNS44NDMzMzMzMwkxLjQwMDQ5NTYxMTYzNzYxCmNocjIJMTcwOTU4Ni4wNzgzMzMzMwkxLjA1ODgxNDA1MTc1Nzc2CmNocjMJMTM0MjQ2MS45NTMzMzMzMwkxLjAxNTUwMDc3MDc0NTk2CmNocjQJMTIwMDQ1OC4xNTY2NjY2NwkwLjk0NjY2MTExOTA3MTU2NgpjaHI1CTEyNTk5OTcuNzg2NjY2NjcJMS4wNDExMDEwMjc2MzUxNwpjaHI2CTEyNTM4MDUuNQkxLjEwMTA3ODY5ODE4NzczCmNocjcJMTI2MTIxMy4yMDY2NjY2NwkxLjE4NzI0MDQyNjg0MTU0CmNocjgJOTU5MjkyLjY3NQkwLjk5MTQyMzgyMjE4NjEyCmNocjkJMTAxNDc2Ni45MzQyNzA4MwkxLjA5OTg2MTYzODA3NTU3CmNocjEwCTExMDc2NzAuOTIxNjY2NjcJMS4yNDE4MDc0NzEwNzM3CmNocjExCTExODk1NzUuMzE1CTEuMzIwOTAyODAwMDU2NjkKY2hyMTIJMTEzODE0MS42OAkxLjI4MDk2Njg0NDM1Mzc0CmNocjEzCTU3NzkzNS40OTY2NjY2NjcJMC43NTgwMTg5MjA4OTk4ODEKY2hyMTQJNzkwNTc1LjgwODMzMzMzMwkxLjEwNzgzMTIwNjQwNDg0CmNocjE1CTc3NjMxNC4zNDAyMDgzMzMJMS4xNDE3MzczNjE1NjAyMgpjaHIxNgk5NjU1NTAuNDg3NQkxLjYwMzIyMzY3MTI0MzkyCmNocjE3CTEwODk3MDkuMjIzMzMzMzMJMS45NjMyNjQ1NjI3NDM0MQpjaHIxOAk0OTI2OTkuNzQzOTU4MzMzCTAuOTE5NTIxNDc1MjQ4Mjc0CmNocjE5CTEyMzQ0NDAuODUxNjY2NjcJMy4xNTg4ODE5MjYzODE5OQpjaHIyMAk2NTQ0MTkuMTMzMzMzMzMzCTEuNTIzMjIzNTA2MDE1NjgKY2hyMjEJNTQ2MTM4LjYwODMzMzMzMwkxLjc1MzgxNzYyMDc0Mjg3CmNocjIyCTUxMDM0Ni43MgkxLjUwNjM4MTY1NjM2OTQ5CmNoclgJMTI5NDc0NC43MzMzMzMzMwkxLjI0NDYyMDU4NDg3OTM3CmNoclkJODIwNDAuNzkzNzUJMC4yMTUwMzg4NzcxMjczMzU=>download plot data</a>.</p>
+<p>EZH2i-treated cells, in comparison, have H3K27m3 globally removed:</p>
+<pre class="r fold-show"><code>bw &lt;- file.path(params$bwdir, &quot;H3K4m3_H9_Ni-EZH2i_pooled.hg38.scaled.bw&quot;)
+values &lt;- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c(&quot;#ffffff&quot;, gl_condition_colors[[&quot;Naive_Untreated&quot;]]),
+  fontcolor.labels = &quot;#555555&quot;,
+  border.col = c(&quot;white&quot;),
+  title = &quot;H3K4m3 - Naïve-EZH2i&quot;
+)</code></pre>
+<p><img src="figure/x_chromosome.Rmd/treemap-h3k4m3-naive-ezh2i-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Underlying values can be downloaded here: <a download='data.tsv' href=data:text/csv;base64,c2VxbmFtZXMJbnJlYWRzCXNjb3JlCmNocjEJMTM5MTA1OS43MTY2NjY2NwkwLjgzODEzNDQ2NDc1MzgzNQpjaHIyCTk0MDU0NS41MDgzMzMzMzMJMC41ODI1MTY5MTA0NzQ1MTYKY2hyMwk3NzA1NzEuMDAzMzMzMzMzCTAuNTgyODk1ODEwMDg3MjA0CmNocjQJNjIzMzMzLjA3MTY2NjY2NwkwLjQ5MTU0OTk4MDIzMTUzNApjaHI1CTY5Nzc2Ni40NjgzMzMzMzMJMC41NzY1NDQ5NzA4ODY4MjYKY2hyNgk3MTcwOTcuMDIJMC42Mjk3NDcwMDA4MzUzNzUKY2hyNwk3MDEwMjkuMDk2NjY2NjY3CTAuNjU5OTEyMjgwOTMzNTEzCmNocjgJNTA0OTkwLjg4ODMzMzMzMwkwLjUyMTkwNTM2ODExOTg5OQpjaHI5CTU1NTUyMS42MDU4MzMzMzMJMC42MDIxMDU2NDg4Mzc3MzcKY2hyMTAJNTYyMjMzLjA0MTY2NjY2NwkwLjYzMDMxODI0NTIyMDAwMQpjaHIxMQk2ODc3NDkuMTkzMzMzMzMzCTAuNzYzNjc1NzYyMDYwMjg4CmNocjEyCTY4ODg2MC40MTUJMC43NzUzMDUzNjYyMDI1MjcKY2hyMTMJMzAwNTM0LjIyODMzMzMzMwkwLjM5NDE4MDAzMDA3MDIxNgpjaHIxNAk0NTA3MzMuMQkwLjYzMTYxMDc2ODYwMjA0CmNocjE1CTQ0MzM2Ny4zODY2NjY2NjcJMC42NTIwNjcxODk4NDMyMzIKY2hyMTYJNTY1OTk5LjYyNjY2NjY2NwkwLjkzOTc5OTYzODc5MTI1NwpjaHIxNwk3MTQxMDAuNTI2NjY2NjY3CTEuMjg2NTUyNjIxNzY1MDYKY2hyMTgJMjQ0MDYyLjYyODMzMzMzMwkwLjQ1NTQ5MjA3MzY0MTEzNgpjaHIxOQk4NjUwODIuNzQ2NjY2NjY3CTIuMjEzNzEwMTU4MzkzMzQKY2hyMjAJMzYxNTg1LjYzNjY2NjY2NwkwLjg0MTYyNTM2Mzg1OTU0MQpjaHIyMQkyMjI5NzcuNzcJMC43MTYwNDk2MTgzNDM4OTkKY2hyMjIJMjkxMjYzLjc0NjY2NjY2NwkwLjg1OTcxODIwMzIzMjczCmNoclgJNDM0NDkxLjE3NDE2NjY2NwkwLjQxNzY3MDQ4MzkxMzg0OApjaHJZCTIyNzU1LjcyOTc5MTY2NjcJMC4wNTk2NDU1Mjk0ODUz>download plot data</a>.</p>
+<pre class="r fold-show"><code>bw &lt;- file.path(params$bwdir, &quot;H3K4m3_H9_Pr-EZH2i_pooled.hg38.scaled.bw&quot;)
+values &lt;- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c(&quot;#ffffff&quot;, gl_condition_colors[[&quot;Primed_Untreated&quot;]]),
+  fontcolor.labels = &quot;#555555&quot;,
+  border.col = c(&quot;white&quot;),
+  title = &quot;H3K4m3 - Primed-EZH2i&quot;
+)</code></pre>
+<p><img src="figure/x_chromosome.Rmd/treemap-h3k4m3-primed-ezh2i-1.png" width="768" style="display: block; margin: auto;" /></p>
+</div>
+<div id="h2aub" class="section level1">
+<h1>H2AUb</h1>
+<p>H2AUb does not show this X-chromosome specificity either.</p>
+<pre class="r fold-show"><code>bw &lt;- file.path(params$bwdir, &quot;H2Aub_H9_Ni_pooled.hg38.scaled.bw&quot;)
+values &lt;- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c(&quot;#ffffff&quot;, gl_condition_colors[[&quot;Naive_Untreated&quot;]]),
+  fontcolor.labels = &quot;#555555&quot;,
+  border.col = c(&quot;white&quot;),
+  title = &quot;H2Aub - Naïve&quot;
+)</code></pre>
+<p><img src="figure/x_chromosome.Rmd/treemap-H2aub-naive-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Underlying values can be downloaded here: <a download='data.tsv' href=data:text/csv;base64,c2VxbmFtZXMJbnJlYWRzCXNjb3JlCmNocjEJMjI5MzgxMC41NDgzMzMzMwkxLjM4MjA1NTQ1OTY5MDA1CmNocjIJMjA3MjY1MS41MzMzMzMzMwkxLjI4MzY3NDgwMDQxMTM3CmNocjMJMTU5MzEzNy44NgkxLjIwNTEyMzcwNjI3NTI0CmNocjQJMTI4MTU5Ni4wOAkxLjAxMDY0NTEyMTI0MjE3CmNocjUJMTQ4NzI4My45NDY2NjY2NwkxLjIyODkwMTI0MjI0NDQ4CmNocjYJMTI5MzE3MS44NAkxLjEzNTY0OTgwMDY0MzEKY2hyNwkxMzc3MDY4Ljc2CTEuMjk2MzAwODEwODE0OTcKY2hyOAkxMTU0MTU3LjY2NjY2NjY3CTEuMTkyODE1NzQzNDI0NzkKY2hyOQkxMTEwMTk0LjUyMzMzMzMzCTEuMjAzMjkxNDQxMzkyMjMKY2hyMTAJMTIyMTc1NwkxLjM2OTcwOTEyNjM4MzYyCmNocjExCTEzMjMzNzYuNTA2NjY2NjcJMS40Njk0NzU0NTk5NzU2CmNocjEyCTExNTA0MzEuMzIJMS4yOTQ3OTg3MDg3MzkwNwpjaHIxMwk2NzE5MjkuNzI2NjY2NjY3CTAuODgxMzAxNTQ1MzU1OTk2CmNocjE0CTcyOTAzNy45OAkxLjAyMTU5ODQ1NTY4ODkyCmNocjE1CTc4MDMzOC4wOAkxLjE0NzY1NTEzNzE1MTExCmNocjE2CTg4NTQ4OC43NDY2NjY2NjcJMS40NzAyODcxOTY0MjgwNQpjaHIxNwk5NDMxMzkuNTMzMzMzMzMzCTEuNjk5MTk4NjMzNzg5MzgKY2hyMTgJNjI0NjY4LjUzMzMzMzMzMwkxLjE2NTgxMzc0MDIyNDc1CmNocjE5CTY0Njk4Mi43MDY2NjY2NjcJMS42NTU2MDEzODA5OTEKY2hyMjAJNzI4MzEyLjAyNjY2NjY2NwkxLjY5NTIxNjMyNTc4NDc3CmNocjIxCTM4NTgyMy4wODE2NjY2NjcJMS4yMzg5OTU1NzUxMDAwOApjaHIyMgk1MDk2NjMuMzQ2NjY2NjY3CTEuNTA0MzY0NTU1MDI3NTEKY2hyWAkxNTA5Mzk0LjMwNjY2NjY3CTEuNDUwOTYwMzEzOTYxMjkKY2hyWQkzNTk4Ny43MjQ1ODMzMzMzCTAuMDk0MzI4MTkzNzA3NTA4OQ==>download plot data</a>.</p>
+<pre class="r fold-show"><code>bw &lt;- file.path(params$bwdir, &quot;H2Aub_H9_Pr_pooled.hg38.scaled.bw&quot;)
+values &lt;- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c(&quot;#ffffff&quot;, gl_condition_colors[[&quot;Primed_Untreated&quot;]]),
+  fontcolor.labels = &quot;#555555&quot;,
+  border.col = c(&quot;white&quot;),
+  title = &quot;H2Aub - Primed&quot;
+)</code></pre>
+<p><img src="figure/x_chromosome.Rmd/treemap-h2aub-primed-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Underlying values can be downloaded here: <a download='data.tsv' href=data:text/csv;base64,c2VxbmFtZXMJbnJlYWRzCXNjb3JlCmNocjEJMTE2OTY0Ny4zOTI1CTAuNzA0NzMwMTk5MjI3Mzk3CmNocjIJMTA1NzcxMi4wNTUJMC42NTUwODI3NzE2Mzc1NTMKY2hyMwk3OTIxMzcuOTc0MTY2NjY3CTAuNTk5MjEwMDcxNjk0MDQxCmNocjQJNjQ0NDc0LjA3ODMzMzMzMwkwLjUwODIyMTQyMjY0NTYwMQpjaHI1CTc0MDA1MS4yNjY2NjY2NjcJMC42MTE0ODM3MjAzNTQ1MDcKY2hyNgk2NzU3MTYuNTM1ODMzMzMzCTAuNTkzNDA3MDk4MzI1Mjg4CmNocjcJNjYxNTIwLjA1NQkwLjYyMjcyMDUyNjc5OTg4MwpjaHI4CTU2OTc3NS4yMDY2NjY2NjcJMC41ODg4NTk2MTI4MTg3NApjaHI5CTU4MjEwOS4wODUyNjA0MTcJMC42MzA5MjI2NTg2MjMzMjQKY2hyMTAJNjUzNTE1LjQwNQkwLjczMjY1NDcwNTAzNjA5NgpjaHIxMQk2NzAxMTQuNzMJMC43NDQwOTQ0NzgxMzQxODYKY2hyMTIJNTc3NjAyLjU1MzMzMzMzMwkwLjY1MDA4NTc3ODQ1NDI4MgpjaHIxMwkzNDU5MjYuNTAzMzMzMzMzCTAuNDUzNzE2NDM3Njk5CmNocjE0CTM4Nzk0NC43NQkwLjU0MzYyNTY2NjEwNDAxMgpjaHIxNQk0MDE3MDYuNTA5NTgzMzMzCTAuNTkwNzk1OTAxMzc0MzgyCmNocjE2CTQ0MzgzOS4wMzA0MTY2NjcJMC43MzY5NjExOTM2MzgyMDUKY2hyMTcJNDk5NTQ4LjUyCTAuOTAwMDA2OTc5NTU2MzM4CmNocjE4CTMwNTExMC41MzA4MzMzMzMJMC41Njk0MjUyNzE0MDcwMzUKY2hyMTkJMzE0NDU2LjExODMzMzMzMwkwLjgwNDY3OTkwNjI5MzAxNgpjaHIyMAkzNTcxNzQuODE4MzMzMzMzCTAuODMxMzU4NzU5NzQ2MjQ3CmNocjIxCTE3MjM2OS44NjY2NjY2NjcJMC41NTM1MzIyMDc0NTEyNDIKY2hyMjIJMjU4ODk4LjQxMDgzMzMzMwkwLjc2NDE4NTk5NjgxMTIzOApjaHJYCTQwNTUyNS4yCTAuMzg5ODI1ODg1MDY2ODYKY2hyWQkxNDY1My4xMTQ1MzEyNQkwLjAzODQwNzU5MTUzMDg2ODY=>download plot data</a>.</p>
+<p>EZH2i-treated cells, in comparison, have H3K27m3 globally removed:</p>
+<pre class="r fold-show"><code>bw &lt;- file.path(params$bwdir, &quot;H2Aub_H9_Ni-EZH2i_pooled.hg38.scaled.bw&quot;)
+values &lt;- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c(&quot;#ffffff&quot;, gl_condition_colors[[&quot;Naive_Untreated&quot;]]),
+  fontcolor.labels = &quot;#555555&quot;,
+  border.col = c(&quot;white&quot;),
+  title = &quot;H2Aub - Naïve-EZH2i&quot;
+)</code></pre>
+<p><img src="figure/x_chromosome.Rmd/treemap-h2aub-naive-ezh2i-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Underlying values can be downloaded here: <a download='data.tsv' href=data:text/csv;base64,c2VxbmFtZXMJbnJlYWRzCXNjb3JlCmNocjEJMjIwOTI0NS42NjkxNjY2NwkxLjMzMTEwMzg0NDI1MDMKY2hyMgkxOTExNjk1LjMyCTEuMTgzOTg4MjcyNDUyOTgKY2hyMwkxNDUwODI0LjE4NjY2NjY3CTEuMDk3NDcxMDEyOTUzOTUKY2hyNAkxMTQ1ODU3LjY2NQkwLjkwMzYwNDA4OTM0MDA2MQpjaHI1CTEzMzk1NTAuNjgzMzMzMzMJMS4xMDY4MzMzNjcyODQ4NQpjaHI2CTExOTE2MTQuMzY2NjY2NjcJMS4wNDY0NjMxMDQxOTg0OApjaHI3CTEyNzkyNzYuMzI2NjY2NjcJMS4yMDQyNDQxMDcyNTQ2CmNocjgJMTA1NTYzNC41NjMzMzMzMwkxLjA5MDk5MjY0NTgxNzYyCmNocjkJMTAzOTkwMi44MjY2NjY2NwkxLjEyNzEwNTMzNTk2NDUyCmNocjEwCTExNTk5NDYuMjIJMS4zMDA0MTMxOTQ4MDczCmNocjExCTEyNjQwNjYuNDMzMzMzMzMJMS40MDM2MTc2MzU4MDExMgpjaHIxMgkxMDcxOTA0LjM3NjY2NjY3CTEuMjA2NDE3NDM1NTA1NjMKY2hyMTMJNjAwMDQ1Ljc0CTAuNzg3MDE4NjY3MjE5MzgKY2hyMTQJNjk3Mjg3LjQ1MTA0MTY2NwkwLjk3NzEwNjU0Njg0MzMxOQpjaHIxNQk3NTM1NTcuNjMJMS4xMDgyNjg3MjAxNTM4NgpjaHIxNgk5MDcyODIuMTMzMzMzMzMzCTEuNTA2NDczNDY5MjY3MTIKY2hyMTcJOTY5NTU1LjEyMjUJMS43NDY3OTAwMzYxNjAyNQpjaHIxOAk1NjE0MjMuNzQJMS4wNDc3ODA1MDMxODU4NQpjaHIxOQk2OTU2NDguMDEzMzMzMzMzCTEuNzgwMTMzODQyMzU4OTMKY2hyMjAJNzA4MDMzLjQ4NjY2NjY2NwkxLjY0ODAxNjA3MjU3OTU0CmNocjIxCTM2NzIyOC45ODY2NjY2NjcJMS4xNzkyODQyNjU2MzU0NgpjaHIyMgk1Mjk3MzYuNTM3NQkxLjU2MzYxNDI0Nzk3Mzc5CmNoclgJMTMzMTIwNS42MDMzMzMzMwkxLjI3OTY2OTkyNTYzMDcxCmNoclkJMzU2MDUuNjk2NDU4MzMzMwkwLjA5MzMyNjg1MTYyNzg0MzE=>download plot data</a>.</p>
+<pre class="r fold-show"><code>bw &lt;- file.path(params$bwdir, &quot;H2Aub_H9_Pr-EZH2i_pooled.hg38.scaled.bw&quot;)
+values &lt;- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c(&quot;#ffffff&quot;, gl_condition_colors[[&quot;Primed_Untreated&quot;]]),
+  fontcolor.labels = &quot;#555555&quot;,
+  border.col = c(&quot;white&quot;),
+  title = &quot;H2Aub - Primed-EZH2i&quot;
+)</code></pre>
+<p><img src="figure/x_chromosome.Rmd/treemap-h2aub-primed-ezh2i-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Underlying values can be downloaded here: <a download='data.tsv' href=data:text/csv;base64,c2VxbmFtZXMJbnJlYWRzCXNjb3JlCmNocjEJMTM0NzMyMy4wOQkwLjgxMTc4MjQ4NzM3ODQ1NApjaHIyCTExNjEyMjMuMDExNjY2NjcJMC43MTkxOTExODc1OTc3NQpjaHIzCTg1MDEyMS43NzgzMzMzMzMJMC42NDMwNzE3MjI4MDE0MTcKY2hyNAk2Njc1MzEuMTkyNQkwLjUyNjQwMzg3NTIxODY5NwpjaHI1CTc4NTc2Ni4wNTE2NjY2NjcJMC42NDkyNTY1NzIxMzY2NzYKY2hyNgk3MTg3OTguMDk3MTg3NQkwLjYzMTI0MDg2ODc4Nzg4NApjaHI3CTczNTAwOS4xNTA4MzMzMzMJMC42OTE4OTkzMzQxOTI3NzYKY2hyOAk2MjQ5MjkuNjUzMzMzMzMzCTAuNjQ1ODYxNDM2OTIyOTcxCmNocjkJNjYwNjE2LjI4MjUJMC43MTYwMTMxODY5NDEyMzMKY2hyMTAJNzQxODI3LjQxCTAuODMxNjYxMTAyNTU4NDYzCmNocjExCTc3NTk3NS43MTE2NjY2NjcJMC44NjE2NDIzNjcxNDcyMDcKY2hyMTIJNjQ5NjQ0LjQwNzUJMC43MzExNjgxNTAwMjA5NDYKY2hyMTMJMzU5MDU3LjkwMjIyNjU2MgkwLjQ3MDkzOTU1MTQ4MzA4NQpjaHIxNAk0MzY4NTQuODU3MTA5Mzc1CTAuNjEyMTYzMjMzNzc3MTIxCmNocjE1CTQ2MjA5Ny44OQkwLjY3OTYxNDQyNzI4MTU1NwpjaHIxNgk1NTcyNjguNDEzMzMzMzMzCTAuOTI1MzAyMTE4Mzg2MTYzCmNocjE3CTYzMjc5Ni43NQkxLjE0MDA3MjQyMzA3NjI3CmNocjE4CTMyNzQyNS40MjUJMC42MTEwNzEzNzQ2NDg5MjcKY2hyMTkJNDQxNjA0LjY1MjUJMS4xMzAwNDc2MjcyMzU0NwpjaHIyMAk0MzU3NTAuNTM2NjY2NjY3CTEuMDE0MjUxMzA1MzE5ODQKY2hyMjEJMjA4MTcxLjA1MTY2NjY2NwkwLjY2ODUwMDczMDM0NzA4NwpjaHIyMgkzNDI4ODEuMDcyNQkxLjAxMjA3NjE3ODE5MTc2CmNoclgJNDQzNDE2LjA2NQkwLjQyNjI0OTg2MDY1MzUxNgpjaHJZCTE4MjI3Ljc0OTM3ODI1NTIJMC4wNDc3NzcxNDMyOTI5MTc5>download plot data</a>.</p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r fold-show"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.0.3 (2020-10-10)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 20.04.2 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=sv_SE.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=sv_SE.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=sv_SE.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=sv_SE.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] parallel  stats4    stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] cowplot_1.1.1        purrr_0.3.4          treemap_2.4-2       
+ [4] rtracklayer_1.50.0   GenomicRanges_1.42.0 GenomeInfoDb_1.26.2 
+ [7] IRanges_2.24.1       S4Vectors_0.28.1     BiocGenerics_0.36.0 
+[10] wigglescout_0.12.8   workflowr_1.6.2     
+
+loaded via a namespace (and not attached):
+ [1] MatrixGenerics_1.2.0        Biobase_2.50.0             
+ [3] shiny_1.6.0                 assertthat_0.2.1           
+ [5] askpass_1.1                 highr_0.8                  
+ [7] GenomeInfoDbData_1.2.4      Rsamtools_2.6.0            
+ [9] yaml_2.2.1                  globals_0.14.0             
+[11] pillar_1.4.7                lattice_0.20-41            
+[13] glue_1.4.2                  digest_0.6.27              
+[15] RColorBrewer_1.1-2          promises_1.1.1             
+[17] XVector_0.30.0              colorspace_2.0-0           
+[19] htmltools_0.5.1.1           httpuv_1.5.5               
+[21] Matrix_1.3-2                plyr_1.8.6                 
+[23] XML_3.99-0.5                pkgconfig_2.0.3            
+[25] listenv_0.8.0               zlibbioc_1.36.0            
+[27] xtable_1.8-4                scales_1.1.1               
+[29] whisker_0.4                 later_1.1.0.1              
+[31] BiocParallel_1.24.1         openssl_1.4.3              
+[33] git2r_0.28.0                tibble_3.0.6               
+[35] generics_0.1.0              ggplot2_3.3.3              
+[37] ellipsis_0.3.1              SummarizedExperiment_1.20.0
+[39] furrr_0.2.2                 magrittr_2.0.1             
+[41] crayon_1.4.0                mime_0.9                   
+[43] evaluate_0.14               fs_1.5.0                   
+[45] future_1.21.0               parallelly_1.23.0          
+[47] tools_4.0.3                 data.table_1.13.6          
+[49] lifecycle_0.2.0             matrixStats_0.58.0         
+[51] gridBase_0.4-7              stringr_1.4.0              
+[53] munsell_0.5.0               DelayedArray_0.16.0        
+[55] Biostrings_2.58.0           compiler_4.0.3             
+[57] rlang_0.4.10                grid_4.0.3                 
+[59] RCurl_1.98-1.2              igraph_1.2.6               
+[61] bitops_1.0-6                rmarkdown_2.6              
+[63] gtable_0.3.0                codetools_0.2-18           
+[65] DBI_1.1.1                   reshape2_1.4.4             
+[67] R6_2.5.0                    GenomicAlignments_1.26.0   
+[69] knitr_1.31                  dplyr_1.0.4                
+[71] fastmap_1.1.0               rprojroot_2.0.2            
+[73] stringi_1.5.3               Rcpp_1.0.6                 
+[75] vctrs_0.3.6                 tidyselect_1.1.0           
+[77] xfun_0.20                  </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
