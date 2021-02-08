@@ -1,0 +1,290 @@
+---
+title: "Histone mark density per chromosome"
+author: "Carmen Navarro"
+date: "2021-02-08"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+editor_options:
+  chunk_output_type: console
+params:
+  bwdir: ./data/bw/Kumar_2020/hu2/
+---
+
+# Summary
+
+Here we look to scaled global levels of coverage per chromosome.
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
+library(wigglescout)
+library(rtracklayer)
+library(treemap)
+library(purrr)
+library(cowplot)
+
+source("./code/globals.R")
+source("./code/embed_functions.R")
+
+knitr::opts_chunk$set(dev = c('png', 'svg'))
+knitr::opts_chunk$set(class.source='fold-show')
+```
+
+# Helper functions
+
+Extra functions used to cleanup the relevant code. Click `code` to see the source.
+```{r helper, class.source = NULL}
+
+#' Summarize stats per chromosome on a scaled bigWig file
+#'
+#' @param bwfile BigWig file to summarize
+#' @param chromosomes Array of chromosome names to include.
+#'
+#' @return A data frame with stats per chromosome: mean, chr size, #reads
+#'   (estimated as (score * chr size) / fraglen), %reads.
+scaled_reads_per_chromosome <- function(bwfile, chromosomes, fraglen = 150) {
+  granges <- unlist(summary(BigWigFile(bwfile)))
+  df <- data.frame(granges[seqnames(granges) %in% chromosomes, ])
+  rownames(df) <- df$seqnames
+  
+  # Calculate scaled number of reads as mean x chromosome length / read length
+  df$nreads <- (df$score * df$width) / fraglen
+  
+  # Perc of total
+  df$perc <- (df$nreads / sum(df$nreads)) * 100
+  
+  # Perc size
+  df$size <- df$width / sum(df$width)
+
+  df$group <- basename(bwfile)
+  df[chromosomes, ]
+}
+
+chromosomes <- paste0("chr", c(1:22, "X", "Y"))
+
+# Fix some parameters on treemap function to remove some clutter from nb.
+chr_treeplot <- partial(
+  treemap,
+  index = "seqnames",
+  vSize = "nreads",
+  vColor = "score",
+  type = "value",
+  mapping = c(0, 3),
+  range = c(0, 3),
+  fontsize.labels = 16,
+  fontsize.legend = 16,
+  fontsize.title = 20
+)
+```
+
+
+# H3K27me3
+
+H3K27me3 is highly abundant on X chromosome on naïve cells.
+
+If we take a look at coverage per chromosome for both Naïve and Primed cells:
+
+```{r treemap-h3k27m3-naive, fig.width=8, fig.height=7, warning = FALSE}
+bw <- file.path(params$bwdir, "H3K27m3_H9_Ni_pooled.hg38.scaled.bw")
+values <- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+
+
+chr_treeplot(
+  values,
+  palette = c("#ffffff", gl_condition_colors[["Naive_Untreated"]]),
+  fontcolor.labels = "#555555",
+  border.col = c("white"),
+  title = "H3K27m3 - Naïve"
+)
+```
+
+Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+
+In this and subsequent plots, each rectangle's size is proportional to the
+number of read mapped to its corresponding chromosome. Color intensity
+represents mean coverage per chromosome, and rectangles are ordered according
+to size. Top-left is the highest value.
+
+As opposed to primed, where values are very even: 
+
+```{r treemap-h3k27m3-primed, fig.width=8, fig.height=7, warning = FALSE}
+bw <- file.path(params$bwdir, "H3K27m3_H9_Pr_pooled.hg38.scaled.bw")
+values <- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c("#ffffff", gl_condition_colors[["Primed_Untreated"]]),
+  fontcolor.labels = "#555555",
+  border.col = c("white"),
+  title = "H3K27m3 - Primed"
+)
+```
+
+Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+
+EZH2i-treated cells, in comparison, have H3K27m3 globally removed:
+
+```{r treemap-h3k27m3-naive-ezh2i, fig.width=8, fig.height=7, warning = FALSE}
+bw <- file.path(params$bwdir, "H3K27m3_H9_Ni-EZH2i_pooled.hg38.scaled.bw")
+values <- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c("#ffffff", gl_condition_colors[["Naive_Untreated"]]),
+  fontcolor.labels = "#555555",
+  border.col = "#999999",
+  title = "H3K27m3 - Naïve-EZH2i"
+)
+```
+
+Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+
+```{r treemap-h3k27m3-primed-ezh2i, fig.width=8, fig.height=7, warning = FALSE}
+bw <- file.path(params$bwdir, "H3K27m3_H9_Pr-EZH2i_pooled.hg38.scaled.bw")
+values <- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c("#ffffff", gl_condition_colors[["Primed_Untreated"]]),
+  fontcolor.labels = "#555555",
+  border.col = "#999999",
+  title = "H3K27m3 - Primed-EZH2i"
+)
+```
+
+Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+
+If we look at the rest of the histone marks:
+
+# H3K4me3 
+
+H3K4me3 does not show this X-chromosome specificity.
+
+```{r treemap-h3k4m3-naive, fig.width=8, fig.height=7, warning = FALSE}
+bw <- file.path(params$bwdir, "H3K4m3_H9_Ni_pooled.hg38.scaled.bw")
+values <- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c("#ffffff", gl_condition_colors[["Naive_Untreated"]]),
+  fontcolor.labels = "#555555",
+  border.col = c("white"),
+  title = "H3K4m3 - Naïve"
+)
+```
+
+Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+
+```{r treemap-h3k4m3-primed, fig.width=8, fig.height=7, warning = FALSE}
+bw <- file.path(params$bwdir, "H3K4m3_H9_Pr_pooled.hg38.scaled.bw")
+values <- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c("#ffffff", gl_condition_colors[["Primed_Untreated"]]),
+  fontcolor.labels = "#555555",
+  border.col = c("white"),
+  title = "H3K4m3 - Primed"
+)
+```
+
+Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+
+EZH2i-treated cells, in comparison, have H3K27m3 globally removed:
+
+```{r treemap-h3k4m3-naive-ezh2i, fig.width=8, fig.height=7, warning = FALSE}
+bw <- file.path(params$bwdir, "H3K4m3_H9_Ni-EZH2i_pooled.hg38.scaled.bw")
+values <- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c("#ffffff", gl_condition_colors[["Naive_Untreated"]]),
+  fontcolor.labels = "#555555",
+  border.col = c("white"),
+  title = "H3K4m3 - Naïve-EZH2i"
+)
+```
+
+Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+
+```{r treemap-h3k4m3-primed-ezh2i, fig.width=8, fig.height=7, warning = FALSE}
+bw <- file.path(params$bwdir, "H3K4m3_H9_Pr-EZH2i_pooled.hg38.scaled.bw")
+values <- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c("#ffffff", gl_condition_colors[["Primed_Untreated"]]),
+  fontcolor.labels = "#555555",
+  border.col = c("white"),
+  title = "H3K4m3 - Primed-EZH2i"
+)
+```
+
+# H2AUb
+
+H2AUb does not show this X-chromosome specificity either.
+
+```{r treemap-H2aub-naive, fig.width=8, fig.height=7, warning = FALSE}
+bw <- file.path(params$bwdir, "H2Aub_H9_Ni_pooled.hg38.scaled.bw")
+values <- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c("#ffffff", gl_condition_colors[["Naive_Untreated"]]),
+  fontcolor.labels = "#555555",
+  border.col = c("white"),
+  title = "H2Aub - Naïve"
+)
+
+```
+
+Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+
+```{r treemap-h2aub-primed, fig.width=8, fig.height=7, warning = FALSE}
+
+bw <- file.path(params$bwdir, "H2Aub_H9_Pr_pooled.hg38.scaled.bw")
+values <- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c("#ffffff", gl_condition_colors[["Primed_Untreated"]]),
+  fontcolor.labels = "#555555",
+  border.col = c("white"),
+  title = "H2Aub - Primed"
+)
+
+```
+
+Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+
+EZH2i-treated cells, in comparison, have H3K27m3 globally removed:
+
+```{r treemap-h2aub-naive-ezh2i, fig.width=8, fig.height=7, warning = FALSE}
+bw <- file.path(params$bwdir, "H2Aub_H9_Ni-EZH2i_pooled.hg38.scaled.bw")
+values <- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c("#ffffff", gl_condition_colors[["Naive_Untreated"]]),
+  fontcolor.labels = "#555555",
+  border.col = c("white"),
+  title = "H2Aub - Naïve-EZH2i"
+)
+```
+
+Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+
+```{r treemap-h2aub-primed-ezh2i, fig.width=8, fig.height=7, warning = FALSE}
+bw <- file.path(params$bwdir, "H2Aub_H9_Pr-EZH2i_pooled.hg38.scaled.bw")
+values <- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
+
+chr_treeplot(
+  values,
+  palette = c("#ffffff", gl_condition_colors[["Primed_Untreated"]]),
+  fontcolor.labels = "#555555",
+  border.col = c("white"),
+  title = "H2Aub - Primed-EZH2i"
+)
+```
+
+Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.

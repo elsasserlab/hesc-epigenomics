@@ -10,12 +10,12 @@ editor_options:
 
 Supplementary code and analysis for publication.
 
-Analyses:
-
 * [Global read counts](global_read_counts.html). Read counts per sample normalized
 to input levels.
 * [Bivalent chromatin](bivalent_chromatin.html). Histone marks on
 bivalent-chromatin annotated regions.
+* [Read density per chromosome](x_chromosome.html). H3K27me3 shows high abundance
+on X chromosome in Naïve cells.
 * [Public RNA-seq analysis](rna_seq_collier_2017.html). Gene expression analysis
 on RNA-seq public data.
 * [Gene groups](gene_expression_groups.html). Gene expression analysis
