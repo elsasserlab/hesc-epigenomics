@@ -9,6 +9,9 @@ bibliography: /home/carmen/work/publications/hesc-epigenomics/data/meta/biblio.b
 params:
   datadir: ./data
   rnaseqdir: ./data/rnaseq/
+  length_cutoff: 10000
+  value_cutoff: 0.01
+  deciding_stat: "FPKM"
 ---
 
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
@@ -75,64 +78,46 @@ There is a newer RNA-seq version: <https://github.com/nf-core/rnaseq/releases/ta
 color_list <- c(Naive=global_palette$teal,
                 Primed=global_palette$coral)
 
-#' Subset a stringtie output table intro high/med/low expr genes
+#' Select by quantile
 #'
 #' @param counts Counts table.
-#' @param min_length Gene length cutoff.
-#' @param group_size Number of genes per group.
-#' @param min_cutoff Minimum threshold to consider.
+#' @param length_cutoff Gene length cutoff.
+#' @param value_cutoff Value cutoff
+#' @param min_q Minimum quantile to consider
+#' @param max_q Maximum quantile to consider
 #' @param field Which field to use (default = TPM).
 #'
-#' @return Named list top, bottom, med
-categorize_genes <- function(counts, min_length, group_size, min_cutoff = 0, field = "TPM") {
+#' @return filtered data.frame
+quantile_group <- function(counts, min_q, max_q, value_cutoff = 0, length_cutoff = 10000, field = "TPM") {
   counts$length <- (counts$End - counts$Start)
-
-  # Filter by gene length
-  counts <- counts[counts$length > min_length, ]
+  counts <- dplyr::filter(counts, .data[[field]] > value_cutoff & length > length_cutoff)
   
-  # Count as "low" genes that have something, instead of none?
-  counts <- counts[counts[, field] > min_cutoff, ]
+  q <- quantile(counts[, field], probs = c(min_q, max_q))
   
-  # Sort by corresponding column
-  counts <- counts[order(counts[, field], decreasing = TRUE), ]
-  
-  total <- nrow(counts)
-  
-  top <- counts[1:group_size, ]
-  bottom <- counts[(total-group_size+1):total, ]
-  med <- counts[((total/2)-(group_size/2)):((total/2)+(group_size/2)-1),]
-  
-  list(top = top, bottom = bottom, med = med)
+  dplyr::filter(counts, .data[[field]] >= q[1] & .data[[field]] <= q[2])
 }
 
 #' Make a venn diagram out ouf a list of selected gene counts
 #'
-#' @param lists List of lists of three (top, med, bottom) gene counts.
-#' @param field Which group to select (top, med, bottom)-
+#' @param gene_counts of count tables
 #' @param title Plot title
 #' @param color Base color
 
 #' @return ggplot object
-genes_venn <- function(lists, field, title, color) {
-  field_list <- list(r1 = lists[[1]][[field]]$Gene.Name, 
-                     r2 = lists[[2]][[field]]$Gene.Name,
-                     r3 = lists[[3]][[field]]$Gene.Name)
+genes_venn <- function(gene_counts, title, color) {
+  field_list <- list(r1 = gene_counts[[1]]$Gene.Name, 
+                     r2 = gene_counts[[2]]$Gene.Name,
+                     r3 = gene_counts[[3]]$Gene.Name)
   
   clist <- rep(color, 3)
   ggvenn(field_list, fill_color = clist, fill_alpha = 0.5, text_size = 5, stroke_color = "#ffffff") + 
     ggtitle(title)
 }
 
-#' Intersect per category
-#'
-#' @param group_list List of lists of three (top, med, bottom) gene counts.
-#' @param category Which group to select (top, med, bottom).
-#'
-#' @return Gene names that intersect
-intersect_3 <- function(group_list, category) {
-  intersect(intersect(group_list[[1]][[category]]$Gene.Name,
-                      group_list[[2]][[category]]$Gene.Name),
-            group_list[[3]][[category]]$Gene.Name)
+intersect_genes_3 <- function(glist) {
+  intersect(intersect(glist[[1]]$Gene.Name, 
+                             glist[[2]]$Gene.Name),
+                             glist[[3]]$Gene.Name)
 }
 
 #' Subset a named granges by name
@@ -176,48 +161,17 @@ genes_hg38_ensembl <- function() {
   genes(edb)
 }
 
-
-#' Export gene sets out of a list of selected gene counts
-#'
-#' @param group_list List of lists of three (top, med, bottom) gene counts.
-#' @param prefix File name prefix
-export_gene_sets_ensembl <- function(group_list, prefix) {
-  merged <- map(c("top", "med", "bottom"),
-                   intersect_3,
-                   group_list=group_list)
+export_gene_set <- function(replicates, name, path, annot_func, name_field) {
+  gene_names <- intersect_genes_3(replicates)
   
-  out_files <- paste0(file.path("./output/Collier_2017/ensembl/",
-                      paste(prefix,
-                            c("top.bed", "med.bed", "bottom.bed"), sep="_")))
-  
-  genes_all <- genes_hg38_ensembl()
-  genes_all <- genes_all[, "gene_name"] 
+  genes_all <- annot_func()
+  genes_all <- genes_all[, name_field]
   names(mcols(genes_all)) <- "name"
   
-  ranges_list <- map(merged, select_genes, granges=genes_all)
+  result <- select_genes(gene_names, genes_all)
   
-  file_list <- map2(ranges_list, out_files, export)
-}
-
-
-#' Export gene sets out of a list of selected gene counts
-#'
-#' @param group_list List of lists of three (top, med, bottom) gene counts.
-#' @param prefix File name prefix
-export_gene_sets <- function(group_list, prefix) {
-  merged <- map(c("top", "med", "bottom"),
-                   intersect_3,
-                   group_list=group_list)
-  
-  out_files <- paste0(file.path("./output/Collier_2017/"),
-                      paste(prefix,
-                            c("top.bed", "med.bed", "bottom.bed"), sep="_"))
-  
-  genes_all <- genes_hg38()
-
-  ranges_list <- map(merged, select_genes, granges=genes_all)
-  
-  file_list <- map2(ranges_list, out_files, export)
+  out_file <- file.path(path, name)
+  export(result, out_file)
 }
 
 ```
@@ -313,7 +267,7 @@ To get sets of high - med -low expressed:
 
 1\. Remove genes that are shorter than 10kb.
 
-2\. Take top 5000, around-median 5000 and lowest 5000 genes.
+2\. Take top 5%, around-median 5% and lowest 5% genes.
 
 In this case, we have 3 biological replicates per condition.
 
@@ -326,33 +280,51 @@ counts_naive <- lapply(stringtie_files$naive,
                        header = T,
                        sep = "\t")
 
-min_length_cutoff <- 10000
-group_size <- 5000
-min_expr_cutoff <- 0
-deciding_stat <- "FPKM"
-
-# Set a cutoff for the low expressed genes, so there is still some signal
-# In there. When intersecting otherwise, I get few overlap.
-groups_naive <- lapply(counts_naive,
-                       categorize_genes,
-                       min_length = min_length_cutoff,
-                       group_size = group_size,
-                       min_cutoff = min_expr_cutoff,
-                       field = deciding_stat)
-
-
 counts_primed <- lapply(stringtie_files$primed,
                         read.csv,
                         header = T,
                         sep = "\t")
 
-groups_primed <- lapply(counts_primed,
-                        categorize_genes,
-                        min_length = min_length_cutoff,
-                        group_size = group_size,
-                        min_cutoff = min_expr_cutoff,
-                        field = deciding_stat)
+# Size of the quantile group
+size = 0.1
 
+min_qs <- c(0, 0.5 - (size/2), 1-size)
+max_qs <- c(0+size, 0.5 + (size/2), 1)
+
+quantile_low <- purrr::partial(
+  quantile_group,
+  min_q = min_qs[1],
+  max_q = max_qs[1],
+  length_cutoff = params$length_cutoff,
+  value_cutoff = params$value_cutoff,
+  field = params$deciding_stat
+)
+
+quantile_med <- purrr::partial(
+  quantile_group,
+  min_q = min_qs[2],
+  max_q = max_qs[2],
+  length_cutoff = params$length_cutoff,
+  value_cutoff = params$value_cutoff,
+  field = params$deciding_stat
+)
+
+quantile_high <- purrr::partial(
+  quantile_group,
+  min_q = min_qs[3],
+  max_q = max_qs[3],
+  length_cutoff = params$length_cutoff,
+  value_cutoff = params$value_cutoff,
+  field = params$deciding_stat
+)
+
+naive_top <- map(counts_naive, quantile_high)
+naive_med <- map(counts_naive, quantile_med)
+naive_low <- map(counts_naive, quantile_low)
+
+primed_top <- map(counts_primed, quantile_high)
+primed_med <- map(counts_primed, quantile_med)
+primed_low <- map(counts_primed, quantile_low)
 
 c <- color_list[["Naive"]]
 ```
@@ -362,29 +334,24 @@ c <- color_list[["Naive"]]
 Top expressed genes:
 
 ```{r top-naive-genes-venn-replicates, fig.width = 8, fig.height = 8}
-groups <- groups_naive
-
-genes_venn(groups,
-           "top",
-           "Naïve top 5k expressed genes across replicates",
+genes_venn(naive_top,
+           "Naïve top expressed genes across replicates",
            color = c)
 ```
 
 Medium expressed genes:
 
 ```{r med-naive-genes-venn-replicates, fig.width = 8, fig.height = 8}
-genes_venn(groups,
-           "med",
-           "Naïve med 5k expressed genes across replicates",
+genes_venn(naive_med,
+           "Naïve med expressed genes across replicates",
            color = c)
 ```
 
 Low expressed genes:
 
 ```{r low-naive-genes-venn-replicates, fig.width = 8, fig.height = 8}
-genes_venn(groups,
-           "bottom",
-           "Naïve bottom 5k expressed genes across replicates",
+genes_venn(naive_low,
+           "Naïve low expressed genes across replicates",
            color = c)
 ```
 
@@ -393,39 +360,31 @@ genes_venn(groups,
 ```{r top-primed-genes-venn-replicates, fig.width = 8, fig.height = 8}
 c <- color_list[["Primed"]]
 
-groups <- groups_primed
-
-genes_venn(groups,
-           "top",
-           "Primed top 5k expressed genes across replicates",
+genes_venn(primed_top,
+           "Primed top expressed genes across replicates",
            color = c)
 ```
 
 ```{r med-primed-genes-venn-replicates, fig.width = 8, fig.height = 8}
-genes_venn(groups,
-           "med",
-           "Primed med 5k expressed genes across replicates",
+genes_venn(primed_med,
+           "Primed med expressed genes across replicates",
            color = c)
 ```
 
 ```{r bottom-primed-genes-venn-replicates, fig.width = 8, fig.height = 8}
-genes_venn(groups,
-           "bottom",
-           "Primed low 5k expressed genes across replicates",
+genes_venn(primed_low,
+           "Primed low expressed genes across replicates",
            color = c)
 ```
+
+
+#### Primed vs Naive 
 
 I assume here there should be some overlap
 
 ```{r naive-vs-primed-venn, fig.width = 8, fig.height = 8}
-
-naive_top_genes <- intersect(intersect(groups_naive[[1]]$top$Gene.Name, 
-                             groups_naive[[2]]$top$Gene.Name),
-                             groups_naive[[3]]$top$Gene.Name)
-
-primed_top_genes <- intersect(intersect(groups_primed[[1]]$top$Gene.Name, 
-                              groups_primed[[2]]$top$Gene.Name),
-                              groups_primed[[3]]$top$Gene.Name)
+naive_top_genes <- intersect_genes_3(naive_top)
+primed_top_genes <- intersect_genes_3(primed_top)
 
 field_list <- list(naive=naive_top_genes,
                    primed=primed_top_genes)
@@ -435,62 +394,101 @@ ggvenn(field_list, fill_color = c(color_list[["Naive"]], color_list[["Primed"]])
 
 ```
 
+#### TPM vs FPKM
+
+There is maximum overlap in the top genes. On the lower side, they tend to 
+disagree more.
+
+```{r naive-tpm-vs-fpkm, fig.width = 8, fig.height = 8}
+quantile_high_tpm <- purrr::partial(
+  quantile_group,
+  min_q = min_qs[3],
+  max_q = max_qs[3],
+  length_cutoff = params$length_cutoff,
+  value_cutoff = params$value_cutoff,
+  field = "TPM"
+)
+
+quantile_high_fpkm <- purrr::partial(
+  quantile_group,
+  min_q = min_qs[3],
+  max_q = max_qs[3],
+  length_cutoff = params$length_cutoff,
+  value_cutoff = params$value_cutoff,
+  field = "FPKM"
+)
+
+naive_top_fpkm <-  intersect_genes_3(map(counts_naive, quantile_high_fpkm))
+naive_top_tpm <-  intersect_genes_3(map(counts_naive, quantile_high_tpm))
+
+
+field_list <- list(fpkm=naive_top_fpkm,
+                   tpm=naive_top_tpm)
+
+ggvenn(field_list, fill_color = c(color_list[["Naive"]], color_list[["Naive"]]), fill_alpha = 0.5, text_size = 5, stroke_color = "#ffffff") + 
+    ggtitle("Naive top expressed genes (TPM vs FPKM)")
+
+```
+
+
+```{r primed-tpm-vs-fpkm, fig.width = 8, fig.height = 8}
+primed_top_fpkm <-  intersect_genes_3(map(counts_primed, quantile_high_fpkm))
+primed_top_tpm <-  intersect_genes_3(map(counts_primed, quantile_high_tpm))
+
+field_list <- list(fpkm=primed_top_fpkm,
+                   tpm=primed_top_tpm)
+
+ggvenn(field_list, fill_color = c(color_list[["Primed"]], color_list[["Primed"]]), fill_alpha = 0.5, text_size = 5, stroke_color = "#ffffff") + 
+    ggtitle("Primed top expressed genes (TPM vs FPKM)")
+
+```
+
+```{r naive-low-tpm-vs-fpkm, fig.width = 8, fig.height = 8}
+
+quantile_tpm <- purrr::partial(
+  quantile_group,
+  min_q = min_qs[1],
+  max_q = max_qs[1],
+  length_cutoff = params$length_cutoff,
+  value_cutoff = params$value_cutoff,
+  field = "TPM"
+)
+
+quantile_fpkm <- purrr::partial(
+  quantile_group,
+  min_q = min_qs[1],
+  max_q = max_qs[1],
+  length_cutoff = params$length_cutoff,
+  value_cutoff = params$value_cutoff,
+  field = "FPKM"
+)
+
+naive_low_fpkm <-  intersect_genes_3(map(counts_naive, quantile_fpkm))
+naive_low_tpm <-  intersect_genes_3(map(counts_naive, quantile_tpm))
+
+field_list <- list(fpkm=naive_low_fpkm,
+                   tpm=naive_low_tpm)
+
+ggvenn(field_list, fill_color = c(color_list[["Naive"]], color_list[["Naive"]]), fill_alpha = 0.5, text_size = 5, stroke_color = "#ffffff") + 
+    ggtitle("Naive low expressed genes (TPM vs FPKM)")
+
+```
+
+
+```{r primed-low-tpm-vs-fpkm, fig.width = 8, fig.height = 8}
+
+primed_low_fpkm <-  intersect_genes_3(map(counts_primed, quantile_fpkm))
+primed_low_tpm <-  intersect_genes_3(map(counts_primed, quantile_tpm))
+
+field_list <- list(fpkm=primed_low_fpkm,
+                   tpm=primed_low_tpm)
+
+ggvenn(field_list, fill_color = c(color_list[["Primed"]], color_list[["Primed"]]), fill_alpha = 0.5, text_size = 5, stroke_color = "#ffffff") + 
+    ggtitle("Primed low expressed genes (TPM vs FPKM)")
+
+```
 
 ## Gene set enrichment
-
-There seems to be some overlap in the Naïve-only vs Primed-only and our groups, when looking at functional annotation, at least. Being more stringent in the top expressed genes:
-
-```{r smaller-gene-groups}
-
-min_length_cutoff <- 10000
-group_size <- 2000
-min_expr_cutoff <- 0
-deciding_stat <- "TPM"
-
-# Set a cutoff for the low expressed genes, so there is still some signal
-# In there. When intersecting otherwise, I get few overlap.
-groups_naive <- lapply(counts_naive,
-                       categorize_genes,
-                       min_length = min_length_cutoff,
-                       group_size = group_size,
-                       min_cutoff = min_expr_cutoff,
-                       field = deciding_stat)
-
-
-counts_primed <- lapply(stringtie_files$primed,
-                        read.csv,
-                        header = T,
-                        sep = "\t")
-
-groups_primed <- lapply(counts_primed,
-                        categorize_genes,
-                        min_length = min_length_cutoff,
-                        group_size = group_size,
-                        min_cutoff = min_expr_cutoff,
-                        field = deciding_stat)
-```
-
-Still quite some overlap among the highest expressed genes:
-
-```{r smaller-top-groups-venn, fig.width = 8, fig.height = 8}
-
-naive_top_genes <- intersect(intersect(groups_naive[[1]]$top$Gene.Name, 
-                             groups_naive[[2]]$top$Gene.Name),
-                             groups_naive[[3]]$top$Gene.Name)
-
-primed_top_genes <- intersect(intersect(groups_primed[[1]]$top$Gene.Name, 
-                              groups_primed[[2]]$top$Gene.Name),
-                              groups_primed[[3]]$top$Gene.Name)
-
-field_list <- list(naive=naive_top_genes,
-                   primed=primed_top_genes)
-
-ggvenn(field_list, fill_color = c(color_list[["Naive"]], color_list[["Primed"]]), fill_alpha = 0.5, text_size = 5, stroke_color = "#ffffff") + 
-    ggtitle("Naive vs primed top expressed genes")
-
-```
-
-Gene enrichment analysis
 
 ```{r go-enrichment, fig.width = 8, fig.height = 8}
 naive_only <- setdiff(naive_top_genes, primed_top_genes)
@@ -519,37 +517,28 @@ This is a bit too much at the moment, we can probably refine this.
 
 Now I annotate the intersection of these sets in the reference genome, to be able to look at chromatin marks there.
 
-```{r annotate-groups}
-min_length_cutoff <- 10000
-group_size <- 5000
-min_expr_cutoff <- 0
-deciding_stat <- "TPM"
+```{r annotate-groups, echo=FALSE, warning=FALSE, message=FALSE}
 
-# Set a cutoff for the low expressed genes, so there is still some signal
-# In there. When intersecting otherwise, I get few overlap.
-groups_naive <- lapply(counts_naive,
-                       categorize_genes,
-                       min_length = min_length_cutoff,
-                       group_size = group_size,
-                       min_cutoff = min_expr_cutoff,
-                       field = deciding_stat)
+export_gene_set(naive_top, "Naive_top.bed", "./output/Collier_2017", genes_hg38, "name")
+export_gene_set(naive_med, "Naive_med.bed", "./output/Collier_2017", genes_hg38, "name")
+export_gene_set(naive_low, "Naive_low.bed", "./output/Collier_2017", genes_hg38, "name")
 
-export_gene_sets(groups_naive, "Naive")
-export_gene_sets_ensembl(groups_naive, "Naive")
+export_gene_set(naive_top, "Naive_top.bed", "./output/Collier_2017/ensembl", genes_hg38_ensembl, "gene_name")
+export_gene_set(naive_med, "Naive_med.bed", "./output/Collier_2017/ensembl", genes_hg38_ensembl, "gene_name")
+export_gene_set(naive_low, "Naive_low.bed", "./output/Collier_2017/ensembl", genes_hg38_ensembl, "gene_name")
 
-groups_naive <- lapply(counts_primed,
-                       categorize_genes,
-                       min_length = min_length_cutoff,
-                       group_size = group_size,
-                       min_cutoff = min_expr_cutoff,
-                       field = deciding_stat)
+export_gene_set(primed_top, "Primed_top.bed", "./output/Collier_2017", genes_hg38, "name")
+export_gene_set(primed_med, "Primed_med.bed", "./output/Collier_2017", genes_hg38, "name")
+export_gene_set(primed_low, "Primed_low.bed", "./output/Collier_2017", genes_hg38, "name")
 
-export_gene_sets(groups_naive, "Primed")
-export_gene_sets_ensembl(groups_naive, "Primed")
+export_gene_set(primed_top, "Primed_top.bed", "./output/Collier_2017/ensembl", genes_hg38_ensembl, "gene_name")
+export_gene_set(primed_med, "Primed_med.bed", "./output/Collier_2017/ensembl", genes_hg38_ensembl, "gene_name")
+export_gene_set(primed_low, "Primed_low.bed", "./output/Collier_2017/ensembl", genes_hg38_ensembl, "gene_name")
+
 
 ```
 
-### Download the BED files
+### Download BED files
 
 ```{r download-files, echo=FALSE}
 xfun::embed_dir(file.path("./output/Collier_2017"))
@@ -564,7 +553,7 @@ This is sort of a validation of the groups I get:
 export_dir <- "./output/Collier_2017/ensembl/"
 bedfiles_top <- list.files(export_dir, full.names = T, pattern = "_top")
 bedfiles_med <- list.files(export_dir, full.names = T, pattern = "_med")
-bedfiles_bottom <- list.files(export_dir, full.names = T, pattern = "_bottom")
+bedfiles_bottom <- list.files(export_dir, full.names = T, pattern = "_low")
 
 # Ensures proper order
 bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
@@ -577,7 +566,9 @@ colors <- c(rep(color_list[["Naive"]], 3), rep(color_list[["Primed"]], 3))
 tss_window <- 2500
 
 bed_ranges <- lapply(bedfiles, import)
-tss_ranges <- lapply(bed_ranges, promoters, upstream = tss_window, downstream = tss_window)
+
+# Take just downstream from TSS
+tss_ranges <- lapply(bed_ranges, promoters, upstream = 0, downstream = tss_window)
 
 this_plot <- partial(bw_loci, bwfiles = bwsignal)
 # 
@@ -606,23 +597,21 @@ ggplot(all_vals, aes(x = sample, y = log2(value), color = sample, group = sample
 Profile is not very informative, I think.
 
 ```{r rnaseq-profile-groups-panel, fig.width=11, fig.height=16, warning = F}
+# Need to match ref names and so on -> ENSEMBL
 export_dir <- "./output/Collier_2017/ensembl/"
 bedfiles_top <- list.files(export_dir, full.names = T, pattern = "_top")
 bedfiles_med <- list.files(export_dir, full.names = T, pattern = "_med")
-bedfiles_bottom <- list.files(export_dir, full.names = T, pattern = "_bottom")
+bedfiles_bottom <- list.files(export_dir, full.names = T, pattern = "_low")
 
 # Ensures proper order
 bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
 bwsignal <- list.files(file.path(params$datadir, "bw/Collier_2017"), full.names = T)
 
-# colors <- as.character(style_info[basename(c(bwsignal, bwinput)), "color_cond"])
-# labels <- style_info[basename(c(bwsignal, bwinput)), "label"]
-
 colors <- c(rep(color_list[["Naive"]], 3), rep(color_list[["Primed"]], 3))
 
-up <- 12000
-dw <- 12000
-bs <- 1000
+up <- 500
+dw <- 500
+bs <- 500
 md <- "stretch"
 
 this_plot <- partial(plot_bw_profile, bwfiles = bwsignal,
