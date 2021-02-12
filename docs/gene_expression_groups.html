@@ -408,7 +408,7 @@ div.tocify {
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -417,7 +417,7 @@ div.tocify {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -426,10 +426,10 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-02-07
+<strong>Last updated:</strong> 2021-02-12
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>hesc-epigenomics/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
@@ -445,12 +445,12 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
 </div>
 </div>
 </div>
@@ -517,16 +517,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreef903045434f8cad89bd72e2153846abc0a669e48targetblankf903045a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/f903045434f8cad89bd72e2153846abc0a669e48" target="_blank">f903045</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreeaa434ad5eed28f8352e090c4380b4b019d763da6targetblankaa434ada"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/aa434ad5eed28f8352e090c4380b4b019d763da6" target="_blank">aa434ad</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreef903045434f8cad89bd72e2153846abc0a669e48targetblankf903045a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreeaa434ad5eed28f8352e090c4380b4b019d763da6targetblankaa434ada" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/f903045434f8cad89bd72e2153846abc0a669e48" target="_blank">f903045</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/aa434ad5eed28f8352e090c4380b4b019d763da6" target="_blank">aa434ad</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -541,8 +541,27 @@ Ignored files:
     Ignored:    data/peaks
     Ignored:    data/rnaseq/
 
+Untracked files:
+    Untracked:  output/Collier_2017/Naive_low.bed
+    Untracked:  output/Collier_2017/Primed_low.bed
+    Untracked:  output/Collier_2017/ensembl/Naive_low.bed
+    Untracked:  output/Collier_2017/ensembl/Primed_low.bed
+
 Unstaged changes:
-    Modified:   analysis/index.Rmd
+    Modified:   analysis/gene_expression_groups.Rmd
+    Modified:   analysis/rna_seq_collier_2017.Rmd
+    Deleted:    output/Collier_2017/Naive_bottom.bed
+    Modified:   output/Collier_2017/Naive_med.bed
+    Modified:   output/Collier_2017/Naive_top.bed
+    Deleted:    output/Collier_2017/Primed_bottom.bed
+    Modified:   output/Collier_2017/Primed_med.bed
+    Modified:   output/Collier_2017/Primed_top.bed
+    Deleted:    output/Collier_2017/ensembl/Naive_bottom.bed
+    Modified:   output/Collier_2017/ensembl/Naive_med.bed
+    Modified:   output/Collier_2017/ensembl/Naive_top.bed
+    Deleted:    output/Collier_2017/ensembl/Primed_bottom.bed
+    Modified:   output/Collier_2017/ensembl/Primed_med.bed
+    Modified:   output/Collier_2017/ensembl/Primed_top.bed
 
 </code></pre>
 <p>
@@ -581,6 +600,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/elsasserlab/hesc-epigenomics/8c0355bc32aaa4706384b998339d6cca154bbfaf/docs/gene_expression_groups.html" target="_blank">8c0355b</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -667,12 +703,49 @@ plots[[2]] &lt;- plots[[2]] + ylim(global_lims) + ylab(&quot;&quot;) + ggtitle(&
 
 plot_grid(plotlist=plots, nrow=1)</code></pre>
 <p><img src="figure/gene_expression_groups.Rmd/h3k27m3-profile-top-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k27m3-profile-top-1">
+Past versions of h3k27m3-profile-top-1.png
+</button>
+</p>
+<div id="fig-h3k27m3-profile-top-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/8c0355bc32aaa4706384b998339d6cca154bbfaf/docs/figure/gene_expression_groups.Rmd/h3k27m3-profile-top-1.png" target="_blank">8c0355b</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="norm-to-input" class="section level3">
 <h3>Norm to input</h3>
 <pre class="r"><code>colors &lt;- as.character(style_info[basename(bwsignal), &quot;color_cond&quot;])
 labels &lt;- style_info[basename(bwsignal), &quot;label&quot;]
 
-global_lims &lt;- c(0, 1.2)
+global_lims &lt;- c(0, 1.5)
 
 this_plot &lt;- partial(plot_bw_profile, bwfiles = bwsignal, bg_bwfiles = bwinput,
                      bin_size = bs,
@@ -688,6 +761,43 @@ plots[[2]] &lt;- plots[[2]] + ylim(global_lims) + ylab(&quot;&quot;) + ggtitle(&
 
 plot_grid(plotlist=plots, nrow=1)</code></pre>
 <p><img src="figure/gene_expression_groups.Rmd/h3k27m3-profile-top-norm-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k27m3-profile-top-norm-1">
+Past versions of h3k27m3-profile-top-norm-1.png
+</button>
+</p>
+<div id="fig-h3k27m3-profile-top-norm-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/8c0355bc32aaa4706384b998339d6cca154bbfaf/docs/figure/gene_expression_groups.Rmd/h3k27m3-profile-top-norm-1.png" target="_blank">8c0355b</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>As shown in the previous report, there is some overlap between these groups of genes:</p>
 <pre class="r"><code>naive_top &lt;- import(bedfiles[[1]])
 primed_top &lt;- import(bedfiles[[2]])
@@ -698,6 +808,43 @@ field_list &lt;- list(naive=naive_top$name,
 ggvenn(field_list, fill_color = c(colors_list[[&quot;Naive_Untreated&quot;]], colors_list[[&quot;Primed_Untreated&quot;]]), fill_alpha = 0.5, text_size = 5, stroke_color = &quot;#ffffff&quot;) + 
     ggtitle(&quot;Naive vs primed top expressed genes&quot;)</code></pre>
 <p><img src="figure/gene_expression_groups.Rmd/top-overlap-genes-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-top-overlap-genes-1">
+Past versions of top-overlap-genes-1.png
+</button>
+</p>
+<div id="fig-top-overlap-genes-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/8c0355bc32aaa4706384b998339d6cca154bbfaf/docs/figure/gene_expression_groups.Rmd/top-overlap-genes-1.png" target="_blank">8c0355b</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="naive-only-vs-primed-only" class="section level3">
 <h3>Naive-only vs primed-only</h3>
@@ -726,6 +873,43 @@ plots[[3]] &lt;- plots[[3]] + ylim(global_lims) + ylab(&quot;&quot;) + ggtitle(&
 
 plot_grid(plotlist=plots, ncol=2)</code></pre>
 <p><img src="figure/gene_expression_groups.Rmd/h3k27m3-profile-naive-only-vs-primed-only-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k27m3-profile-naive-only-vs-primed-only-1">
+Past versions of h3k27m3-profile-naive-only-vs-primed-only-1.png
+</button>
+</p>
+<div id="fig-h3k27m3-profile-naive-only-vs-primed-only-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/8c0355bc32aaa4706384b998339d6cca154bbfaf/docs/figure/gene_expression_groups.Rmd/h3k27m3-profile-naive-only-vs-primed-only-1.png" target="_blank">8c0355b</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="norm-to-input-1" class="section level4">
 <h4>Norm to input</h4>
 <pre class="r"><code>colors &lt;- as.character(style_info[basename(bwsignal), &quot;color_cond&quot;])
@@ -749,6 +933,43 @@ plots[[3]] &lt;- plots[[3]] + ylim(global_lims) + ylab(&quot;&quot;) + ggtitle(&
 
 plot_grid(plotlist=plots, ncol=2)</code></pre>
 <p><img src="figure/gene_expression_groups.Rmd/h3k27m3-profile-naive-only-vs-primed-only-norm-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k27m3-profile-naive-only-vs-primed-only-norm-1">
+Past versions of h3k27m3-profile-naive-only-vs-primed-only-norm-1.png
+</button>
+</p>
+<div id="fig-h3k27m3-profile-naive-only-vs-primed-only-norm-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/8c0355bc32aaa4706384b998339d6cca154bbfaf/docs/figure/gene_expression_groups.Rmd/h3k27m3-profile-naive-only-vs-primed-only-norm-1.png" target="_blank">8c0355b</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -756,10 +977,10 @@ plot_grid(plotlist=plots, ncol=2)</code></pre>
 <h2>High-med-low expressed genes</h2>
 <pre class="r"><code>bedfiles_top &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_top&quot;)
 bedfiles_med &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_med&quot;)
-bedfiles_bottom &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_bottom&quot;)
+bedfiles_low &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_low&quot;)
 
 # Ensures proper order
-bedfiles &lt;- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
+bedfiles &lt;- c(bedfiles_top, bedfiles_med, bedfiles_low)
 bwsignal &lt;- bwfiles[grepl(&quot;H3K27m3.*pooled.hg38.scaled&quot;, bwfiles)]
 
 colors &lt;- as.character(style_info[basename(c(bwsignal, bwinput)), &quot;color_cond&quot;])
@@ -790,15 +1011,52 @@ plots[[2]] &lt;- plots[[2]] + ggtitle(&quot;- Primed&quot; )
 
 plot_grid(plotlist=plots, nrow=3)</code></pre>
 <p><img src="figure/gene_expression_groups.Rmd/h3k27m3-profile-groups-panel-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k27m3-profile-groups-panel-1">
+Past versions of h3k27m3-profile-groups-panel-1.png
+</button>
+</p>
+<div id="fig-h3k27m3-profile-groups-panel-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/8c0355bc32aaa4706384b998339d6cca154bbfaf/docs/figure/gene_expression_groups.Rmd/h3k27m3-profile-groups-panel-1.png" target="_blank">8c0355b</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="boxplots" class="section level2">
 <h2>Boxplots</h2>
 <pre class="r"><code>bedfiles_top &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_top&quot;)
 bedfiles_med &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_med&quot;)
-bedfiles_bottom &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_bottom&quot;)
+bedfiles_low &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_low&quot;)
 
 # Ensures proper order
-bedfiles &lt;- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
+bedfiles &lt;- c(bedfiles_top, bedfiles_med, bedfiles_low)
 bwsignal &lt;- bwfiles[grepl(&quot;H3K27m3.*pooled.hg38.scaled&quot;, bwfiles)]
 
 colors &lt;- as.character(style_info[basename(c(bwsignal, bwinput)), &quot;color_cond&quot;])
@@ -840,6 +1098,43 @@ all_vals &lt;- do.call(rbind, pivoted_list)
 
 ggplot(all_vals, aes(x = sample, y = value, color = sample, group = sample)) + geom_boxplot() + facet_wrap(group ~ .)  + theme_default() + theme(axis.text.x = element_text(angle=45, hjust = 1)) + scale_color_manual(name = &quot;sample&quot;, values = colors)</code></pre>
 <p><img src="figure/gene_expression_groups.Rmd/h3k27m3-boxplots-tss-groups-panel-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k27m3-boxplots-tss-groups-panel-1">
+Past versions of h3k27m3-boxplots-tss-groups-panel-1.png
+</button>
+</p>
+<div id="fig-h3k27m3-boxplots-tss-groups-panel-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/8c0355bc32aaa4706384b998339d6cca154bbfaf/docs/figure/gene_expression_groups.Rmd/h3k27m3-boxplots-tss-groups-panel-1.png" target="_blank">8c0355b</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="h3k4m3" class="section level1">
@@ -859,7 +1154,7 @@ up &lt;- 10000
 dw &lt;- 10000
 bs &lt;- 500
 md &lt;- &quot;stretch&quot;
-global_lims &lt;- c(0, 115)
+global_lims &lt;- c(0, 140)
 
 this_plot &lt;- partial(plot_bw_profile, bwfiles = c(bwsignal, bwinput),
                      bin_size = bs,
@@ -875,10 +1170,49 @@ plots[[2]] &lt;- plots[[2]] + ylim(global_lims) + ylab(&quot;&quot;) + ggtitle(&
 
 plot_grid(plotlist=plots, nrow=1)</code></pre>
 <p><img src="figure/gene_expression_groups.Rmd/h3k4m3-profile-top-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k4m3-profile-top-1">
+Past versions of h3k4m3-profile-top-1.png
+</button>
+</p>
+<div id="fig-h3k4m3-profile-top-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/8c0355bc32aaa4706384b998339d6cca154bbfaf/docs/figure/gene_expression_groups.Rmd/h3k4m3-profile-top-1.png" target="_blank">8c0355b</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="norm-to-input-2" class="section level3">
 <h3>Norm to input</h3>
 <pre class="r"><code>colors &lt;- as.character(style_info[basename(bwsignal), &quot;color_cond&quot;])
 labels &lt;- style_info[basename(bwsignal), &quot;label&quot;]
+
+global_lims &lt;- c(0, 170)
 
 this_plot &lt;- partial(plot_bw_profile, bwfiles = bwsignal, bg_bwfiles = bwinput,
                      bin_size = bs,
@@ -894,12 +1228,51 @@ plots[[2]] &lt;- plots[[2]] + ylim(global_lims) + ylab(&quot;&quot;) + ggtitle(&
 
 plot_grid(plotlist=plots, nrow=1)</code></pre>
 <p><img src="figure/gene_expression_groups.Rmd/h3k4m3-profile-top-norm-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k4m3-profile-top-norm-1">
+Past versions of h3k4m3-profile-top-norm-1.png
+</button>
+</p>
+<div id="fig-h3k4m3-profile-top-norm-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/8c0355bc32aaa4706384b998339d6cca154bbfaf/docs/figure/gene_expression_groups.Rmd/h3k4m3-profile-top-norm-1.png" target="_blank">8c0355b</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="naive-only-vs-primed-only-1" class="section level3">
 <h3>Naive-only vs primed-only</h3>
 <pre class="r"><code>naive_only_top &lt;- setdiff(naive_top, primed_top)
 primed_only_top &lt;- setdiff(primed_top, naive_top)
 both &lt;- intersect(naive_top, primed_top)
+
+global_lims &lt;- c(0, 140)
 
 colors &lt;- as.character(style_info[basename(c(bwsignal, bwinput)), &quot;color_cond&quot;])
 labels &lt;- style_info[basename(c(bwsignal, bwinput)), &quot;label&quot;]
@@ -920,9 +1293,48 @@ plots[[3]] &lt;- plots[[3]] + ylim(global_lims) + ylab(&quot;&quot;) + ggtitle(&
 
 plot_grid(plotlist=plots, ncol=2)</code></pre>
 <p><img src="figure/gene_expression_groups.Rmd/h3k4m3-profile-naive-only-vs-primed-only-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k4m3-profile-naive-only-vs-primed-only-1">
+Past versions of h3k4m3-profile-naive-only-vs-primed-only-1.png
+</button>
+</p>
+<div id="fig-h3k4m3-profile-naive-only-vs-primed-only-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/8c0355bc32aaa4706384b998339d6cca154bbfaf/docs/figure/gene_expression_groups.Rmd/h3k4m3-profile-naive-only-vs-primed-only-1.png" target="_blank">8c0355b</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Norm to input:</p>
 <pre class="r"><code>colors &lt;- as.character(style_info[basename(bwsignal), &quot;color_cond&quot;])
 labels &lt;- style_info[basename(bwsignal), &quot;label&quot;]
+
+global_lims &lt;- c(0, 160)
 
 this_plot &lt;- partial(plot_bw_profile, bwfiles = bwsignal, bg_bwfiles = bwinput,
                      bin_size = bs,
@@ -940,16 +1352,55 @@ plots[[3]] &lt;- plots[[3]] + ylim(global_lims) + ylab(&quot;&quot;) + ggtitle(&
 
 plot_grid(plotlist=plots, ncol=2)</code></pre>
 <p><img src="figure/gene_expression_groups.Rmd/h3k4m3-profile-naive-only-vs-primed-only-norm-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k4m3-profile-naive-only-vs-primed-only-norm-1">
+Past versions of h3k4m3-profile-naive-only-vs-primed-only-norm-1.png
+</button>
+</p>
+<div id="fig-h3k4m3-profile-naive-only-vs-primed-only-norm-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/8c0355bc32aaa4706384b998339d6cca154bbfaf/docs/figure/gene_expression_groups.Rmd/h3k4m3-profile-naive-only-vs-primed-only-norm-1.png" target="_blank">8c0355b</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="high-med-low-expressed-genes-1" class="section level2">
 <h2>High-med-low expressed genes</h2>
 <pre class="r"><code>bedfiles_top &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_top&quot;)
 bedfiles_med &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_med&quot;)
-bedfiles_bottom &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_bottom&quot;)
+bedfiles_low &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_low&quot;)
+
+global_lims &lt;- c(0, 140)
 
 # Ensures proper order
-bedfiles &lt;- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
+bedfiles &lt;- c(bedfiles_top, bedfiles_med, bedfiles_low)
 bwsignal &lt;- bwfiles[grepl(&quot;H3K4m3.*pooled.hg38.scaled&quot;, bwfiles)]
 
 colors &lt;- as.character(style_info[basename(c(bwsignal, bwinput)), &quot;color_cond&quot;])
@@ -959,7 +1410,7 @@ up &lt;- 10000
 dw &lt;- 10000
 bs &lt;- 500
 md &lt;- &quot;stretch&quot;
-global_lims &lt;- c(0, 115)
+global_lims &lt;- c(0, 150)
 
 this_plot &lt;- partial(plot_bw_profile, bwfiles = c(bwsignal, bwinput),
                      bin_size = bs,
@@ -980,6 +1431,43 @@ plots[[2]] &lt;- plots[[2]] + ggtitle(&quot;Primed&quot; )
 
 plot_grid(plotlist=plots, nrow=3)</code></pre>
 <p><img src="figure/gene_expression_groups.Rmd/h3k4m3-profile-groups-panel-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k4m3-profile-groups-panel-1">
+Past versions of h3k4m3-profile-groups-panel-1.png
+</button>
+</p>
+<div id="fig-h3k4m3-profile-groups-panel-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/8c0355bc32aaa4706384b998339d6cca154bbfaf/docs/figure/gene_expression_groups.Rmd/h3k4m3-profile-groups-panel-1.png" target="_blank">8c0355b</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="h2aub" class="section level1">
@@ -988,10 +1476,10 @@ plot_grid(plotlist=plots, nrow=3)</code></pre>
 <h2>High-med-low expressed genes</h2>
 <pre class="r"><code>bedfiles_top &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_top&quot;)
 bedfiles_med &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_med&quot;)
-bedfiles_bottom &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_bottom&quot;)
+bedfiles_low &lt;- list.files(params$genesdir, full.names = T, pattern = &quot;_low&quot;)
 
 # Ensures proper order
-bedfiles &lt;- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
+bedfiles &lt;- c(bedfiles_top, bedfiles_med, bedfiles_low)
 bwsignal &lt;- bwfiles[grepl(&quot;H2A.*pooled.hg38.scaled&quot;, bwfiles)]
 
 colors &lt;- as.character(style_info[basename(c(bwsignal, bwinput)), &quot;color_cond&quot;])
@@ -1022,6 +1510,43 @@ plots[[2]] &lt;- plots[[2]] + ggtitle(&quot;Primed&quot; )
 
 plot_grid(plotlist=plots, nrow=3)</code></pre>
 <p><img src="figure/gene_expression_groups.Rmd/h2aub-profile-groups-panel-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h2aub-profile-groups-panel-1">
+Past versions of h2aub-profile-groups-panel-1.png
+</button>
+</p>
+<div id="fig-h2aub-profile-groups-panel-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/8c0355bc32aaa4706384b998339d6cca154bbfaf/docs/figure/gene_expression_groups.Rmd/h2aub-profile-groups-panel-1.png" target="_blank">8c0355b</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">

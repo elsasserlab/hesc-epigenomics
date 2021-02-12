@@ -105,7 +105,7 @@ plot_grid(plotlist=plots, nrow=1)
 colors <- as.character(style_info[basename(bwsignal), "color_cond"])
 labels <- style_info[basename(bwsignal), "label"]
 
-global_lims <- c(0, 1.2)
+global_lims <- c(0, 1.5)
 
 this_plot <- partial(plot_bw_profile, bwfiles = bwsignal, bg_bwfiles = bwinput,
                      bin_size = bs,
@@ -200,10 +200,10 @@ plot_grid(plotlist=plots, ncol=2)
 ```{r h3k27m3-profile-groups-panel, fig.width=11, fig.height=16}
 bedfiles_top <- list.files(params$genesdir, full.names = T, pattern = "_top")
 bedfiles_med <- list.files(params$genesdir, full.names = T, pattern = "_med")
-bedfiles_bottom <- list.files(params$genesdir, full.names = T, pattern = "_bottom")
+bedfiles_low <- list.files(params$genesdir, full.names = T, pattern = "_low")
 
 # Ensures proper order
-bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
+bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_low)
 bwsignal <- bwfiles[grepl("H3K27m3.*pooled.hg38.scaled", bwfiles)]
 
 colors <- as.character(style_info[basename(c(bwsignal, bwinput)), "color_cond"])
@@ -241,10 +241,10 @@ plot_grid(plotlist=plots, nrow=3)
 ```{r h3k27m3-boxplots-tss-groups-panel, fig.width=11, fig.height=16}
 bedfiles_top <- list.files(params$genesdir, full.names = T, pattern = "_top")
 bedfiles_med <- list.files(params$genesdir, full.names = T, pattern = "_med")
-bedfiles_bottom <- list.files(params$genesdir, full.names = T, pattern = "_bottom")
+bedfiles_low <- list.files(params$genesdir, full.names = T, pattern = "_low")
 
 # Ensures proper order
-bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
+bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_low)
 bwsignal <- bwfiles[grepl("H3K27m3.*pooled.hg38.scaled", bwfiles)]
 
 colors <- as.character(style_info[basename(c(bwsignal, bwinput)), "color_cond"])
@@ -302,7 +302,7 @@ up <- 10000
 dw <- 10000
 bs <- 500
 md <- "stretch"
-global_lims <- c(0, 115)
+global_lims <- c(0, 140)
 
 this_plot <- partial(plot_bw_profile, bwfiles = c(bwsignal, bwinput),
                      bin_size = bs,
@@ -324,6 +324,8 @@ plot_grid(plotlist=plots, nrow=1)
 
 colors <- as.character(style_info[basename(bwsignal), "color_cond"])
 labels <- style_info[basename(bwsignal), "label"]
+
+global_lims <- c(0, 170)
 
 this_plot <- partial(plot_bw_profile, bwfiles = bwsignal, bg_bwfiles = bwinput,
                      bin_size = bs,
@@ -347,6 +349,8 @@ plot_grid(plotlist=plots, nrow=1)
 naive_only_top <- setdiff(naive_top, primed_top)
 primed_only_top <- setdiff(primed_top, naive_top)
 both <- intersect(naive_top, primed_top)
+
+global_lims <- c(0, 140)
 
 colors <- as.character(style_info[basename(c(bwsignal, bwinput)), "color_cond"])
 labels <- style_info[basename(c(bwsignal, bwinput)), "label"]
@@ -375,6 +379,8 @@ Norm to input:
 colors <- as.character(style_info[basename(bwsignal), "color_cond"])
 labels <- style_info[basename(bwsignal), "label"]
 
+global_lims <- c(0, 160)
+
 this_plot <- partial(plot_bw_profile, bwfiles = bwsignal, bg_bwfiles = bwinput,
                      bin_size = bs,
                      mode = md,
@@ -399,10 +405,12 @@ plot_grid(plotlist=plots, ncol=2)
 ```{r h3k4m3-profile-groups-panel, fig.width=11, fig.height=16}
 bedfiles_top <- list.files(params$genesdir, full.names = T, pattern = "_top")
 bedfiles_med <- list.files(params$genesdir, full.names = T, pattern = "_med")
-bedfiles_bottom <- list.files(params$genesdir, full.names = T, pattern = "_bottom")
+bedfiles_low <- list.files(params$genesdir, full.names = T, pattern = "_low")
+
+global_lims <- c(0, 140)
 
 # Ensures proper order
-bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
+bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_low)
 bwsignal <- bwfiles[grepl("H3K4m3.*pooled.hg38.scaled", bwfiles)]
 
 colors <- as.character(style_info[basename(c(bwsignal, bwinput)), "color_cond"])
@@ -412,7 +420,7 @@ up <- 10000
 dw <- 10000
 bs <- 500
 md <- "stretch"
-global_lims <- c(0, 115)
+global_lims <- c(0, 150)
 
 this_plot <- partial(plot_bw_profile, bwfiles = c(bwsignal, bwinput),
                      bin_size = bs,
@@ -441,10 +449,10 @@ plot_grid(plotlist=plots, nrow=3)
 ```{r h2aub-profile-groups-panel, fig.width=11, fig.height=16}
 bedfiles_top <- list.files(params$genesdir, full.names = T, pattern = "_top")
 bedfiles_med <- list.files(params$genesdir, full.names = T, pattern = "_med")
-bedfiles_bottom <- list.files(params$genesdir, full.names = T, pattern = "_bottom")
+bedfiles_low <- list.files(params$genesdir, full.names = T, pattern = "_low")
 
 # Ensures proper order
-bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_bottom)
+bedfiles <- c(bedfiles_top, bedfiles_med, bedfiles_low)
 bwsignal <- bwfiles[grepl("H2A.*pooled.hg38.scaled", bwfiles)]
 
 colors <- as.character(style_info[basename(c(bwsignal, bwinput)), "color_cond"])
@@ -475,3 +483,4 @@ plots[[2]] <- plots[[2]] + ggtitle("Primed" )
 
 plot_grid(plotlist=plots, nrow=3)
 ```
+
