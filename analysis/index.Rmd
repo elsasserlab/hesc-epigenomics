@@ -10,6 +10,13 @@ editor_options:
 
 Supplementary code and analysis for publication.
 
+# Publication figures
+
+* [Annotations](annotations.html). Generation of relevant BED annotation files.
+* [Figure 1](figure01.html). Figure 1 plots.
+
+# Supplementary analyses
+
 * [Global read counts](global_read_counts.html). Read counts per sample normalized
 to input levels.
 * [Bivalent chromatin](bivalent_chromatin.html). Histone marks on
@@ -21,3 +28,4 @@ on RNA-seq public data.
 * [Gene groups](gene_expression_groups.html). Gene expression analysis
 on groups (high-med-low expressed genes) obtained from
 [Public RNA-seq data](rna_seq_collier_2017.html).
+* [RNA-seq expression data with histone marks](histone_marks_vs_expression.html).

@@ -1,0 +1,455 @@
+---
+title: "Genome annotations"
+author: "Carmen Navarro"
+date: "2021-02-16"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+editor_options:
+  chunk_output_type: console
+bibliography: /home/carmen/work/publications/hesc-epigenomics/data/meta/biblio.bib
+params:
+  datadir: ./data/
+  outbins: ./data/bed/Kumar_2020/bins_stats
+  outgenes: ./data/bed/Kumar_2020/gene_stats
+  
+  
+  length_cutoff: 10000
+  value_cutoff: 0.01
+  deciding_stat: "FPKM"
+---
+
+# Summary
+
+This notebook shows how the genome annotations relevant for this publication
+were calculated.
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
+library(wigglescout)
+library(ggplot2)
+library(knitr)
+library(ggvenn)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+library(org.Hs.eg.db)
+library(rtracklayer)
+library(GenomicRanges)
+library(purrr)
+library(xfun)
+library(cowplot)
+library(tidyr)
+library(DESeq2)
+
+source("./code/ucsc_annotations.R")
+source("./code/deseq_functions.R")
+source("./code/embed_functions.R")
+source("./code/globals.R")
+
+knitr::opts_chunk$set(dev = c('png', 'svg'))
+knitr::opts_chunk$set(class.source='fold-show')
+```
+
+
+# Gene annotation
+
+Gene annotation is obtained from UCSC hg38 annotation. 
+```{r get-hg38-genes}
+genes <- genes_hg38()
+```
+
+Only genes that have a gene symbol associated to it are kept, leaving a set
+of `r length(genes)`.
+
+Download `r embed_df(data.frame(genes), "hg38_genes.bed", "gene annotation")`.
+
+## Bivalent genes by name
+
+Bivalent genes are obtained from UCSC hg38 annotation using as names the ones
+in [@court2017annotated] supplementary table. 
+
+```{r get-bivalent-genes}
+gene_file <- file.path(params$datadir, "meta/Court_2017_gene_names_uniq.txt")
+gene_list <- read.table(gene_file, header=F)
+colnames(gene_list) <- c("name")
+
+biv_genes_name <- get_genes_by_name(gene_list$name)
+```
+
+From the list of `r length(gene_list$name)` gene names from
+[@court2017annotated], `r length(unique(biv_genes_name))` unique genomic loci are
+successfully retrieved.
+
+Download `r embed_df(data.frame(biv_genes_name), "bivalent_genes.bed", "bivalent gene annotation")`.
+
+Download `r embed_df(gene_list, "genes.txt", "genes list")`.
+
+## Bivalent genes by overlap
+
+Bivalent genes are obtained from overlap of hg38-liftovered from original 
+[@court2017annotated] genes with UCSC hg38 annotation.
+
+```{r get-bivalent-genes-overlap}
+gene_file <- file.path(params$datadir, "bed/Bivalent_Court2017.hg38.bed")
+gene_loci <- import(gene_file)
+
+biv_genes_overlap <- get_genes_by_overlap(gene_loci)
+
+export(biv_genes_overlap, "./data/bed/Kumar_2020/Court_2017_bivalent_genes.bed")
+```
+
+From the list of `r length(gene_list$name)` gene names from
+[@court2017annotated], `r length(unique(biv_genes_overlap))` unique genomic loci are
+successfully retrieved.
+
+Download `r embed_df(data.frame(biv_genes_overlap), "bivalent_genes.bed", "bivalent gene annotation")`.
+
+
+## Match between both
+
+```{r venn-names}
+
+field_list <- list(names = biv_genes_name$name, overlap = biv_genes_overlap$name)
+ggvenn(field_list, fill_alpha = 0.5, text_size = 5, stroke_color = "#ffffff") + 
+    ggtitle("Names vs location")
+
+```
+
+Some of the names cases are: either the gene has not been annotated because 
+locus is proximal to annotation but not overlapping it (this may be because
+of lift over of coordinates), or because the name from UCSC hg38 annotation
+does not match the name in Court 2017 original annotated gene name.
+
+# H3K27m3 differential TSS
+
+```{r all-genes-tss-k27-diff, warning=F, message=F}
+bw_cond_1 <-
+  list.files(
+    file.path(params$datadir, "bw/Kumar_2020"),
+    full.names = T,
+    pattern = "H3K27m3_H9_Ni_rep[1-3].hg38.scaled.bw"
+  )
+bw_cond_2 <-
+  list.files(
+    file.path(params$datadir, "bw/Kumar_2020"),
+    full.names = T,
+    pattern = "H3K27m3_H9_Pr_rep[1-3].hg38.scaled.bw"
+  )
+
+all_hg38_genes <- genes_hg38()
+tss <- promoters(all_hg38_genes, upstream = 2500, downstream = 2500)
+mcols(tss) <- NULL
+
+c1 <- bw_loci(bw_cond_1, tss)
+c2 <- bw_loci(bw_cond_2, tss)
+
+diff <- bw_granges_diff_analysis(c2, c1, "Primed", "Naive", estimate_size_factors = FALSE)
+diff_lfc <- lfcShrink(diff, coef="condition_Naive_vs_Primed", type="apeglm")
+
+data <- plotMA(diff_lfc, returnData = T)
+
+ggplot(data, aes(x=mean, y=lfc, color=isDE)) +
+  geom_point(alpha=0.5, size=0.7) +
+  theme_default() +
+  scale_color_manual(values = list("FALSE"="grey", "TRUE"="red")) +
+  geom_hline(yintercept = 0, linetype="dashed") +
+  theme(legend.position = "none") +
+  ggtitle("H3K27me3 diff. decorated TSS - All genes") + scale_x_log10() + ylim(-5, 5)
+
+
+
+# select by cutoff
+p_cutoff <- 0.05
+diff_lfc <- diff_lfc[!is.na(diff_lfc$padj), ]
+signif_tss <- diff_lfc[diff_lfc$padj <= p_cutoff & abs(diff_lfc$log2FoldChange) > 1, ]
+
+mcols(c1) <- NULL
+signif_gr <- c1[as.numeric(rownames(signif_tss)), ]
+signif_gr$score <- signif_tss$log2FoldChange
+
+export(signif_gr, "./data/bed/Kumar_2020_H3K27m3_diff_tss.bed")
+
+# Select bivalent ones
+signif_gr_biv <- subsetByOverlaps(biv_genes_overlap, signif_gr)
+export(signif_gr_biv, file.path(params$outgenes, "Kumar_2020_H3K27m3_diff_bivalent.bed"))
+```
+
+
+## Bivalent
+
+```{r biv-genes-tss-k27-diff, warning=F, message=F}
+biv_genes <- biv_genes_overlap
+tss <- promoters(biv_genes, upstream = 2500, downstream = 2500)
+tss$gene_id <- NULL
+
+c1 <- bw_loci(bw_cond_1, tss)
+c2 <- bw_loci(bw_cond_2, tss)
+
+diff <- bw_granges_diff_analysis(c2, c1, "Primed", "Naive", estimate_size_factors = FALSE)
+diff_lfc <- lfcShrink(diff, coef="condition_Naive_vs_Primed", type="apeglm")
+
+data <- plotMA(diff_lfc, returnData = T)
+
+ggplot(data, aes(x=mean, y=lfc, color=isDE)) +
+  geom_point(alpha=0.8, size=0.8) +
+  theme_default() +
+  scale_color_manual(values = list("FALSE"="grey", "TRUE"="red")) +
+  geom_hline(yintercept = 0, linetype="dashed") +
+  theme(legend.position = "none") +
+  ggtitle("H3K27me3 diff. decorated bivalent TSS") + scale_x_log10() + ylim(-5, 5)
+
+# select by cutoff
+p_cutoff <- 0.05
+diff_lfc <- diff_lfc[!is.na(diff_lfc$padj), ]
+signif_tss <- diff_lfc[diff_lfc$padj <= p_cutoff & abs(diff_lfc$log2FoldChange) > 1, ]
+
+signif_gr <- c1[c1$name %in% rownames(signif_tss), ]
+
+signif_gr$score <- signif_tss$log2FoldChange
+
+# export(signif_gr, "./data/bed/Kumar_2020_H3K27m3_diff_tss_bivalent.bed")
+```
+
+## Compare
+```{r venn-global-vs-local}
+
+global <- import("./data/bed/Kumar_2020_H3K27m3_diff_bivalent.bed")
+local <- signif_gr
+field_list <- list(global = global$name, local = local$name)
+ggvenn(field_list, fill_alpha = 0.5, text_size = 5, stroke_color = "#ffffff") + 
+    ggtitle("Global vs local")
+
+```
+
+# H2Aub differential TSS
+
+```{r all-genes-tss-h2aub-diff, warning=F, message=F}
+bw_cond_1 <-
+  list.files(
+    file.path(params$datadir, "bw/Kumar_2020"),
+    full.names = T,
+    pattern = "H2Aub_H9_Ni_rep[1-3].hg38.scaled.bw"
+  )
+bw_cond_2 <-
+  list.files(
+    file.path(params$datadir, "bw/Kumar_2020"),
+    full.names = T,
+    pattern = "H2Aub_H9_Pr_rep[1-3].hg38.scaled.bw"
+  )
+
+all_hg38_genes <- genes_hg38()
+tss <- promoters(all_hg38_genes, upstream = 1500, downstream = 1500)
+mcols(tss) <- NULL
+
+c1 <- bw_loci(bw_cond_1, tss)
+c2 <- bw_loci(bw_cond_2, tss)
+
+diff <- bw_granges_diff_analysis(c2, c1, "Primed", "Naive", estimate_size_factors = FALSE)
+diff_lfc <- lfcShrink(diff, coef="condition_Naive_vs_Primed", type="apeglm")
+
+data <- plotMA(diff_lfc, returnData = T)
+
+ggplot(data, aes(x=mean, y=lfc, color=isDE)) +
+  geom_point(alpha=0.5, size=0.7) +
+  theme_default() +
+  scale_color_manual(values = list("FALSE"="grey", "TRUE"="red")) +
+  geom_hline(yintercept = 0, linetype="dashed") +
+  theme(legend.position = "none") +
+  ggtitle("H2Aub diff. decorated TSS - All genes") + scale_x_log10()
+
+
+# select by cutoff
+p_cutoff <- 0.05
+diff_lfc <- diff_lfc[!is.na(diff_lfc$padj), ]
+signif_tss <- diff_lfc[diff_lfc$padj <= p_cutoff & abs(diff_lfc$log2FoldChange) > 1, ]
+
+mcols(c1) <- NULL
+signif_gr <- c1[as.numeric(rownames(signif_tss)), ]
+signif_gr$score <- signif_tss$log2FoldChange
+
+export(signif_gr, file.path(params$outgenes, "Kumar_2020_H2Aub_diff_tss.bed"))
+
+# Select bivalent ones
+signif_gr_biv <- subsetByOverlaps(biv_genes_overlap, signif_gr)
+export(signif_gr_biv, file.path(params$outgenes, "Kumar_2020_H2Aub_diff_bivalent.bed"))
+```
+
+# H3K4m3 differential TSS
+
+```{r all-genes-tss-k4-diff, warning=F, message=F}
+bw_cond_1 <-
+  list.files(
+    file.path(params$datadir, "bw/Kumar_2020"),
+    full.names = T,
+    pattern = "H3K4m3_H9_Ni_rep[1-3].hg38.scaled.bw"
+  )
+bw_cond_2 <-
+  list.files(
+    file.path(params$datadir, "bw/Kumar_2020"),
+    full.names = T,
+    pattern = "H3K4m3_H9_Pr_rep[1-3].hg38.scaled.bw"
+  )
+
+all_hg38_genes <- genes_hg38()
+tss <- promoters(all_hg38_genes, upstream = 1500, downstream = 1500)
+mcols(tss) <- NULL
+
+c1 <- bw_loci(bw_cond_1, tss)
+c2 <- bw_loci(bw_cond_2, tss)
+
+diff <- bw_granges_diff_analysis(c2, c1, "Primed", "Naive", estimate_size_factors = FALSE)
+diff_lfc <- lfcShrink(diff, coef="condition_Naive_vs_Primed", type="apeglm")
+
+data <- plotMA(diff_lfc, returnData = T)
+
+ggplot(data, aes(x=mean, y=lfc, color=isDE)) +
+  geom_point(alpha=0.5, size=0.7) +
+  theme_default() +
+  scale_color_manual(values = list("FALSE"="grey", "TRUE"="red")) +
+  geom_hline(yintercept = 0, linetype="dashed") +
+  theme(legend.position = "none") +
+  ggtitle("H3K4me3 diff. decorated TSS - All genes") + scale_x_log10()
+
+
+
+# select by cutoff
+p_cutoff <- 0.05
+diff_lfc <- diff_lfc[!is.na(diff_lfc$padj), ]
+signif_tss <- diff_lfc[diff_lfc$padj <= p_cutoff & abs(diff_lfc$log2FoldChange) > 1, ]
+
+mcols(c1) <- NULL
+signif_gr <- c1[as.numeric(rownames(signif_tss)), ]
+signif_gr$score <- signif_tss$log2FoldChange
+
+export(signif_gr, file.path(params$outgenes, "Kumar_2020_H3K4m3_diff_tss.bed"))
+
+# Select bivalent ones
+signif_gr_biv <- subsetByOverlaps(biv_genes_overlap, signif_gr)
+export(signif_gr_biv, file.path(params$outgenes, "Kumar_2020_H3K4m3_diff_bivalent.bed"))
+```
+
+
+# Genome-wide differential test annotation
+
+## H3K27m3 differential 5b bins
+
+```{r k27-diffbins, warning=F, message=F, cache=T}
+bw_cond_1 <-
+  list.files(
+    file.path(params$datadir, "bw/Kumar_2020"),
+    full.names = T,
+    pattern = "H3K27m3_H9_Ni_rep[1-3].hg38.scaled.bw"
+  )
+bw_cond_2 <-
+  list.files(
+    file.path(params$datadir, "bw/Kumar_2020"),
+    full.names = T,
+    pattern = "H3K27m3_H9_Pr_rep[1-3].hg38.scaled.bw"
+  )
+
+bs <- 5000
+c1 <- bw_bins(bw_cond_1, bin_size = bs, genome = "hg38")
+c2 <- bw_bins(bw_cond_2, bin_size = bs, genome = "hg38")
+
+diff <- bw_granges_diff_analysis(c2, c1, "Primed", "Naive", estimate_size_factors = FALSE)
+diff_lfc <- lfcShrink(diff, coef="condition_Naive_vs_Primed", type="apeglm")
+
+mcols(c1) <- NULL
+c1$logfc <- diff_lfc$log2FoldChange
+c1$padj <- diff_lfc$padj
+
+p_cutoff <- 0.05
+c1$score <- 0
+c1 <- c1[!is.na(c1$padj), ]
+c1[c1$padj <= p_cutoff & c1$logfc > 0, ]$score <- 1 
+c1[c1$padj <= p_cutoff & c1$logfc < 0, ]$score <- -1
+c1 <- c1[c1$padj <= p_cutoff]
+export(c1, file.path(params$outbins, "Kumar_2020_H3K27m3_signif_ni_05_5kb.bed"))
+```
+
+## H3K4m3 differential 5kb bins
+
+```{r k4-diffbins, warning=F, message=F, cache=T}
+bw_cond_1 <-
+  list.files(
+    file.path(params$datadir, "bw/Kumar_2020"),
+    full.names = T,
+    pattern = "H3K4m3_H9_Ni_rep[1-3].hg38.scaled.bw"
+  )
+bw_cond_2 <-
+  list.files(
+    file.path(params$datadir, "bw/Kumar_2020"),
+    full.names = T,
+    pattern = "H3K4m3_H9_Pr_rep[1-3].hg38.scaled.bw"
+  )
+
+bs <- 5000
+c1 <- bw_bins(bw_cond_1, bin_size = bs, genome = "hg38")
+c2 <- bw_bins(bw_cond_2, bin_size = bs, genome = "hg38")
+
+diff <- bw_granges_diff_analysis(c2, c1, "Primed", "Naive", estimate_size_factors = FALSE)
+diff_lfc <- lfcShrink(diff, coef="condition_Naive_vs_Primed", type="apeglm")
+
+mcols(c1) <- NULL
+c1$logfc <- diff_lfc$log2FoldChange
+c1$padj <- diff_lfc$padj
+
+p_cutoff <- 0.05
+c1$score <- 0
+c1 <- c1[!is.na(c1$padj), ]
+c1[c1$padj <= p_cutoff & c1$logfc > 0, ]$score <- 1 
+c1[c1$padj <= p_cutoff & c1$logfc < 0, ]$score <- -1
+c1 <- c1[c1$padj <= p_cutoff]
+export(c1, file.path(params$outbins, "Kumar_2020_H3K4m3_signif_ni_05_5kb.bed"))
+```
+
+## H2AUb differential 5kb bins
+
+```{r h2aub-diffbins, warning=F, message=F, cache=T}
+bw_cond_1 <-
+  list.files(
+    file.path(params$datadir, "bw/Kumar_2020"),
+    full.names = T,
+    pattern = "H2Aub_H9_Ni_rep[1-3].hg38.scaled.bw"
+  )
+bw_cond_2 <-
+  list.files(
+    file.path(params$datadir, "bw/Kumar_2020"),
+    full.names = T,
+    pattern = "H2Aub_H9_Pr_rep[1-3].hg38.scaled.bw"
+  )
+
+bs <- 5000
+c1 <- bw_bins(bw_cond_1, bin_size = bs, genome = "hg38")
+c2 <- bw_bins(bw_cond_2, bin_size = bs, genome = "hg38")
+
+diff <- bw_granges_diff_analysis(c2, c1, "Primed", "Naive", estimate_size_factors = FALSE)
+diff_lfc <- lfcShrink(diff, coef="condition_Naive_vs_Primed", type="apeglm")
+
+mcols(c1) <- NULL
+c1$logfc <- diff_lfc$log2FoldChange
+c1$padj <- diff_lfc$padj
+
+p_cutoff <- 0.05
+c1$score <- 0
+c1 <- c1[!is.na(c1$padj), ]
+c1[c1$padj <= p_cutoff & c1$logfc > 0, ]$score <- 1 
+c1[c1$padj <= p_cutoff & c1$logfc < 0, ]$score <- -1
+c1 <- c1[c1$padj <= p_cutoff]
+export(c1, file.path(params$outbins,"Kumar_2020_H2AUb_signif_ni_05_5kb.bed"))
+```
+
+
+# Gene expression levels on Naïve and Primed hESC cells
+
+**Data**: Used public data from [@collier2017]: H9 embryonic stem cells in
+Naïve and Primed state, three biological replicates.
+
+```{r rnaseq-sample-table, results="asis", echo=FALSE}
+samples_file <- file.path(params$datadir, "meta",
+                          "Kumar_2020_public_data_plus_layout.csv")
+
+samples <- read.table(samples_file, header = T, sep=",")
+# 
+samples <- samples[samples$dataset_id == "Collier_2017", ]
+kable(samples, caption="Sample info")
+```
+
