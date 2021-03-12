@@ -420,7 +420,7 @@ div.tocify {
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -429,7 +429,7 @@ div.tocify {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -441,7 +441,7 @@ div.tocify {
 <strong>Last updated:</strong> 2021-03-12
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>hesc-epigenomics/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
@@ -457,12 +457,12 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown is untracked by Git. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
 </div>
 </div>
 </div>
@@ -529,16 +529,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreeef20c53e9c315fe47688ac95ea756ece6f380bd7targetblankef20c53a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/ef20c53e9c315fe47688ac95ea756ece6f380bd7" target="_blank">ef20c53</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree8f01ba64e21b43fd061888142891060a335d2a5ctargetblank8f01ba6a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/8f01ba64e21b43fd061888142891060a335d2a5c" target="_blank">8f01ba6</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreeef20c53e9c315fe47688ac95ea756ece6f380bd7targetblankef20c53a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree8f01ba64e21b43fd061888142891060a335d2a5ctargetblank8f01ba6a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/ef20c53e9c315fe47688ac95ea756ece6f380bd7" target="_blank">ef20c53</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/8f01ba64e21b43fd061888142891060a335d2a5c" target="_blank">8f01ba6</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -555,13 +555,11 @@ Ignored files:
     Ignored:    data/rnaseq/
 
 Untracked files:
-    Untracked:  analysis/fig_01_quantitative_chip.Rmd
     Untracked:  analysis/global_bins.Rmd
     Untracked:  analysis/histone_marks_vs_expression.Rmd
     Untracked:  output/annotations/
 
 Unstaged changes:
-    Modified:   analysis/index.Rmd
     Modified:   data/README.md
 
 </code></pre>
@@ -575,9 +573,86 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <hr>
 </div>
 <div id="versions" class="tab-pane fade">
+
 <p>
-There are no past versions. Publish this analysis with <code>wflow_publish()</code> to start tracking its development.
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/fig_01_quantitative_chip.Rmd</code>) and HTML (<code>docs/fig_01_quantitative_chip.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
 </p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/8f01ba64e21b43fd061888142891060a335d2a5c/analysis/fig_01_quantitative_chip.Rmd" target="_blank">8f01ba6</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-03-12
+</td>
+<td>
+Stat tests in global counts
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/0f37941ef6bcfbb3dc65c34a3452c778e729592b/analysis/fig_01_quantitative_chip.Rmd" target="_blank">0f37941</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-03-12
+</td>
+<td>
+Fig1 fresh
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/elsasserlab/hesc-epigenomics/0f37941ef6bcfbb3dc65c34a3452c778e729592b/docs/fig_01_quantitative_chip.html" target="_blank">0f37941</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-03-12
+</td>
+<td>
+Fig1 fresh
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr>
 </div>
 </div>
@@ -633,8 +708,11 @@ calculate_inrc &lt;- function(counts, selector = &quot;final_mapped&quot;) {
 #&#39; @param inrc Table with the INRC values
 #&#39; @param ip Which IP to plot
 #&#39; @param colors Corresponding colors
-inrc_barplot &lt;- function(inrc, ip, colors, font = 12) {
+inrc_barplot &lt;- function(inrc, ip, colors, font = 16) {
   inrc &lt;- inrc[inrc$ip == ip, ]
+  
+  # So paired test takes right replicates
+  inrc &lt;- inrc[order(inrc$condition, inrc$replicate), ]
   
   max_v &lt;- max(abs(inrc$norm_to_naive))
   
@@ -642,15 +720,38 @@ inrc_barplot &lt;- function(inrc, ip, colors, font = 12) {
                     y = .data[[&quot;norm_to_naive&quot;]],
                     color = .data[[&quot;condition&quot;]])
   
-  ggplot(inrc[inrc$replicate!=&#39;pooled&#39;,], aesthetics) +
-  geom_point() +
-  geom_bar(data=inrc[inrc$replicate==&#39;pooled&#39;,],
-           stat=&#39;identity&#39;, alpha=0.6, aes(fill=condition)) +
-  scale_fill_manual(values = colors) +
-  scale_color_manual(values = colors) +
-  labs(x = &quot;&quot;, y = &#39;log2(INRC vs Naïve)&#39;, title = paste(ip, &quot;MINUTE-ChIP&quot;)) +
-  theme_classic(base_size=font) +
-  theme(axis.text.x = element_text(angle=45, hjust=1)) + ylim(-max_v, max_v)
+  my_comp &lt;- list(c(&quot;Naive_Untreated&quot;, &quot;Primed_Untreated&quot;),
+                  c(&quot;Naive_Untreated&quot;, &quot;Naive_EZH2i&quot;),
+                  c(&quot;Primed_Untreated&quot;, &quot;Primed_EZH2i&quot;),
+                  c(&quot;Naive_EZH2i&quot;, &quot;Primed_EZH2i&quot;))
+  
+  stats_method &lt;- &quot;t.test&quot;
+  
+  ggplot(inrc[inrc$replicate != &#39;pooled&#39;,], aesthetics) +
+    geom_point() +
+    stat_compare_means(
+      method = stats_method,
+      paired = TRUE,
+      comparisons = my_comp,
+      label = &quot;p.format&quot;
+    ) +
+    geom_bar(
+      data = inrc[inrc$replicate == &#39;pooled&#39;,],
+      stat = &#39;identity&#39;,
+      alpha = 0.6,
+      aes(fill = condition)
+    ) +
+    scale_fill_manual(values = colors) +
+    scale_color_manual(values = colors) +
+    labs(
+      x = &quot;&quot;,
+      y = &#39;log2(INRC vs Naïve)&#39;,
+      title = paste(ip, &quot;MINUTE-ChIP&quot;),
+      caption = paste(stats_method, &quot;signif. test, paired&quot;)
+    ) +
+    theme_classic(base_size = font) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    ylim(-max_v, max_v)
 }
 
 colors_list &lt;- c(&quot;Naive_EZH2i&quot;=&quot;#5F9EA0&quot;,
@@ -671,19 +772,130 @@ ip &lt;- &quot;H2Aub&quot;
 
 inrc_barplot(inrc, &quot;H2Aub&quot;, colors_list)</code></pre>
 <p><img src="figure/fig_01_quantitative_chip.Rmd/h2aub-inrc-barplot-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>You can download data values here: <a download='H2AUb_global.tsv' href=data:text/csv;base64,aXAJdHJlYXRtZW50CWNlbGx0eXBlCWNvbmRpdGlvbglyZXBsaWNhdGUJbm9ybV90b19uYWl2ZQpIMkF1YglFWkgyaQlOYWl2ZQlOYWl2ZV9FWkgyaQkyCTAuMTE4ODk4ODczNjQyNjkKSDJBdWIJVW50cmVhdGVkCU5haXZlCU5haXZlX1VudHJlYXRlZAkzCS0wLjAyNzU0NTI5MjkzNjc3NDYKSDJBdWIJRVpIMmkJUHJpbWVkCVByaW1lZF9FWkgyaQkzCS0wLjc4NzMxMjkxMzc5NTk0OApIMkF1YglVbnRyZWF0ZWQJTmFpdmUJTmFpdmVfVW50cmVhdGVkCTEJMC4wMzk0MzAwMzUyMjcwMTQzCkgyQXViCVVudHJlYXRlZAlOYWl2ZQlOYWl2ZV9VbnRyZWF0ZWQJMgktMC4wMDg0NTYxMzExMTQ0NDE4NgpIMkF1YglFWkgyaQlQcmltZWQJUHJpbWVkX0VaSDJpCTIJLTAuODgyNTcyMTg0MDkyOTU0CkgyQXViCUVaSDJpCU5haXZlCU5haXZlX0VaSDJpCTEJLTAuMTk3MTgwOTExODM3NDk0CkgyQXViCUVaSDJpCU5haXZlCU5haXZlX0VaSDJpCTMJMC4wMDM5MDMzMDYxMDM4Mzc4NQpIMkF1YglVbnRyZWF0ZWQJUHJpbWVkCVByaW1lZF9VbnRyZWF0ZWQJMQktMS4xMDI5OTUzMjc0OTUKSDJBdWIJRVpIMmkJUHJpbWVkCVByaW1lZF9FWkgyaQkxCS0wLjk5NzM4MTgwMzk4MjkKSDJBdWIJVW50cmVhdGVkCVByaW1lZAlQcmltZWRfVW50cmVhdGVkCTIJLTEuMDAxNzkxODQ1MjAzNDYKSDJBdWIJVW50cmVhdGVkCVByaW1lZAlQcmltZWRfVW50cmVhdGVkCTMJLTEuMDM2MDQzODg5NTM1Nzg=>download plot data</a>.</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h2aub-inrc-barplot-1">
+Past versions of h2aub-inrc-barplot-1.png
+</button>
+</p>
+<div id="fig-h2aub-inrc-barplot-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/0f37941ef6bcfbb3dc65c34a3452c778e729592b/docs/figure/fig_01_quantitative_chip.Rmd/h2aub-inrc-barplot-1.png" target="_blank">0f37941</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-03-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>You can download data values here: <a download='H2AUb_global.tsv' href=data:text/csv;base64,aXAJdHJlYXRtZW50CWNlbGx0eXBlCWNvbmRpdGlvbglyZXBsaWNhdGUJbm9ybV90b19uYWl2ZQpIMkF1YglVbnRyZWF0ZWQJTmFpdmUJTmFpdmVfVW50cmVhdGVkCTEJMC4wMzk0MzAwMzUyMjcwMTQzCkgyQXViCVVudHJlYXRlZAlOYWl2ZQlOYWl2ZV9VbnRyZWF0ZWQJMgktMC4wMDg0NTYxMzExMTQ0NDE4NgpIMkF1YglVbnRyZWF0ZWQJTmFpdmUJTmFpdmVfVW50cmVhdGVkCTMJLTAuMDI3NTQ1MjkyOTM2Nzc0NgpIMkF1YglVbnRyZWF0ZWQJUHJpbWVkCVByaW1lZF9VbnRyZWF0ZWQJMQktMS4xMDI5OTUzMjc0OTUKSDJBdWIJVW50cmVhdGVkCVByaW1lZAlQcmltZWRfVW50cmVhdGVkCTIJLTEuMDAxNzkxODQ1MjAzNDYKSDJBdWIJVW50cmVhdGVkCVByaW1lZAlQcmltZWRfVW50cmVhdGVkCTMJLTEuMDM2MDQzODg5NTM1NzgKSDJBdWIJRVpIMmkJTmFpdmUJTmFpdmVfRVpIMmkJMQktMC4xOTcxODA5MTE4Mzc0OTQKSDJBdWIJRVpIMmkJTmFpdmUJTmFpdmVfRVpIMmkJMgkwLjExODg5ODg3MzY0MjY5CkgyQXViCUVaSDJpCU5haXZlCU5haXZlX0VaSDJpCTMJMC4wMDM5MDMzMDYxMDM4Mzc4NQpIMkF1YglFWkgyaQlQcmltZWQJUHJpbWVkX0VaSDJpCTEJLTAuOTk3MzgxODAzOTgyOQpIMkF1YglFWkgyaQlQcmltZWQJUHJpbWVkX0VaSDJpCTIJLTAuODgyNTcyMTg0MDkyOTU0CkgyQXViCUVaSDJpCVByaW1lZAlQcmltZWRfRVpIMmkJMwktMC43ODczMTI5MTM3OTU5NDg=>download plot data</a>.</p>
 </div>
 <div id="h3k27m3-levels" class="section level2">
 <h2>H3K27m3 levels</h2>
 <pre class="r"><code>inrc_barplot(inrc, &quot;H3K27m3&quot;, colors_list)</code></pre>
 <p><img src="figure/fig_01_quantitative_chip.Rmd/h3k27m3-inrc-barplot-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>You can download data values here: <a download='H3K27m3_global.tsv' href=data:text/csv;base64,aXAJdHJlYXRtZW50CWNlbGx0eXBlCWNvbmRpdGlvbglyZXBsaWNhdGUJbm9ybV90b19uYWl2ZQpIM0syN20zCVVudHJlYXRlZAlOYWl2ZQlOYWl2ZV9VbnRyZWF0ZWQJMgkwLjE3MzE1MjgyMTcwNTE4NwpIM0syN20zCVVudHJlYXRlZAlQcmltZWQJUHJpbWVkX1VudHJlYXRlZAkyCS0xLjU2NDU5ODc0MjczNzk0CkgzSzI3bTMJRVpIMmkJTmFpdmUJTmFpdmVfRVpIMmkJMgktNC40MjgzMjY3NzA1OTczOQpIM0syN20zCVVudHJlYXRlZAlOYWl2ZQlOYWl2ZV9VbnRyZWF0ZWQJMwktMC4xMzAxNTUyMTI5NjYxNwpIM0syN20zCVVudHJlYXRlZAlOYWl2ZQlOYWl2ZV9VbnRyZWF0ZWQJMQkwLjA0NDE1ODY5NjkzMDU0ODIKSDNLMjdtMwlFWkgyaQlQcmltZWQJUHJpbWVkX0VaSDJpCTMJLTMuMTk2ODM0ODIzNDg1MjMKSDNLMjdtMwlFWkgyaQlOYWl2ZQlOYWl2ZV9FWkgyaQkzCS01LjAyOTQ5MjgwODcxMTI3CkgzSzI3bTMJVW50cmVhdGVkCVByaW1lZAlQcmltZWRfVW50cmVhdGVkCTEJLTEuNzM0MjMzMTAxOTMwMDUKSDNLMjdtMwlFWkgyaQlQcmltZWQJUHJpbWVkX0VaSDJpCTIJLTQuMjE4NTc5ODcxNTEwMDEKSDNLMjdtMwlFWkgyaQlOYWl2ZQlOYWl2ZV9FWkgyaQkxCS01LjQ2NTk4NTc0NzgwNTgKSDNLMjdtMwlFWkgyaQlQcmltZWQJUHJpbWVkX0VaSDJpCTEJLTMuNzkyNDgzMTcwNzQzMDgKSDNLMjdtMwlVbnRyZWF0ZWQJUHJpbWVkCVByaW1lZF9VbnRyZWF0ZWQJMwktMS43NzY1MTAxMTUwMzA3OQ==>download plot data</a>.</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k27m3-inrc-barplot-1">
+Past versions of h3k27m3-inrc-barplot-1.png
+</button>
+</p>
+<div id="fig-h3k27m3-inrc-barplot-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/0f37941ef6bcfbb3dc65c34a3452c778e729592b/docs/figure/fig_01_quantitative_chip.Rmd/h3k27m3-inrc-barplot-1.png" target="_blank">0f37941</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-03-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>You can download data values here: <a download='H3K27m3_global.tsv' href=data:text/csv;base64,aXAJdHJlYXRtZW50CWNlbGx0eXBlCWNvbmRpdGlvbglyZXBsaWNhdGUJbm9ybV90b19uYWl2ZQpIM0syN20zCVVudHJlYXRlZAlOYWl2ZQlOYWl2ZV9VbnRyZWF0ZWQJMQkwLjA0NDE1ODY5NjkzMDU0ODIKSDNLMjdtMwlVbnRyZWF0ZWQJTmFpdmUJTmFpdmVfVW50cmVhdGVkCTIJMC4xNzMxNTI4MjE3MDUxODcKSDNLMjdtMwlVbnRyZWF0ZWQJTmFpdmUJTmFpdmVfVW50cmVhdGVkCTMJLTAuMTMwMTU1MjEyOTY2MTcKSDNLMjdtMwlVbnRyZWF0ZWQJUHJpbWVkCVByaW1lZF9VbnRyZWF0ZWQJMQktMS43MzQyMzMxMDE5MzAwNQpIM0syN20zCVVudHJlYXRlZAlQcmltZWQJUHJpbWVkX1VudHJlYXRlZAkyCS0xLjU2NDU5ODc0MjczNzk0CkgzSzI3bTMJVW50cmVhdGVkCVByaW1lZAlQcmltZWRfVW50cmVhdGVkCTMJLTEuNzc2NTEwMTE1MDMwNzkKSDNLMjdtMwlFWkgyaQlOYWl2ZQlOYWl2ZV9FWkgyaQkxCS01LjQ2NTk4NTc0NzgwNTgKSDNLMjdtMwlFWkgyaQlOYWl2ZQlOYWl2ZV9FWkgyaQkyCS00LjQyODMyNjc3MDU5NzM5CkgzSzI3bTMJRVpIMmkJTmFpdmUJTmFpdmVfRVpIMmkJMwktNS4wMjk0OTI4MDg3MTEyNwpIM0syN20zCUVaSDJpCVByaW1lZAlQcmltZWRfRVpIMmkJMQktMy43OTI0ODMxNzA3NDMwOApIM0syN20zCUVaSDJpCVByaW1lZAlQcmltZWRfRVpIMmkJMgktNC4yMTg1Nzk4NzE1MTAwMQpIM0syN20zCUVaSDJpCVByaW1lZAlQcmltZWRfRVpIMmkJMwktMy4xOTY4MzQ4MjM0ODUyMw==>download plot data</a>.</p>
 </div>
 <div id="h3k4m3-levels" class="section level2">
 <h2>H3K4m3 levels</h2>
 <pre class="r"><code>inrc_barplot(inrc, &quot;H3K4m3&quot;, colors_list)</code></pre>
 <p><img src="figure/fig_01_quantitative_chip.Rmd/h3k4m3-inrc-barplot-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>You can download data values here: <a download='H3K4m3_global.tsv' href=data:text/csv;base64,aXAJdHJlYXRtZW50CWNlbGx0eXBlCWNvbmRpdGlvbglyZXBsaWNhdGUJbm9ybV90b19uYWl2ZQpIM0s0bTMJRVpIMmkJTmFpdmUJTmFpdmVfRVpIMmkJMQktMS4xNjYyOTMxNDI1Mjc2MgpIM0s0bTMJRVpIMmkJTmFpdmUJTmFpdmVfRVpIMmkJMwktMS4wMjE4NDI3MDE1MjAwOQpIM0s0bTMJVW50cmVhdGVkCU5haXZlCU5haXZlX1VudHJlYXRlZAkxCS0wLjAzMjE5MDYzNDQxNjQ3ODIKSDNLNG0zCVVudHJlYXRlZAlOYWl2ZQlOYWl2ZV9VbnRyZWF0ZWQJMgktMC4wMTk3NjMzOTMyMDU5NDMxCkgzSzRtMwlVbnRyZWF0ZWQJUHJpbWVkCVByaW1lZF9VbnRyZWF0ZWQJMwktMC4wMjg5NTUxNTcwNDU2NzgzCkgzSzRtMwlVbnRyZWF0ZWQJUHJpbWVkCVByaW1lZF9VbnRyZWF0ZWQJMgktMC4wMjg3NjMxMTU2MTgxNTM0CkgzSzRtMwlFWkgyaQlOYWl2ZQlOYWl2ZV9FWkgyaQkyCS0xLjAzNjU4MTg2ODAyMDY3CkgzSzRtMwlVbnRyZWF0ZWQJTmFpdmUJTmFpdmVfVW50cmVhdGVkCTMJMC4wMzcxMDQ3OTU0NTExMjE2CkgzSzRtMwlFWkgyaQlQcmltZWQJUHJpbWVkX0VaSDJpCTIJLTAuODA2ODk5NTQ4ODM1NjkKSDNLNG0zCUVaSDJpCVByaW1lZAlQcmltZWRfRVpIMmkJMwktMS4wMzcyMzgxNjQxODE0NQpIM0s0bTMJRVpIMmkJUHJpbWVkCVByaW1lZF9FWkgyaQkxCS0xLjIxMzAzOTUxMjg5NjE5CkgzSzRtMwlVbnRyZWF0ZWQJUHJpbWVkCVByaW1lZF9VbnRyZWF0ZWQJMQktMC41NTAwMDIzNDgzMjkyMDY=>download plot data</a>.</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k4m3-inrc-barplot-1">
+Past versions of h3k4m3-inrc-barplot-1.png
+</button>
+</p>
+<div id="fig-h3k4m3-inrc-barplot-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/0f37941ef6bcfbb3dc65c34a3452c778e729592b/docs/figure/fig_01_quantitative_chip.Rmd/h3k4m3-inrc-barplot-1.png" target="_blank">0f37941</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-03-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>You can download data values here: <a download='H3K4m3_global.tsv' href=data:text/csv;base64,aXAJdHJlYXRtZW50CWNlbGx0eXBlCWNvbmRpdGlvbglyZXBsaWNhdGUJbm9ybV90b19uYWl2ZQpIM0s0bTMJVW50cmVhdGVkCU5haXZlCU5haXZlX1VudHJlYXRlZAkxCS0wLjAzMjE5MDYzNDQxNjQ3ODIKSDNLNG0zCVVudHJlYXRlZAlOYWl2ZQlOYWl2ZV9VbnRyZWF0ZWQJMgktMC4wMTk3NjMzOTMyMDU5NDMxCkgzSzRtMwlVbnRyZWF0ZWQJTmFpdmUJTmFpdmVfVW50cmVhdGVkCTMJMC4wMzcxMDQ3OTU0NTExMjE2CkgzSzRtMwlVbnRyZWF0ZWQJUHJpbWVkCVByaW1lZF9VbnRyZWF0ZWQJMQktMC41NTAwMDIzNDgzMjkyMDYKSDNLNG0zCVVudHJlYXRlZAlQcmltZWQJUHJpbWVkX1VudHJlYXRlZAkyCS0wLjAyODc2MzExNTYxODE1MzQKSDNLNG0zCVVudHJlYXRlZAlQcmltZWQJUHJpbWVkX1VudHJlYXRlZAkzCS0wLjAyODk1NTE1NzA0NTY3ODMKSDNLNG0zCUVaSDJpCU5haXZlCU5haXZlX0VaSDJpCTEJLTEuMTY2MjkzMTQyNTI3NjIKSDNLNG0zCUVaSDJpCU5haXZlCU5haXZlX0VaSDJpCTIJLTEuMDM2NTgxODY4MDIwNjcKSDNLNG0zCUVaSDJpCU5haXZlCU5haXZlX0VaSDJpCTMJLTEuMDIxODQyNzAxNTIwMDkKSDNLNG0zCUVaSDJpCVByaW1lZAlQcmltZWRfRVpIMmkJMQktMS4yMTMwMzk1MTI4OTYxOQpIM0s0bTMJRVpIMmkJUHJpbWVkCVByaW1lZF9FWkgyaQkyCS0wLjgwNjg5OTU0ODgzNTY5CkgzSzRtMwlFWkgyaQlQcmltZWQJUHJpbWVkX0VaSDJpCTMJLTEuMDM3MjM4MTY0MTgxNDU=>download plot data</a>.</p>
 </div>
 </div>
 <div id="chromhmm-global" class="section level1">
@@ -699,6 +911,43 @@ chromhmm &lt;- params$chromhmm
 
 plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001)</code></pre>
 <p><img src="figure/fig_01_quantitative_chip.Rmd/chromhmm-h3k27m3-1.png" width="1248" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromhmm-h3k27m3-1">
+Past versions of chromhmm-h3k27m3-1.png
+</button>
+</p>
+<div id="fig-chromhmm-h3k27m3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/0f37941ef6bcfbb3dc65c34a3452c778e729592b/docs/figure/fig_01_quantitative_chip.Rmd/chromhmm-h3k27m3-1.png" target="_blank">0f37941</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-03-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="h3k4m3" class="section level2">
 <h2>H3K4m3</h2>
@@ -708,6 +957,43 @@ labels &lt;- gsub(&quot;_H9&quot;, &quot;&quot;, labels)
 
 plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001)</code></pre>
 <p><img src="figure/fig_01_quantitative_chip.Rmd/chromhmm-h3k4m3-1.png" width="1248" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromhmm-h3k4m3-1">
+Past versions of chromhmm-h3k4m3-1.png
+</button>
+</p>
+<div id="fig-chromhmm-h3k4m3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/0f37941ef6bcfbb3dc65c34a3452c778e729592b/docs/figure/fig_01_quantitative_chip.Rmd/chromhmm-h3k4m3-1.png" target="_blank">0f37941</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-03-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="h2aub" class="section level2">
 <h2>H2AUb</h2>
@@ -719,6 +1005,43 @@ chromhmm &lt;- params$chromhmm
 
 plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001)</code></pre>
 <p><img src="figure/fig_01_quantitative_chip.Rmd/chromhmm-h2aub-1.png" width="1248" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromhmm-h2aub-1">
+Past versions of chromhmm-h2aub-1.png
+</button>
+</p>
+<div id="fig-chromhmm-h2aub-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/0f37941ef6bcfbb3dc65c34a3452c778e729592b/docs/figure/fig_01_quantitative_chip.Rmd/chromhmm-h2aub-1.png" target="_blank">0f37941</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-03-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -747,48 +1070,58 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] purrr_0.3.4        knitr_1.31         dplyr_1.0.4        reshape2_1.4.4    
-[5] ggplot2_3.3.3      wigglescout_0.12.8 workflowr_1.6.2   
+[1] purrr_0.3.4        knitr_1.31         ggpubr_0.4.0.999   dplyr_1.0.4       
+[5] reshape2_1.4.4     ggplot2_3.3.3      wigglescout_0.12.8 workflowr_1.6.2   
 
 loaded via a namespace (and not attached):
- [1] Rcpp_1.0.6                  lattice_0.20-41            
- [3] listenv_0.8.0               Rsamtools_2.6.0            
- [5] Biostrings_2.58.0           assertthat_0.2.1           
- [7] rprojroot_2.0.2             digest_0.6.27              
- [9] parallelly_1.23.0           R6_2.5.0                   
-[11] GenomeInfoDb_1.26.2         plyr_1.8.6                 
-[13] stats4_4.0.4                evaluate_0.14              
-[15] highr_0.8                   pillar_1.4.7               
-[17] zlibbioc_1.36.0             rlang_0.4.10               
-[19] furrr_0.2.2                 S4Vectors_0.28.1           
-[21] Matrix_1.3-2                rmarkdown_2.6              
-[23] labeling_0.4.2              BiocParallel_1.24.1        
-[25] stringr_1.4.0               RCurl_1.98-1.2             
-[27] munsell_0.5.0               DelayedArray_0.16.0        
-[29] compiler_4.0.4              httpuv_1.5.5               
-[31] rtracklayer_1.50.0          xfun_0.21                  
-[33] askpass_1.1                 pkgconfig_2.0.3            
-[35] BiocGenerics_0.36.0         globals_0.14.0             
-[37] htmltools_0.5.1.1           openssl_1.4.3              
-[39] tidyselect_1.1.0            SummarizedExperiment_1.20.0
-[41] tibble_3.0.6                GenomeInfoDbData_1.2.4     
-[43] IRanges_2.24.1              codetools_0.2-18           
-[45] matrixStats_0.58.0          XML_3.99-0.5               
-[47] future_1.21.0               withr_2.4.1                
-[49] crayon_1.4.1                later_1.1.0.1              
-[51] GenomicAlignments_1.26.0    bitops_1.0-6               
-[53] grid_4.0.4                  gtable_0.3.0               
-[55] lifecycle_1.0.0             DBI_1.1.1                  
-[57] git2r_0.28.0                magrittr_2.0.1             
-[59] scales_1.1.1                stringi_1.5.3              
-[61] farver_2.0.3                XVector_0.30.0             
-[63] fs_1.5.0                    promises_1.2.0.1           
-[65] ellipsis_0.3.1              generics_0.1.0             
-[67] vctrs_0.3.6                 RColorBrewer_1.1-2         
-[69] tools_4.0.4                 Biobase_2.50.0             
-[71] glue_1.4.2                  MatrixGenerics_1.2.0       
-[73] parallel_4.0.4              yaml_2.2.1                 
-[75] colorspace_2.0-0            GenomicRanges_1.42.0       </code></pre>
+ [1] bitops_1.0-6                matrixStats_0.58.0         
+ [3] fs_1.5.0                    RColorBrewer_1.1-2         
+ [5] rprojroot_2.0.2             GenomeInfoDb_1.26.2        
+ [7] tools_4.0.4                 backports_1.2.1            
+ [9] R6_2.5.0                    DBI_1.1.1                  
+[11] BiocGenerics_0.36.0         colorspace_2.0-0           
+[13] withr_2.4.1                 tidyselect_1.1.0           
+[15] curl_4.3                    compiler_4.0.4             
+[17] git2r_0.28.0                Biobase_2.50.0             
+[19] DelayedArray_0.16.0         labeling_0.4.2             
+[21] rtracklayer_1.50.0          scales_1.1.1               
+[23] askpass_1.1                 stringr_1.4.0              
+[25] digest_0.6.27               Rsamtools_2.6.0            
+[27] foreign_0.8-81              rmarkdown_2.6              
+[29] rio_0.5.16                  XVector_0.30.0             
+[31] pkgconfig_2.0.3             htmltools_0.5.1.1          
+[33] parallelly_1.23.0           MatrixGenerics_1.2.0       
+[35] highr_0.8                   rlang_0.4.10               
+[37] readxl_1.3.1                farver_2.0.3               
+[39] generics_0.1.0              BiocParallel_1.24.1        
+[41] zip_2.1.1                   car_3.0-10                 
+[43] RCurl_1.98-1.2              magrittr_2.0.1             
+[45] GenomeInfoDbData_1.2.4      Matrix_1.3-2               
+[47] Rcpp_1.0.6                  munsell_0.5.0              
+[49] S4Vectors_0.28.1            abind_1.4-5                
+[51] lifecycle_1.0.0             furrr_0.2.2                
+[53] stringi_1.5.3               whisker_0.4                
+[55] yaml_2.2.1                  carData_3.0-4              
+[57] SummarizedExperiment_1.20.0 zlibbioc_1.36.0            
+[59] plyr_1.8.6                  grid_4.0.4                 
+[61] parallel_4.0.4              listenv_0.8.0              
+[63] promises_1.2.0.1            forcats_0.5.1              
+[65] crayon_1.4.1                lattice_0.20-41            
+[67] Biostrings_2.58.0           haven_2.3.1                
+[69] hms_1.0.0                   pillar_1.4.7               
+[71] GenomicRanges_1.42.0        ggsignif_0.6.0             
+[73] codetools_0.2-18            stats4_4.0.4               
+[75] XML_3.99-0.5                glue_1.4.2                 
+[77] evaluate_0.14               data.table_1.13.6          
+[79] vctrs_0.3.6                 httpuv_1.5.5               
+[81] cellranger_1.1.0            openssl_1.4.3              
+[83] gtable_0.3.0                tidyr_1.1.2                
+[85] future_1.21.0               assertthat_0.2.1           
+[87] xfun_0.21                   openxlsx_4.2.3             
+[89] broom_0.7.4                 rstatix_0.7.0              
+[91] later_1.1.0.1               tibble_3.0.6               
+[93] GenomicAlignments_1.26.0    IRanges_2.24.1             
+[95] globals_0.14.0              ellipsis_0.3.1             </code></pre>
 </div>
 </div>
 </div>
