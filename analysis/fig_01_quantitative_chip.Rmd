@@ -1,0 +1,176 @@
+---
+title: "Figure 1. Quantitative ChIP"
+author: "Carmen Navarro"
+date: "2021-03-12"
+output:
+  workflowr::wflow_html:
+    code_folding: show
+editor_options:
+  chunk_output_type: console
+params:
+  datadir: "./data/"
+  chromhmm: "./data/bed/E001_15_coreMarks_hg38lift_noblock_fullnames.bed"
+---
+
+# Summary
+
+This notebook includes the figures related to the quantitative side of ChIP:
+
+- Global Read count levels.
+- ChromHMM descriptive plots per mark (+ EZH2i?)
+
+
+Supplementary possibles:
+
+- Global ChIP comparison bin-based to other datasets, correlations.
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+library(wigglescout)
+library(ggplot2)
+library(reshape2)
+library(dplyr)
+library(knitr)
+
+knitr::opts_chunk$set(dev = c('png', 'svg'))
+source("./code/embed_functions.R")
+```
+
+## Helper functions
+
+```{r helper-functions, class.source = NULL}
+#' Calculate INRC from a mapped read counts table, and append such values
+#' to it.
+#'
+#' @param counts Counts table. Corresponding file is provided as part of the 
+#'   included metadata.
+#' @param selector Counts column used. Final_mapped represents the final number
+#'   of reads after deduplication and blacklisting.
+
+#' @return A table including INRC and INRC norm to naive reference
+calculate_inrc <- function(counts, selector = "final_mapped") {
+  counts$condition <- paste(counts$celltype, counts$treatment, sep="_")
+  
+  inputs <- counts[counts$ip == "Input", c("library", selector)]
+  colnames(inputs) <- c("library", "input_reads")
+  
+  non_inputs <- counts[counts$ip != "Input",]
+  counts <- merge(non_inputs, inputs, by.x="input", by.y="library")
+  counts$inrc <- counts[, selector] / counts[, "input_reads"]
+  
+  references <- counts[grepl("_Ni_pooled", counts$library), c("ip", "inrc")]
+  colnames(references) <- c("ip", "ref_inrc")
+  
+  counts <- merge(counts, references, by="ip")
+  counts$norm_to_naive <- log2(counts$inrc / counts$ref_inrc)
+  
+  id_vars <- c("ip", "treatment", "celltype", "condition", "replicate", "norm_to_naive")
+  inrc <- counts[, c(id_vars)]
+  
+  inrc$condition <- factor(inrc$condition, levels = c("Naive_Untreated", "Primed_Untreated", "Naive_EZH2i", "Primed_EZH2i"))
+  
+  inrc
+}
+
+#' Barplot INRC pooled vs replicates per condition
+#'
+#' @param inrc Table with the INRC values
+#' @param ip Which IP to plot
+#' @param colors Corresponding colors
+inrc_barplot <- function(inrc, ip, colors, font = 12) {
+  inrc <- inrc[inrc$ip == ip, ]
+  
+  max_v <- max(abs(inrc$norm_to_naive))
+  
+  aesthetics <- aes(x = .data[["condition"]],
+                    y = .data[["norm_to_naive"]],
+                    color = .data[["condition"]])
+  
+  ggplot(inrc[inrc$replicate!='pooled',], aesthetics) +
+  geom_point() +
+  geom_bar(data=inrc[inrc$replicate=='pooled',],
+           stat='identity', alpha=0.6, aes(fill=condition)) +
+  scale_fill_manual(values = colors) +
+  scale_color_manual(values = colors) +
+  labs(x = "", y = 'log2(INRC vs Naïve)', title = paste(ip, "MINUTE-ChIP")) +
+  theme_classic(base_size=font) +
+  theme(axis.text.x = element_text(angle=45, hjust=1)) + ylim(-max_v, max_v)
+}
+
+colors_list <- c("Naive_EZH2i"="#5F9EA0",
+                 "Naive_Untreated"="#278b8b",
+                 "Primed_EZH2i"="#f47770",
+                 "Primed_Untreated"="#f44b34")
+
+```
+
+# Global read counts
+
+## H2AUb levels
+
+```{r h2aub-inrc-barplot}
+counts_file <- file.path(params$datadir, "meta", "Kumar_2020_stats_summary.csv")
+counts <- read.table(counts_file, sep="\t", header = T, na.strings = "NA", stringsAsFactors = F)
+
+inrc <- calculate_inrc(counts) 
+ip <- "H2Aub"
+
+inrc_barplot(inrc, "H2Aub", colors_list)
+```
+
+You can download data values here: `r embed_last_plot_data(name="H2AUb_global.tsv")`.
+
+## H3K27m3 levels
+
+```{r h3k27m3-inrc-barplot}
+inrc_barplot(inrc, "H3K27m3", colors_list)
+```
+
+You can download data values here: `r embed_last_plot_data(name="H3K27m3_global.tsv")`.
+
+## H3K4m3 levels
+
+```{r h3k4m3-inrc-barplot}
+inrc_barplot(inrc, "H3K4m3", colors_list)
+```
+
+You can download data values here: `r embed_last_plot_data(name="H3K4m3_global.tsv")`.
+
+# ChromHMM global
+
+Here global average per ChromHMM categories are shown.
+
+## H3K27m3
+
+```{r chromhmm-h3k27m3, fig.width = 13, fig.height = 14}
+bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020"), pattern = "H3K27m3.*pooled.*hg38.scaled", full.names = T)
+labels <- gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles))
+labels <- gsub("_H9", "", labels)
+
+chromhmm <- params$chromhmm
+
+plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001)
+```
+
+## H3K4m3
+
+```{r chromhmm-h3k4m3, fig.width = 13, fig.height = 14}
+bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020"), pattern = "H3K4m3.*pooled.*hg38.scaled", full.names = T)
+labels <- gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles))
+labels <- gsub("_H9", "", labels)
+
+plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001)
+```
+
+
+## H2AUb
+
+```{r chromhmm-h2aub, fig.width = 13, fig.height = 14}
+bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020"), pattern = "H2Aub.*pooled.*hg38.scaled", full.names = T)
+labels <- gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles))
+labels <- gsub("_H9", "", labels)
+
+chromhmm <- params$chromhmm
+
+plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001)
+```
+

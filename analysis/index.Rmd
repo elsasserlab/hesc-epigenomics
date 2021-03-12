@@ -13,12 +13,14 @@ Supplementary code and analysis for publication.
 # Publication figures
 
 * [Annotations](annotations.html). Generation of relevant BED annotation files.
-* [Figure 1](figure01.html). Figure 1 plots.
+* [Figure 1](fig_01_quantitative_chip.html). Figure 1. Minute-ChIP is quantitative.
 
 # Supplementary analyses
 
 * [Global read counts](global_read_counts.html). Read counts per sample normalized
 to input levels.
+* [Global bins analysis](global_bins.html). Genome-wide bin analysis per 
+histone mark.
 * [Bivalent chromatin](bivalent_chromatin.html). Histone marks on
 bivalent-chromatin annotated regions.
 * [Read density per chromosome](x_chromosome.html). H3K27me3 shows high abundance
