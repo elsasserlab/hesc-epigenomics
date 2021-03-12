@@ -29,6 +29,7 @@ library(wigglescout)
 library(ggplot2)
 library(reshape2)
 library(dplyr)
+library(ggpubr)
 library(knitr)
 
 knitr::opts_chunk$set(dev = c('png', 'svg'))
@@ -76,8 +77,11 @@ calculate_inrc <- function(counts, selector = "final_mapped") {
 #' @param inrc Table with the INRC values
 #' @param ip Which IP to plot
 #' @param colors Corresponding colors
-inrc_barplot <- function(inrc, ip, colors, font = 12) {
+inrc_barplot <- function(inrc, ip, colors, font = 16) {
   inrc <- inrc[inrc$ip == ip, ]
+  
+  # So paired test takes right replicates
+  inrc <- inrc[order(inrc$condition, inrc$replicate), ]
   
   max_v <- max(abs(inrc$norm_to_naive))
   
@@ -85,15 +89,38 @@ inrc_barplot <- function(inrc, ip, colors, font = 12) {
                     y = .data[["norm_to_naive"]],
                     color = .data[["condition"]])
   
-  ggplot(inrc[inrc$replicate!='pooled',], aesthetics) +
-  geom_point() +
-  geom_bar(data=inrc[inrc$replicate=='pooled',],
-           stat='identity', alpha=0.6, aes(fill=condition)) +
-  scale_fill_manual(values = colors) +
-  scale_color_manual(values = colors) +
-  labs(x = "", y = 'log2(INRC vs Naïve)', title = paste(ip, "MINUTE-ChIP")) +
-  theme_classic(base_size=font) +
-  theme(axis.text.x = element_text(angle=45, hjust=1)) + ylim(-max_v, max_v)
+  my_comp <- list(c("Naive_Untreated", "Primed_Untreated"),
+                  c("Naive_Untreated", "Naive_EZH2i"),
+                  c("Primed_Untreated", "Primed_EZH2i"),
+                  c("Naive_EZH2i", "Primed_EZH2i"))
+  
+  stats_method <- "t.test"
+  
+  ggplot(inrc[inrc$replicate != 'pooled',], aesthetics) +
+    geom_point() +
+    stat_compare_means(
+      method = stats_method,
+      paired = TRUE,
+      comparisons = my_comp,
+      label = "p.format"
+    ) +
+    geom_bar(
+      data = inrc[inrc$replicate == 'pooled',],
+      stat = 'identity',
+      alpha = 0.6,
+      aes(fill = condition)
+    ) +
+    scale_fill_manual(values = colors) +
+    scale_color_manual(values = colors) +
+    labs(
+      x = "",
+      y = 'log2(INRC vs Naïve)',
+      title = paste(ip, "MINUTE-ChIP"),
+      caption = paste(stats_method, "signif. test, paired")
+    ) +
+    theme_classic(base_size = font) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    ylim(-max_v, max_v)
 }
 
 colors_list <- c("Naive_EZH2i"="#5F9EA0",
