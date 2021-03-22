@@ -9,7 +9,7 @@ editor_options:
   chunk_output_type: console
 params:
   datadir: "./data/"
-  chromhmm: "./data/bed/E001_15_coreMarks_hg38lift_noblock_fullnames.bed"
+  chromhmm: "./data/bed/E008_15_coreMarks_hg38lift_noblock_fullnames.bed"
 ---
 
 # Summary
