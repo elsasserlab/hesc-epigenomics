@@ -74,7 +74,7 @@ bw_granges_diff_analysis <- function(granges_c1,
   cts_df <- cts_df[complete, ]
 
   values_df <- cts_df[, 6:ncol(cts_df)] %>% dplyr::select(where(is.numeric))
-  cts <- get_nreads_columns(values_df, cts_df$width)
+  cts <- get_nreads_columns(values_df, cts_df$width, factor = length_factor)
 
   condition_labels <- c(rep(label_c1, used_values(granges_c1)),
                         rep(label_c2, used_values(granges_c2)))
@@ -111,11 +111,11 @@ bw_granges_diff_analysis <- function(granges_c1,
   result
 }
 
-get_nreads_columns <- function(df, lengths, fraglen = 150) {
+get_nreads_columns <- function(df, lengths, fraglen = 150, factor = 1) {
   # Convert mean coverages to round integer read numbers
   cts <- as.matrix(df)
 
   # Estimate of # fragments from coverage
-  cts <- round(cts*(lengths / fraglen))
+  cts <- round(cts*factor*(lengths / fraglen))
   cts
 }
