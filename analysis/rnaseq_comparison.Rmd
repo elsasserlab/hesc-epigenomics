@@ -1,0 +1,261 @@
+---
+title: "RNA seq comparison"
+author: "Carmen Navarro"
+date: "2021-03-24"
+output:
+  workflowr::wflow_html:
+    code_folding: show
+editor_options:
+  chunk_output_type: console
+params:
+  datadir: "./data/"
+  rnaseqdir: "./data/rnaseq"
+
+---
+# Summary
+
+Compare results from all RNA-seq data (public and ours).
+
+Input files are RSEM output data for all the studies available at the moment.
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+library(wigglescout)
+library(ggplot2)
+library(reshape2)
+library(dplyr)
+library(ggpubr)
+library(knitr)
+library(DESeq2)
+library(BiocParallel)
+library(tidyverse)
+knitr::opts_chunk$set(dev = c('png', 'svg'))
+source("./code/embed_functions.R")
+```
+
+# PCA plot
+
+```{r pca-vst, fig.width = 10, fig.height = 10}
+
+# Some code copied or adapted from: https://github.com/nf-core/rnaseq/blob/master/bin/deseq2_qc.r
+##' PCA pre-processeor
+##'
+##' Generate all the necessary information to plot PCA from a DESeq2 object
+##' in which an assay containing a variance-stabilised matrix of counts is
+##' stored. Copied from DESeq2::plotPCA, but with additional ability to
+##' say which assay to run the PCA on, and adds an assessment of how well
+##' each PC explains the experimental grouping of the data.
+##' 
+##' @param object The DESeq2DataSet object.
+##' @param intgroup interesting groups: a character vector of names in 'colData(x)' to use for grouping.
+##' @param ntop number of top genes to use for principla components, selected by highest row variance.
+##' @param assay the name or index of the assay that stores the variance-stabilised data.
+##' @return A data.frame containing the projected data alongside the grouping columns.
+##' A 'percentVar' attribute is set which includes the percentage of variation each PC explains,
+##' and additionally how much the variation within that PC is explained by the grouping variable.
+##' @author Gavin Kelly
+plotPCA_vst <- function (object, intgroup = "condition", ntop = 500, assay=length(assays(object))) {
+    rv         <- rowVars(assay(object, assay))
+    select     <- order(rv, decreasing = TRUE)[seq_len(min(ntop, length(rv)))]
+    pca        <- prcomp(t(assay(object, assay)[select, ]))
+    percentVar <- pca$sdev^2/sum(pca$sdev^2)
+    if (!all(intgroup %in% names(colData(object)))) {
+        stop("the argument 'intgroup' should specify columns of colData(dds)")
+    }
+    intgroup.df <- as.data.frame(colData(object)[, intgroup, drop = FALSE])
+    group <- if (length(intgroup) > 1) {
+        factor(apply(intgroup.df, 1, paste, collapse = ":"))
+    }  else {
+        colData(object)[[intgroup]]
+    }
+    d <- cbind(pca$x, group = group, intgroup.df, name = colnames(object))
+    percentFrame <- data.frame(PC=seq(along=percentVar), percentVar=100*percentVar, groupR=0.0)
+    for (ipc in seq(along=percentVar)) {
+        fit1 <- lm(pca$x[,ipc]  ~ group)
+        percentFrame$groupR[ipc] <- 100*summary(fit1)$r.squared
+    }
+    attr(d, "percentVar") <- percentFrame
+    return(d)
+}
+
+
+read_counts_file <- function(f, id_col = 1, count_col = 3, sample_suffix = "") {
+  counts <- read.delim(file = f, header = TRUE)
+  # rownames(counts) <- counts[, id_col]
+  counts <- counts[, c(id_col, count_col:ncol(counts)), drop = FALSE]
+  colnames(counts) <- gsub(sample_suffix, "", colnames(counts))
+  colnames(counts) <- gsub(pattern = '\\.$', replacement = '', colnames(counts))
+  counts
+}
+
+datasets <- c("Collier_2017", "Kinoshita_2021", "Moody_2017", "Kumar_2020", "Collinson_2017")
+counts_files <- file.path(params$rnaseqdir, datasets, "rsem.merged.gene_counts.tsv")
+counts_all <- lapply(counts_files, read_counts_file)
+
+counts <- reduce(counts_all, full_join, by="gene_id") 
+rownames(counts) <- counts$gene_id
+counts$gene_id <- NULL
+# 
+# cts_file <- "./data/rnaseq/Collier_2017/rsem.merged.gene_counts.tsv"
+cores <- 2
+# counts <- read_counts_file(cts_file)
+
+samples.vec <- sort(colnames(counts))
+groups      <- sub("_[^_]+$", "", samples.vec)
+
+counts  <- counts[,samples.vec,drop=FALSE]
+coldata <- data.frame(row.names=colnames(counts), condition=groups)
+dds     <- DESeqDataSetFromMatrix(countData=round(counts), colData=coldata, design=~ condition)
+dds     <- DESeq(dds, parallel=TRUE, BPPARAM=MulticoreParam(cores))
+vst <- TRUE
+if (vst == FALSE) {
+    vst_name <- "rlog"
+    rld      <- rlog(dds)
+} else {
+    vst_name <- "vst"
+    rld      <- varianceStabilizingTransformation(dds)
+}
+assay(dds, vst_name) <- assay(rld)
+
+ntop <- c(500, Inf)
+for (n_top_var in ntop) {
+    pca.data      <- plotPCA_vst(dds, assay=vst_name,intgroup=c("condition"),ntop=n_top_var)
+    
+    # Shape by study color by group
+    pca.data$study <- str_split_fixed(pca.data$group, "_", 3)[, 1]
+    
+    percentVar    <- round(attr(pca.data, "percentVar")$percentVar)
+    plot_subtitle <- ifelse(n_top_var==Inf, "All genes", paste("Top", n_top_var, "genes"))
+    pl <- ggplot(pca.data, aes(PC1, PC2, color=condition, shape=study)) +
+          geom_point(size=4) +
+          xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+          ylab(paste0("PC2: ",percentVar[2],"% variance")) +
+          labs(title = paste0("First PCs on ", vst_name, "-transformed data"), subtitle = plot_subtitle) + 
+          theme(legend.position="right",
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.background = element_blank(),
+                panel.border = element_rect(colour = "black", fill=NA, size=1),
+                text = element_text(size = 15),
+                legend.direction = "vertical")
+
+    print(pl)
+    
+   pl <- ggplot(attr(pca.data, "percentVar"), aes(x=PC, y=percentVar)) +
+            geom_line(aes(colour="explained by PC")) +
+            geom_line(aes(y=groupR, colour="of PC explained by condition")) +
+            scale_x_continuous(breaks=seq(along=percentVar), minor_breaks=NULL)  +
+            labs(title="Diagnostics of PCs", subtitle=plot_subtitle, x="Component", y="Percentage explaned", colour="Percentage variation") +
+            theme_bw() +
+            theme(legend.position="top")
+   
+   print(pl)
+      
+   pc_r <- order(attr(pca.data, "percentVar")$groupR, decreasing=TRUE)
+   pl <- ggplot(pca.data, aes_string(paste0("PC", pc_r[1]), paste0("PC", pc_r[2]), color="condition", shape="study")) +
+   geom_point(size=3) +
+   xlab(paste0("PC", pc_r[1], ": ",percentVar[pc_r[1]],"% variance")) +
+   ylab(paste0("PC", pc_r[2], ": ",percentVar[pc_r[2]],"% variance")) +
+   labs(title = paste0("Group-Explanatory PCs of ", vst_name, "-tranformed data"), subtitle = plot_subtitle) + 
+   theme(legend.position="right",
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.background = element_blank(),
+                panel.border = element_rect(colour = "black", fill=NA, size=1),
+                text = element_text(size = 15),
+                legend.direction = "vertical")
+   print(pl)
+}
+
+```
+
+```{r distance-heatmap-vst, fig.width = 11, fig.height = 11}
+
+library(pheatmap)
+library(RColorBrewer)
+## SAMPLE CORRELATION HEATMAP
+sampleDists      <- dist(t(assay(dds, vst_name)))
+sampleDistMatrix <- as.matrix(sampleDists)
+colors           <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(
+    border_color = "white",
+    sampleDistMatrix,
+    clustering_distance_rows=sampleDists,
+    clustering_distance_cols=sampleDists,
+    col=colors,
+    main=paste("Euclidean distance between", vst_name, "of samples")
+)
+```
+
+
+```{r pca-rlog, fig.width = 10, fig.height = 10}
+
+vst_name <- "rlog"
+rld      <- rlog(dds)
+assay(dds, vst_name) <- assay(rld)
+
+ntop <- c(500, Inf)
+for (n_top_var in ntop) {
+    pca.data      <- plotPCA_vst(dds, assay=vst_name,intgroup=c("condition"),ntop=n_top_var)
+    
+    # Shape by study color by group
+    pca.data$study <- str_split_fixed(pca.data$group, "_", 3)[, 1]
+    
+    percentVar    <- round(attr(pca.data, "percentVar")$percentVar)
+    plot_subtitle <- ifelse(n_top_var==Inf, "All genes", paste("Top", n_top_var, "genes"))
+    pl <- ggplot(pca.data, aes(PC1, PC2, color=condition, shape=study)) +
+          geom_point(size=4) +
+          xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+          ylab(paste0("PC2: ",percentVar[2],"% variance")) +
+          labs(title = paste0("First PCs on ", vst_name, "-transformed data"), subtitle = plot_subtitle) + 
+          theme(legend.position="right",
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.background = element_blank(),
+                panel.border = element_rect(colour = "black", fill=NA, size=1),
+                text = element_text(size = 15),
+                legend.direction = "vertical")
+
+    print(pl)
+    
+   pl <- ggplot(attr(pca.data, "percentVar"), aes(x=PC, y=percentVar)) +
+            geom_line(aes(colour="explained by PC")) +
+            geom_line(aes(y=groupR, colour="of PC explained by condition")) +
+            scale_x_continuous(breaks=seq(along=percentVar), minor_breaks=NULL)  +
+            labs(title="Diagnostics of PCs", subtitle=plot_subtitle, x="Component", y="Percentage explaned", colour="Percentage variation") +
+            theme_bw() +
+            theme(legend.position="top")
+   
+   print(pl)
+      
+   pc_r <- order(attr(pca.data, "percentVar")$groupR, decreasing=TRUE)
+   pl <- ggplot(pca.data, aes_string(paste0("PC", pc_r[1]), paste0("PC", pc_r[2]), color="condition", shape="study")) +
+   geom_point(size=3) +
+   xlab(paste0("PC", pc_r[1], ": ",percentVar[pc_r[1]],"% variance")) +
+   ylab(paste0("PC", pc_r[2], ": ",percentVar[pc_r[2]],"% variance")) +
+   labs(title = paste0("Group-Explanatory PCs of ", vst_name, "-tranformed data"), subtitle = plot_subtitle) + 
+   theme(legend.position="right",
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.background = element_blank(),
+                panel.border = element_rect(colour = "black", fill=NA, size=1),
+                text = element_text(size = 15),
+                legend.direction = "vertical")
+   print(pl)
+}
+```
+
+
+```{r distance-heatmap-rlog, fig.width = 11, fig.height = 11}
+## SAMPLE CORRELATION HEATMAP
+sampleDists      <- dist(t(assay(dds, vst_name)))
+sampleDistMatrix <- as.matrix(sampleDists)
+colors           <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(
+    sampleDistMatrix,
+    clustering_distance_rows=sampleDists,
+    clustering_distance_cols=sampleDists,
+    col=colors,
+    main=paste("Euclidean distance between", vst_name, "of samples")
+)
+```
+
