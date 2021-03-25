@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Carmen Navarro" />
+
+<meta name="date" content="2021-03-24" />
+
+<title>RNA seq comparison</title>
+
+<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/lumen.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">hesc-epigenomics</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/elsasserlab/hesc-epigenomics">
+    <span class="fas fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">RNA seq comparison</h1>
+<h4 class="author">Carmen Navarro</h4>
+<h4 class="date">2021-03-24</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2021-03-25
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>hesc-epigenomics/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210202code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20210202)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210202code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210202)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree8ed2280423c73ce25243b536ec23cdda1253705ctargetblank8ed2280a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/8ed2280423c73ce25243b536ec23cdda1253705c" target="_blank">8ed2280</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree8ed2280423c73ce25243b536ec23cdda1253705ctargetblank8ed2280a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/8ed2280423c73ce25243b536ec23cdda1253705c" target="_blank">8ed2280</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/annotations_cache/
+    Ignored:    analysis/annotations_extended.Rmd
+    Ignored:    analysis/global_bins_extended.Rmd
+    Ignored:    analysis/histone_marks_vs_expression_extended.Rmd
+    Ignored:    data/bed/
+    Ignored:    data/bw
+    Ignored:    data/igv/
+    Ignored:    data/meta/
+    Ignored:    data/other/
+    Ignored:    data/peaks
+    Ignored:    data/rnaseq/
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/rnaseq_comparison.Rmd</code>) and HTML (<code>docs/rnaseq_comparison.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/8ed2280423c73ce25243b536ec23cdda1253705c/analysis/rnaseq_comparison.Rmd" target="_blank">8ed2280</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-03-25
+</td>
+<td>
+wflow_publish(“./analysis/rnaseq_comparison.Rmd”)
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="summary" class="section level1">
+<h1>Summary</h1>
+<p>Compare results from all RNA-seq data (public and ours).</p>
+<p>Input files are RSEM output data for all the studies available at the moment.</p>
+</div>
+<div id="pca-plot" class="section level1">
+<h1>PCA plot</h1>
+<pre class="r"><code># Some code copied or adapted from: https://github.com/nf-core/rnaseq/blob/master/bin/deseq2_qc.r
+##&#39; PCA pre-processeor
+##&#39;
+##&#39; Generate all the necessary information to plot PCA from a DESeq2 object
+##&#39; in which an assay containing a variance-stabilised matrix of counts is
+##&#39; stored. Copied from DESeq2::plotPCA, but with additional ability to
+##&#39; say which assay to run the PCA on, and adds an assessment of how well
+##&#39; each PC explains the experimental grouping of the data.
+##&#39; 
+##&#39; @param object The DESeq2DataSet object.
+##&#39; @param intgroup interesting groups: a character vector of names in &#39;colData(x)&#39; to use for grouping.
+##&#39; @param ntop number of top genes to use for principla components, selected by highest row variance.
+##&#39; @param assay the name or index of the assay that stores the variance-stabilised data.
+##&#39; @return A data.frame containing the projected data alongside the grouping columns.
+##&#39; A &#39;percentVar&#39; attribute is set which includes the percentage of variation each PC explains,
+##&#39; and additionally how much the variation within that PC is explained by the grouping variable.
+##&#39; @author Gavin Kelly
+plotPCA_vst &lt;- function (object, intgroup = &quot;condition&quot;, ntop = 500, assay=length(assays(object))) {
+    rv         &lt;- rowVars(assay(object, assay))
+    select     &lt;- order(rv, decreasing = TRUE)[seq_len(min(ntop, length(rv)))]
+    pca        &lt;- prcomp(t(assay(object, assay)[select, ]))
+    percentVar &lt;- pca$sdev^2/sum(pca$sdev^2)
+    if (!all(intgroup %in% names(colData(object)))) {
+        stop(&quot;the argument &#39;intgroup&#39; should specify columns of colData(dds)&quot;)
+    }
+    intgroup.df &lt;- as.data.frame(colData(object)[, intgroup, drop = FALSE])
+    group &lt;- if (length(intgroup) &gt; 1) {
+        factor(apply(intgroup.df, 1, paste, collapse = &quot;:&quot;))
+    }  else {
+        colData(object)[[intgroup]]
+    }
+    d &lt;- cbind(pca$x, group = group, intgroup.df, name = colnames(object))
+    percentFrame &lt;- data.frame(PC=seq(along=percentVar), percentVar=100*percentVar, groupR=0.0)
+    for (ipc in seq(along=percentVar)) {
+        fit1 &lt;- lm(pca$x[,ipc]  ~ group)
+        percentFrame$groupR[ipc] &lt;- 100*summary(fit1)$r.squared
+    }
+    attr(d, &quot;percentVar&quot;) &lt;- percentFrame
+    return(d)
+}
+
+
+read_counts_file &lt;- function(f, id_col = 1, count_col = 3, sample_suffix = &quot;&quot;) {
+  counts &lt;- read.delim(file = f, header = TRUE)
+  # rownames(counts) &lt;- counts[, id_col]
+  counts &lt;- counts[, c(id_col, count_col:ncol(counts)), drop = FALSE]
+  colnames(counts) &lt;- gsub(sample_suffix, &quot;&quot;, colnames(counts))
+  colnames(counts) &lt;- gsub(pattern = &#39;\\.$&#39;, replacement = &#39;&#39;, colnames(counts))
+  counts
+}
+
+datasets &lt;- c(&quot;Collier_2017&quot;, &quot;Kinoshita_2021&quot;, &quot;Moody_2017&quot;, &quot;Kumar_2020&quot;, &quot;Collinson_2017&quot;)
+counts_files &lt;- file.path(params$rnaseqdir, datasets, &quot;rsem.merged.gene_counts.tsv&quot;)
+counts_all &lt;- lapply(counts_files, read_counts_file)
+
+counts &lt;- reduce(counts_all, full_join, by=&quot;gene_id&quot;) 
+rownames(counts) &lt;- counts$gene_id
+counts$gene_id &lt;- NULL
+# 
+# cts_file &lt;- &quot;./data/rnaseq/Collier_2017/rsem.merged.gene_counts.tsv&quot;
+cores &lt;- 2
+# counts &lt;- read_counts_file(cts_file)
+
+samples.vec &lt;- sort(colnames(counts))
+groups      &lt;- sub(&quot;_[^_]+$&quot;, &quot;&quot;, samples.vec)
+
+counts  &lt;- counts[,samples.vec,drop=FALSE]
+coldata &lt;- data.frame(row.names=colnames(counts), condition=groups)
+dds     &lt;- DESeqDataSetFromMatrix(countData=round(counts), colData=coldata, design=~ condition)</code></pre>
+<pre><code>converting counts to integer mode</code></pre>
+<pre><code>Warning in DESeqDataSet(se, design = design, ignoreRank): some variables in
+design formula are characters, converting to factors</code></pre>
+<pre class="r"><code>dds     &lt;- DESeq(dds, parallel=TRUE, BPPARAM=MulticoreParam(cores))</code></pre>
+<pre><code>estimating size factors</code></pre>
+<pre><code>estimating dispersions</code></pre>
+<pre><code>gene-wise dispersion estimates: 2 workers</code></pre>
+<pre><code>mean-dispersion relationship</code></pre>
+<pre><code>final dispersion estimates, fitting model and testing: 2 workers</code></pre>
+<pre class="r"><code>vst &lt;- TRUE
+if (vst == FALSE) {
+    vst_name &lt;- &quot;rlog&quot;
+    rld      &lt;- rlog(dds)
+} else {
+    vst_name &lt;- &quot;vst&quot;
+    rld      &lt;- varianceStabilizingTransformation(dds)
+}
+assay(dds, vst_name) &lt;- assay(rld)
+
+ntop &lt;- c(500, Inf)
+for (n_top_var in ntop) {
+    pca.data      &lt;- plotPCA_vst(dds, assay=vst_name,intgroup=c(&quot;condition&quot;),ntop=n_top_var)
+    
+    # Shape by study color by group
+    pca.data$study &lt;- str_split_fixed(pca.data$group, &quot;_&quot;, 3)[, 1]
+    
+    percentVar    &lt;- round(attr(pca.data, &quot;percentVar&quot;)$percentVar)
+    plot_subtitle &lt;- ifelse(n_top_var==Inf, &quot;All genes&quot;, paste(&quot;Top&quot;, n_top_var, &quot;genes&quot;))
+    pl &lt;- ggplot(pca.data, aes(PC1, PC2, color=condition, shape=study)) +
+          geom_point(size=4) +
+          xlab(paste0(&quot;PC1: &quot;,percentVar[1],&quot;% variance&quot;)) +
+          ylab(paste0(&quot;PC2: &quot;,percentVar[2],&quot;% variance&quot;)) +
+          labs(title = paste0(&quot;First PCs on &quot;, vst_name, &quot;-transformed data&quot;), subtitle = plot_subtitle) + 
+          theme(legend.position=&quot;right&quot;,
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.background = element_blank(),
+                panel.border = element_rect(colour = &quot;black&quot;, fill=NA, size=1),
+                text = element_text(size = 15),
+                legend.direction = &quot;vertical&quot;)
+
+    print(pl)
+    
+   pl &lt;- ggplot(attr(pca.data, &quot;percentVar&quot;), aes(x=PC, y=percentVar)) +
+            geom_line(aes(colour=&quot;explained by PC&quot;)) +
+            geom_line(aes(y=groupR, colour=&quot;of PC explained by condition&quot;)) +
+            scale_x_continuous(breaks=seq(along=percentVar), minor_breaks=NULL)  +
+            labs(title=&quot;Diagnostics of PCs&quot;, subtitle=plot_subtitle, x=&quot;Component&quot;, y=&quot;Percentage explaned&quot;, colour=&quot;Percentage variation&quot;) +
+            theme_bw() +
+            theme(legend.position=&quot;top&quot;)
+   
+   print(pl)
+      
+   pc_r &lt;- order(attr(pca.data, &quot;percentVar&quot;)$groupR, decreasing=TRUE)
+   pl &lt;- ggplot(pca.data, aes_string(paste0(&quot;PC&quot;, pc_r[1]), paste0(&quot;PC&quot;, pc_r[2]), color=&quot;condition&quot;, shape=&quot;study&quot;)) +
+   geom_point(size=3) +
+   xlab(paste0(&quot;PC&quot;, pc_r[1], &quot;: &quot;,percentVar[pc_r[1]],&quot;% variance&quot;)) +
+   ylab(paste0(&quot;PC&quot;, pc_r[2], &quot;: &quot;,percentVar[pc_r[2]],&quot;% variance&quot;)) +
+   labs(title = paste0(&quot;Group-Explanatory PCs of &quot;, vst_name, &quot;-tranformed data&quot;), subtitle = plot_subtitle) + 
+   theme(legend.position=&quot;right&quot;,
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.background = element_blank(),
+                panel.border = element_rect(colour = &quot;black&quot;, fill=NA, size=1),
+                text = element_text(size = 15),
+                legend.direction = &quot;vertical&quot;)
+   print(pl)
+}</code></pre>
+<p><img src="figure/rnaseq_comparison.Rmd/pca-vst-1.png" width="960" style="display: block; margin: auto;" /><img src="figure/rnaseq_comparison.Rmd/pca-vst-2.png" width="960" style="display: block; margin: auto;" /><img src="figure/rnaseq_comparison.Rmd/pca-vst-3.png" width="960" style="display: block; margin: auto;" /><img src="figure/rnaseq_comparison.Rmd/pca-vst-4.png" width="960" style="display: block; margin: auto;" /><img src="figure/rnaseq_comparison.Rmd/pca-vst-5.png" width="960" style="display: block; margin: auto;" /><img src="figure/rnaseq_comparison.Rmd/pca-vst-6.png" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>library(pheatmap)
+library(RColorBrewer)
+## SAMPLE CORRELATION HEATMAP
+sampleDists      &lt;- dist(t(assay(dds, vst_name)))
+sampleDistMatrix &lt;- as.matrix(sampleDists)
+colors           &lt;- colorRampPalette( rev(brewer.pal(9, &quot;Blues&quot;)) )(255)
+pheatmap(
+    border_color = &quot;white&quot;,
+    sampleDistMatrix,
+    clustering_distance_rows=sampleDists,
+    clustering_distance_cols=sampleDists,
+    col=colors,
+    main=paste(&quot;Euclidean distance between&quot;, vst_name, &quot;of samples&quot;)
+)</code></pre>
+<p><img src="figure/rnaseq_comparison.Rmd/distance-heatmap-vst-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>vst_name &lt;- &quot;rlog&quot;
+rld      &lt;- rlog(dds)</code></pre>
+<pre><code>rlog() may take a few minutes with 30 or more samples,
+vst() is a much faster transformation</code></pre>
+<pre class="r"><code>assay(dds, vst_name) &lt;- assay(rld)
+
+ntop &lt;- c(500, Inf)
+for (n_top_var in ntop) {
+    pca.data      &lt;- plotPCA_vst(dds, assay=vst_name,intgroup=c(&quot;condition&quot;),ntop=n_top_var)
+    
+    # Shape by study color by group
+    pca.data$study &lt;- str_split_fixed(pca.data$group, &quot;_&quot;, 3)[, 1]
+    
+    percentVar    &lt;- round(attr(pca.data, &quot;percentVar&quot;)$percentVar)
+    plot_subtitle &lt;- ifelse(n_top_var==Inf, &quot;All genes&quot;, paste(&quot;Top&quot;, n_top_var, &quot;genes&quot;))
+    pl &lt;- ggplot(pca.data, aes(PC1, PC2, color=condition, shape=study)) +
+          geom_point(size=4) +
+          xlab(paste0(&quot;PC1: &quot;,percentVar[1],&quot;% variance&quot;)) +
+          ylab(paste0(&quot;PC2: &quot;,percentVar[2],&quot;% variance&quot;)) +
+          labs(title = paste0(&quot;First PCs on &quot;, vst_name, &quot;-transformed data&quot;), subtitle = plot_subtitle) + 
+          theme(legend.position=&quot;right&quot;,
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.background = element_blank(),
+                panel.border = element_rect(colour = &quot;black&quot;, fill=NA, size=1),
+                text = element_text(size = 15),
+                legend.direction = &quot;vertical&quot;)
+
+    print(pl)
+    
+   pl &lt;- ggplot(attr(pca.data, &quot;percentVar&quot;), aes(x=PC, y=percentVar)) +
+            geom_line(aes(colour=&quot;explained by PC&quot;)) +
+            geom_line(aes(y=groupR, colour=&quot;of PC explained by condition&quot;)) +
+            scale_x_continuous(breaks=seq(along=percentVar), minor_breaks=NULL)  +
+            labs(title=&quot;Diagnostics of PCs&quot;, subtitle=plot_subtitle, x=&quot;Component&quot;, y=&quot;Percentage explaned&quot;, colour=&quot;Percentage variation&quot;) +
+            theme_bw() +
+            theme(legend.position=&quot;top&quot;)
+   
+   print(pl)
+      
+   pc_r &lt;- order(attr(pca.data, &quot;percentVar&quot;)$groupR, decreasing=TRUE)
+   pl &lt;- ggplot(pca.data, aes_string(paste0(&quot;PC&quot;, pc_r[1]), paste0(&quot;PC&quot;, pc_r[2]), color=&quot;condition&quot;, shape=&quot;study&quot;)) +
+   geom_point(size=3) +
+   xlab(paste0(&quot;PC&quot;, pc_r[1], &quot;: &quot;,percentVar[pc_r[1]],&quot;% variance&quot;)) +
+   ylab(paste0(&quot;PC&quot;, pc_r[2], &quot;: &quot;,percentVar[pc_r[2]],&quot;% variance&quot;)) +
+   labs(title = paste0(&quot;Group-Explanatory PCs of &quot;, vst_name, &quot;-tranformed data&quot;), subtitle = plot_subtitle) + 
+   theme(legend.position=&quot;right&quot;,
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.background = element_blank(),
+                panel.border = element_rect(colour = &quot;black&quot;, fill=NA, size=1),
+                text = element_text(size = 15),
+                legend.direction = &quot;vertical&quot;)
+   print(pl)
+}</code></pre>
+<p><img src="figure/rnaseq_comparison.Rmd/pca-rlog-1.png" width="960" style="display: block; margin: auto;" /><img src="figure/rnaseq_comparison.Rmd/pca-rlog-2.png" width="960" style="display: block; margin: auto;" /><img src="figure/rnaseq_comparison.Rmd/pca-rlog-3.png" width="960" style="display: block; margin: auto;" /><img src="figure/rnaseq_comparison.Rmd/pca-rlog-4.png" width="960" style="display: block; margin: auto;" /><img src="figure/rnaseq_comparison.Rmd/pca-rlog-5.png" width="960" style="display: block; margin: auto;" /><img src="figure/rnaseq_comparison.Rmd/pca-rlog-6.png" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>## SAMPLE CORRELATION HEATMAP
+sampleDists      &lt;- dist(t(assay(dds, vst_name)))
+sampleDistMatrix &lt;- as.matrix(sampleDists)
+colors           &lt;- colorRampPalette( rev(brewer.pal(9, &quot;Blues&quot;)) )(255)
+pheatmap(
+    sampleDistMatrix,
+    clustering_distance_rows=sampleDists,
+    clustering_distance_cols=sampleDists,
+    col=colors,
+    main=paste(&quot;Euclidean distance between&quot;, vst_name, &quot;of samples&quot;)
+)</code></pre>
+<p><img src="figure/rnaseq_comparison.Rmd/distance-heatmap-rlog-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.0.4 (2021-02-15)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 20.04.2 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=sv_SE.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=sv_SE.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=sv_SE.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=sv_SE.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] parallel  stats4    stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] RColorBrewer_1.1-2          pheatmap_1.0.12            
+ [3] forcats_0.5.1               stringr_1.4.0              
+ [5] purrr_0.3.4                 readr_1.4.0                
+ [7] tidyr_1.1.2                 tibble_3.0.6               
+ [9] tidyverse_1.3.0             BiocParallel_1.24.1        
+[11] DESeq2_1.30.0               SummarizedExperiment_1.20.0
+[13] Biobase_2.50.0              MatrixGenerics_1.2.0       
+[15] matrixStats_0.58.0          GenomicRanges_1.42.0       
+[17] GenomeInfoDb_1.26.2         IRanges_2.24.1             
+[19] S4Vectors_0.28.1            BiocGenerics_0.36.0        
+[21] knitr_1.31                  ggpubr_0.4.0.999           
+[23] dplyr_1.0.4                 reshape2_1.4.4             
+[25] ggplot2_3.3.3               wigglescout_0.12.8         
+[27] workflowr_1.6.2            
+
+loaded via a namespace (and not attached):
+  [1] colorspace_2.0-0         ggsignif_0.6.0           ellipsis_0.3.1          
+  [4] rio_0.5.16               rprojroot_2.0.2          XVector_0.30.0          
+  [7] fs_1.5.0                 rstudioapi_0.13          farver_2.0.3            
+ [10] listenv_0.8.0            furrr_0.2.2              bit64_4.0.5             
+ [13] lubridate_1.7.9.2        AnnotationDbi_1.52.0     xml2_1.3.2              
+ [16] codetools_0.2-18         splines_4.0.4            cachem_1.0.4            
+ [19] geneplotter_1.68.0       jsonlite_1.7.2           Rsamtools_2.6.0         
+ [22] broom_0.7.4              annotate_1.68.0          dbplyr_2.1.0            
+ [25] compiler_4.0.4           httr_1.4.2               backports_1.2.1         
+ [28] assertthat_0.2.1         Matrix_1.3-2             fastmap_1.1.0           
+ [31] cli_2.3.0                later_1.1.0.1            htmltools_0.5.1.1       
+ [34] tools_4.0.4              gtable_0.3.0             glue_1.4.2              
+ [37] GenomeInfoDbData_1.2.4   Rcpp_1.0.6               carData_3.0-4           
+ [40] cellranger_1.1.0         vctrs_0.3.6              Biostrings_2.58.0       
+ [43] rtracklayer_1.50.0       xfun_0.21                globals_0.14.0          
+ [46] rvest_0.3.6              openxlsx_4.2.3           lifecycle_1.0.0         
+ [49] rstatix_0.7.0            XML_3.99-0.5             future_1.21.0           
+ [52] zlibbioc_1.36.0          scales_1.1.1             hms_1.0.0               
+ [55] promises_1.2.0.1         yaml_2.2.1               curl_4.3                
+ [58] memoise_2.0.0            stringi_1.5.3            RSQLite_2.2.3           
+ [61] highr_0.8                genefilter_1.72.0        zip_2.1.1               
+ [64] rlang_0.4.10             pkgconfig_2.0.3          bitops_1.0-6            
+ [67] evaluate_0.14            lattice_0.20-41          labeling_0.4.2          
+ [70] GenomicAlignments_1.26.0 bit_4.0.4                tidyselect_1.1.0        
+ [73] parallelly_1.23.0        plyr_1.8.6               magrittr_2.0.1          
+ [76] R6_2.5.0                 generics_0.1.0           DelayedArray_0.16.0     
+ [79] DBI_1.1.1                pillar_1.4.7             haven_2.3.1             
+ [82] whisker_0.4              foreign_0.8-81           withr_2.4.1             
+ [85] survival_3.2-7           abind_1.4-5              RCurl_1.98-1.2          
+ [88] modelr_0.1.8             crayon_1.4.1             car_3.0-10              
+ [91] rmarkdown_2.6            locfit_1.5-9.4           grid_4.0.4              
+ [94] readxl_1.3.1             data.table_1.13.6        blob_1.2.1              
+ [97] git2r_0.28.0             reprex_1.0.0             digest_0.6.27           
+[100] xtable_1.8-4             httpuv_1.5.5             munsell_0.5.0           </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
