@@ -32,7 +32,13 @@ library(dplyr)
 library(ggpubr)
 library(knitr)
 
-knitr::opts_chunk$set(dev = c('png', 'svg'))
+my_svg <- function(file, width, height) {
+  library(svglite)
+  svglite(file = file, width = width, height = height, bg = "white")
+}
+
+
+knitr::opts_chunk$set(dev = c('png', 'my_svg'), fig.ext = c("png", "svg"), fig.width = 8, fig.height = 8)
 source("./code/embed_functions.R")
 ```
 
@@ -134,7 +140,7 @@ colors_list <- c("Naive_EZH2i"="#5F9EA0",
 
 ## H2AUb levels
 
-```{r h2aub-inrc-barplot}
+```{r h2aub-inrc-barplot, fig.height = 8, fig.width = 8}
 counts_file <- file.path(params$datadir, "meta", "Kumar_2020_stats_summary.csv")
 counts <- read.table(counts_file, sep="\t", header = T, na.strings = "NA", stringsAsFactors = F)
 
@@ -148,7 +154,7 @@ You can download data values here: `r embed_last_plot_data(name="H2AUb_global.ts
 
 ## H3K27m3 levels
 
-```{r h3k27m3-inrc-barplot}
+```{r h3k27m3-inrc-barplot, fig.height = 8, fig.width = 8}
 inrc_barplot(inrc, "H3K27m3", colors_list)
 ```
 
@@ -156,7 +162,7 @@ You can download data values here: `r embed_last_plot_data(name="H3K27m3_global.
 
 ## H3K4m3 levels
 
-```{r h3k4m3-inrc-barplot}
+```{r h3k4m3-inrc-barplot, fig.height = 8, fig.width = 8}
 inrc_barplot(inrc, "H3K4m3", colors_list)
 ```
 
