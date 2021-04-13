@@ -34,8 +34,9 @@ library(org.Hs.eg.db)
 library(GenomicRanges)
 library(rtracklayer)
 library(ggplot2)
-
-knitr::opts_chunk$set(dev = c('png', 'svg'))
+source("./code/embed_functions.R")
+source("./code/globals.R")
+knitr::opts_chunk$set(dev = c('png', 'my_svg'), fig.ext = c("png", "svg"), fig.width = 8, fig.height = 8)
 ```
 
 ```{r helper-functions}
@@ -58,7 +59,7 @@ biv_ranges
 ## H3K4m3 
 
 ```{r h3k4m3-court-biv-profile, fig.width=8, fig.height=7, message=F}
-bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020/hu2"), full.names = T)
+bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020/"), full.names = T)
 
 bwinput <- bwfiles[grepl("IN.*pooled", bwfiles)]
 bwfiles <- bwfiles[grepl("H3K4m3.*pooled.hg38.scaled", bwfiles)]
@@ -81,7 +82,7 @@ plot_bw_profile(
 Norm to input:
 
 ```{r h3k4m3-court-biv-profile-norm, fig.width=8, fig.height=7, message=F}
-bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020/hu2"), full.names = T)
+bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020/"), full.names = T)
 
 bwinput <- bwfiles[grepl("IN.*pooled", bwfiles)]
 bwfiles <- bwfiles[grepl("H3K4m3.*pooled.hg38.scaled", bwfiles)]
@@ -105,7 +106,7 @@ plot_bw_profile(
 ## H3K27m3
 
 ```{r h3k27m3-court-biv-profile, fig.width=8, fig.height=7, message=F}
-bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020/hu2"), full.names = T)
+bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020/"), full.names = T)
 
 bwinput <- bwfiles[grepl("IN.*pooled", bwfiles)]
 bwfiles <- bwfiles[grepl("H3K27m3.*pooled.hg38.scaled", bwfiles)]
@@ -128,7 +129,7 @@ plot_bw_profile(
 Norm to input:
 
 ```{r h3k27m3-court-biv-profile-norm, fig.width=8, fig.height=7, message=F}
-bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020/hu2"), full.names = T)
+bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020/"), full.names = T)
 
 bwinput <- bwfiles[grepl("IN.*pooled", bwfiles)]
 bwfiles <- bwfiles[grepl("H3K27m3.*pooled.hg38.scaled", bwfiles)]
@@ -153,7 +154,7 @@ plot_bw_profile(
 ## H2AUb
 
 ```{r h2aub-court-biv-profile, fig.width=8, fig.height=7, message=F}
-bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020/hu2"), full.names = T)
+bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020/"), full.names = T)
 
 bwinput <- bwfiles[grepl("IN.*pooled", bwfiles)]
 bwfiles <- bwfiles[grepl("H2A.*pooled.hg38.scaled", bwfiles)]
@@ -176,7 +177,7 @@ plot_bw_profile(
 Norm to input:
 
 ```{r h2aub-court-biv-profile-norm, fig.width=8, fig.height=7, message=F}
-bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020/hu2"), full.names = T)
+bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020/"), full.names = T)
 
 bwinput <- bwfiles[grepl("IN.*pooled", bwfiles)]
 bwfiles <- bwfiles[grepl("H2A.*pooled.hg38.scaled", bwfiles)]
