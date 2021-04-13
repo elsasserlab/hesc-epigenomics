@@ -426,7 +426,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-02-05
+<strong>Last updated:</strong> 2021-04-13
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -517,16 +517,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree87ff15f7aa5937570b780d7991ec3097562de76atargetblank87ff15fa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/87ff15f7aa5937570b780d7991ec3097562de76a" target="_blank">87ff15f</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree6e3bb863b028eb1e6bc0904e410fc2ea1d53b09ctargetblank6e3bb86a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/6e3bb863b028eb1e6bc0904e410fc2ea1d53b09c" target="_blank">6e3bb86</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree87ff15f7aa5937570b780d7991ec3097562de76atargetblank87ff15fa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree6e3bb863b028eb1e6bc0904e410fc2ea1d53b09ctargetblank6e3bb86a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/87ff15f7aa5937570b780d7991ec3097562de76a" target="_blank">87ff15f</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/6e3bb863b028eb1e6bc0904e410fc2ea1d53b09c" target="_blank">6e3bb86</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -535,16 +535,25 @@ Note that you need to be careful to ensure that all relevant files for the analy
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/annotations_cache/
+    Ignored:    analysis/annotations_extended.Rmd
+    Ignored:    analysis/global_bins_extended.Rmd
+    Ignored:    analysis/histone_marks_vs_expression_extended.Rmd
+    Ignored:    analysis/kumar_2020_comparison_extended.Rmd
+    Ignored:    analysis/messmer_2019_gene_groups_extended.Rmd
     Ignored:    data/bed/
     Ignored:    data/bw
+    Ignored:    data/igv/
     Ignored:    data/meta/
+    Ignored:    data/other/
     Ignored:    data/peaks
+    Ignored:    data/rnaseq/
 
 Untracked files:
-    Untracked:  analysis/rna_seq_collier_2017.Rmd
+    Untracked:  output/Kumar_2020/
 
 Unstaged changes:
-    Modified:   _workflowr.yml
+    Modified:   code/globals.R
 
 </code></pre>
 <p>
@@ -583,6 +592,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/6e3bb863b028eb1e6bc0904e410fc2ea1d53b09c/analysis/bivalent_chromatin.Rmd" target="_blank">6e3bb86</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-04-13
+</td>
+<td>
+wflow_publish(“./analysis/bivalent_chromatin.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/elsasserlab/hesc-epigenomics/0481b52b31f8f9a2a188db336b93b2c5ea3b5f68/docs/bivalent_chromatin.html" target="_blank">0481b52</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-05
+</td>
+<td>
+RNA seq first analysis
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -678,7 +721,7 @@ biv_ranges</code></pre>
   seqinfo: 22 sequences from an unspecified genome; no seqlengths</code></pre>
 <div id="h3k4m3" class="section level2">
 <h2>H3K4m3</h2>
-<pre class="r"><code>bwfiles &lt;- list.files(file.path(params$datadir, &quot;bw/Kumar_2020/hu2&quot;), full.names = T)
+<pre class="r"><code>bwfiles &lt;- list.files(file.path(params$datadir, &quot;bw/Kumar_2020/&quot;), full.names = T)
 
 bwinput &lt;- bwfiles[grepl(&quot;IN.*pooled&quot;, bwfiles)]
 bwfiles &lt;- bwfiles[grepl(&quot;H3K4m3.*pooled.hg38.scaled&quot;, bwfiles)]
@@ -720,6 +763,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/0481b52b31f8f9a2a188db336b93b2c5ea3b5f68/docs/figure/bivalent_chromatin.Rmd/h3k4m3-court-biv-profile-1.png" target="_blank">0481b52</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/elsasserlab/hesc-epigenomics/blob/87ff15f7aa5937570b780d7991ec3097562de76a/docs/figure/bivalent_chromatin.Rmd/h3k4m3-court-biv-profile-1.png" target="_blank">87ff15f</a>
 </td>
 <td>
@@ -745,7 +799,7 @@ cnluzon
 </div>
 </div>
 <p>Norm to input:</p>
-<pre class="r"><code>bwfiles &lt;- list.files(file.path(params$datadir, &quot;bw/Kumar_2020/hu2&quot;), full.names = T)
+<pre class="r"><code>bwfiles &lt;- list.files(file.path(params$datadir, &quot;bw/Kumar_2020/&quot;), full.names = T)
 
 bwinput &lt;- bwfiles[grepl(&quot;IN.*pooled&quot;, bwfiles)]
 bwfiles &lt;- bwfiles[grepl(&quot;H3K4m3.*pooled.hg38.scaled&quot;, bwfiles)]
@@ -788,6 +842,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/0481b52b31f8f9a2a188db336b93b2c5ea3b5f68/docs/figure/bivalent_chromatin.Rmd/h3k4m3-court-biv-profile-norm-1.png" target="_blank">0481b52</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/elsasserlab/hesc-epigenomics/blob/87ff15f7aa5937570b780d7991ec3097562de76a/docs/figure/bivalent_chromatin.Rmd/h3k4m3-court-biv-profile-norm-1.png" target="_blank">87ff15f</a>
 </td>
 <td>
@@ -815,7 +880,7 @@ cnluzon
 </div>
 <div id="h3k27m3" class="section level2">
 <h2>H3K27m3</h2>
-<pre class="r"><code>bwfiles &lt;- list.files(file.path(params$datadir, &quot;bw/Kumar_2020/hu2&quot;), full.names = T)
+<pre class="r"><code>bwfiles &lt;- list.files(file.path(params$datadir, &quot;bw/Kumar_2020/&quot;), full.names = T)
 
 bwinput &lt;- bwfiles[grepl(&quot;IN.*pooled&quot;, bwfiles)]
 bwfiles &lt;- bwfiles[grepl(&quot;H3K27m3.*pooled.hg38.scaled&quot;, bwfiles)]
@@ -857,6 +922,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/0481b52b31f8f9a2a188db336b93b2c5ea3b5f68/docs/figure/bivalent_chromatin.Rmd/h3k27m3-court-biv-profile-1.png" target="_blank">0481b52</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/elsasserlab/hesc-epigenomics/blob/87ff15f7aa5937570b780d7991ec3097562de76a/docs/figure/bivalent_chromatin.Rmd/h3k27m3-court-biv-profile-1.png" target="_blank">87ff15f</a>
 </td>
 <td>
@@ -882,7 +958,7 @@ cnluzon
 </div>
 </div>
 <p>Norm to input:</p>
-<pre class="r"><code>bwfiles &lt;- list.files(file.path(params$datadir, &quot;bw/Kumar_2020/hu2&quot;), full.names = T)
+<pre class="r"><code>bwfiles &lt;- list.files(file.path(params$datadir, &quot;bw/Kumar_2020/&quot;), full.names = T)
 
 bwinput &lt;- bwfiles[grepl(&quot;IN.*pooled&quot;, bwfiles)]
 bwfiles &lt;- bwfiles[grepl(&quot;H3K27m3.*pooled.hg38.scaled&quot;, bwfiles)]
@@ -926,6 +1002,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/0481b52b31f8f9a2a188db336b93b2c5ea3b5f68/docs/figure/bivalent_chromatin.Rmd/h3k27m3-court-biv-profile-norm-1.png" target="_blank">0481b52</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/elsasserlab/hesc-epigenomics/blob/87ff15f7aa5937570b780d7991ec3097562de76a/docs/figure/bivalent_chromatin.Rmd/h3k27m3-court-biv-profile-norm-1.png" target="_blank">87ff15f</a>
 </td>
 <td>
@@ -953,7 +1040,7 @@ cnluzon
 </div>
 <div id="h2aub" class="section level2">
 <h2>H2AUb</h2>
-<pre class="r"><code>bwfiles &lt;- list.files(file.path(params$datadir, &quot;bw/Kumar_2020/hu2&quot;), full.names = T)
+<pre class="r"><code>bwfiles &lt;- list.files(file.path(params$datadir, &quot;bw/Kumar_2020/&quot;), full.names = T)
 
 bwinput &lt;- bwfiles[grepl(&quot;IN.*pooled&quot;, bwfiles)]
 bwfiles &lt;- bwfiles[grepl(&quot;H2A.*pooled.hg38.scaled&quot;, bwfiles)]
@@ -995,6 +1082,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/0481b52b31f8f9a2a188db336b93b2c5ea3b5f68/docs/figure/bivalent_chromatin.Rmd/h2aub-court-biv-profile-1.png" target="_blank">0481b52</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/elsasserlab/hesc-epigenomics/blob/87ff15f7aa5937570b780d7991ec3097562de76a/docs/figure/bivalent_chromatin.Rmd/h2aub-court-biv-profile-1.png" target="_blank">87ff15f</a>
 </td>
 <td>
@@ -1020,7 +1118,7 @@ cnluzon
 </div>
 </div>
 <p>Norm to input:</p>
-<pre class="r"><code>bwfiles &lt;- list.files(file.path(params$datadir, &quot;bw/Kumar_2020/hu2&quot;), full.names = T)
+<pre class="r"><code>bwfiles &lt;- list.files(file.path(params$datadir, &quot;bw/Kumar_2020/&quot;), full.names = T)
 
 bwinput &lt;- bwfiles[grepl(&quot;IN.*pooled&quot;, bwfiles)]
 bwfiles &lt;- bwfiles[grepl(&quot;H2A.*pooled.hg38.scaled&quot;, bwfiles)]
@@ -1064,6 +1162,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/0481b52b31f8f9a2a188db336b93b2c5ea3b5f68/docs/figure/bivalent_chromatin.Rmd/h2aub-court-biv-profile-norm-1.png" target="_blank">0481b52</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-02-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/elsasserlab/hesc-epigenomics/blob/87ff15f7aa5937570b780d7991ec3097562de76a/docs/figure/bivalent_chromatin.Rmd/h2aub-court-biv-profile-norm-1.png" target="_blank">87ff15f</a>
 </td>
 <td>
@@ -1096,7 +1205,7 @@ cnluzon
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 4.0.3 (2020-10-10)
+<pre><code>R version 4.0.5 (2021-03-31)
 Platform: x86_64-pc-linux-gnu (64-bit)
 Running under: Ubuntu 20.04.2 LTS
 
@@ -1117,66 +1226,69 @@ attached base packages:
 [8] methods   base     
 
 other attached packages:
- [1] purrr_0.3.4                             
- [2] ggplot2_3.3.3                           
- [3] rtracklayer_1.50.0                      
- [4] org.Hs.eg.db_3.11.4                     
- [5] TxDb.Hsapiens.UCSC.hg38.knownGene_3.10.0
- [6] GenomicFeatures_1.40.1                  
- [7] AnnotationDbi_1.52.0                    
- [8] Biobase_2.50.0                          
- [9] GenomicRanges_1.42.0                    
-[10] GenomeInfoDb_1.26.2                     
-[11] IRanges_2.24.1                          
-[12] S4Vectors_0.28.1                        
-[13] BiocGenerics_0.36.0                     
-[14] wigglescout_0.12.8                      
-[15] workflowr_1.6.2                         
+ [1] svglite_2.0.0                           
+ [2] purrr_0.3.4                             
+ [3] ggplot2_3.3.3                           
+ [4] rtracklayer_1.50.0                      
+ [5] org.Hs.eg.db_3.11.4                     
+ [6] TxDb.Hsapiens.UCSC.hg38.knownGene_3.10.0
+ [7] GenomicFeatures_1.40.1                  
+ [8] AnnotationDbi_1.52.0                    
+ [9] Biobase_2.50.0                          
+[10] GenomicRanges_1.42.0                    
+[11] GenomeInfoDb_1.26.2                     
+[12] IRanges_2.24.1                          
+[13] S4Vectors_0.28.1                        
+[14] BiocGenerics_0.36.0                     
+[15] wigglescout_0.12.8                      
+[16] workflowr_1.6.2                         
 
 loaded via a namespace (and not attached):
- [1] bitops_1.0-6                matrixStats_0.57.0         
+ [1] bitops_1.0-6                matrixStats_0.58.0         
  [3] fs_1.5.0                    bit64_4.0.5                
  [5] RColorBrewer_1.1-2          progress_1.2.2             
  [7] httr_1.4.2                  rprojroot_2.0.2            
- [9] tools_4.0.3                 R6_2.5.0                   
-[11] DBI_1.1.0                   colorspace_2.0-0           
-[13] withr_2.4.0                 tidyselect_1.1.0           
+ [9] tools_4.0.5                 R6_2.5.0                   
+[11] DBI_1.1.1                   colorspace_2.0-0           
+[13] withr_2.4.1                 tidyselect_1.1.0           
 [15] prettyunits_1.1.1           curl_4.3                   
-[17] bit_4.0.4                   compiler_4.0.3             
-[19] git2r_0.27.1                xml2_1.3.2                 
+[17] bit_4.0.4                   compiler_4.0.5             
+[19] git2r_0.28.0                xml2_1.3.2                 
 [21] DelayedArray_0.16.0         labeling_0.4.2             
 [23] scales_1.1.1                askpass_1.1                
-[25] rappdirs_0.3.1              stringr_1.4.0              
-[27] digest_0.6.27               Rsamtools_2.6.0            
-[29] rmarkdown_2.6               XVector_0.30.0             
-[31] pkgconfig_2.0.3             htmltools_0.5.1            
-[33] parallelly_1.23.0           MatrixGenerics_1.2.0       
-[35] dbplyr_2.0.0                rlang_0.4.10               
-[37] rstudioapi_0.13             RSQLite_2.2.1              
-[39] farver_2.0.3                generics_0.1.0             
-[41] BiocParallel_1.24.1         dplyr_1.0.3                
-[43] RCurl_1.98-1.2              magrittr_2.0.1             
-[45] GenomeInfoDbData_1.2.4      Matrix_1.3-2               
-[47] Rcpp_1.0.6                  munsell_0.5.0              
-[49] lifecycle_0.2.0             furrr_0.2.1                
-[51] stringi_1.5.3               whisker_0.4                
-[53] yaml_2.2.1                  SummarizedExperiment_1.20.0
-[55] zlibbioc_1.36.0             plyr_1.8.6                 
-[57] BiocFileCache_1.12.1        grid_4.0.3                 
-[59] blob_1.2.1                  listenv_0.8.0              
-[61] promises_1.1.1              crayon_1.3.4               
-[63] lattice_0.20-41             Biostrings_2.58.0          
-[65] hms_0.5.3                   knitr_1.30                 
-[67] pillar_1.4.7                reshape2_1.4.4             
-[69] codetools_0.2-18            biomaRt_2.44.4             
-[71] XML_3.99-0.5                glue_1.4.2                 
-[73] evaluate_0.14               vctrs_0.3.6                
-[75] httpuv_1.5.4                gtable_0.3.0               
-[77] openssl_1.4.3               future_1.21.0              
-[79] assertthat_0.2.1            xfun_0.20                  
-[81] later_1.1.0.1               tibble_3.0.5               
-[83] GenomicAlignments_1.26.0    memoise_1.1.0              
-[85] globals_0.14.0              ellipsis_0.3.1             </code></pre>
+[25] rappdirs_0.3.3              systemfonts_1.0.1          
+[27] stringr_1.4.0               digest_0.6.27              
+[29] Rsamtools_2.6.0             rmarkdown_2.6              
+[31] XVector_0.30.0              pkgconfig_2.0.3            
+[33] htmltools_0.5.1.1           parallelly_1.23.0          
+[35] MatrixGenerics_1.2.0        highr_0.8                  
+[37] dbplyr_2.1.0                fastmap_1.1.0              
+[39] rlang_0.4.10                RSQLite_2.2.3              
+[41] farver_2.0.3                generics_0.1.0             
+[43] BiocParallel_1.24.1         dplyr_1.0.4                
+[45] RCurl_1.98-1.2              magrittr_2.0.1             
+[47] GenomeInfoDbData_1.2.4      Matrix_1.3-2               
+[49] Rcpp_1.0.6                  munsell_0.5.0              
+[51] lifecycle_1.0.0             furrr_0.2.2                
+[53] stringi_1.5.3               whisker_0.4                
+[55] yaml_2.2.1                  SummarizedExperiment_1.20.0
+[57] zlibbioc_1.36.0             plyr_1.8.6                 
+[59] BiocFileCache_1.12.1        grid_4.0.5                 
+[61] blob_1.2.1                  listenv_0.8.0              
+[63] promises_1.2.0.1            crayon_1.4.1               
+[65] lattice_0.20-41             Biostrings_2.58.0          
+[67] hms_1.0.0                   knitr_1.31                 
+[69] pillar_1.4.7                reshape2_1.4.4             
+[71] codetools_0.2-18            biomaRt_2.44.4             
+[73] XML_3.99-0.5                glue_1.4.2                 
+[75] evaluate_0.14               vctrs_0.3.6                
+[77] httpuv_1.5.5                gtable_0.3.0               
+[79] openssl_1.4.3               future_1.21.0              
+[81] assertthat_0.2.1            cachem_1.0.4               
+[83] xfun_0.21                   later_1.1.0.1              
+[85] tibble_3.0.6                GenomicAlignments_1.26.0   
+[87] memoise_2.0.0               globals_0.14.0             
+[89] ellipsis_0.3.1             </code></pre>
 </div>
 </div>
 </div>
