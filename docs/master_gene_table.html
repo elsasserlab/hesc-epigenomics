@@ -488,16 +488,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreee6efbe9b8140c8a48320082d5abf04f46c374155targetblanke6efbe9a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/e6efbe9b8140c8a48320082d5abf04f46c374155" target="_blank">e6efbe9</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreedc04f0935f2d92f398ddf4f8570b22df857389aftargetblankdc04f09a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/dc04f0935f2d92f398ddf4f8570b22df857389af" target="_blank">dc04f09</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreee6efbe9b8140c8a48320082d5abf04f46c374155targetblanke6efbe9a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreedc04f0935f2d92f398ddf4f8570b22df857389aftargetblankdc04f09a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/e6efbe9b8140c8a48320082d5abf04f46c374155" target="_blank">e6efbe9</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/dc04f0935f2d92f398ddf4f8570b22df857389af" target="_blank">dc04f09</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -520,7 +520,6 @@ Ignored files:
     Ignored:    data/bw
     Ignored:    data/igv/
     Ignored:    data/liftover/
-    Ignored:    data/meta/
     Ignored:    data/other/
     Ignored:    data/peaks
     Ignored:    data/rnaseq/
@@ -551,10 +550,6 @@ Untracked files:
     Untracked:  output/gene_groups_panel_w_k4_naive.png
     Untracked:  output/h3k27m3_h2aub_panel_at_differential_k27_all_k4_enriched.png
     Untracked:  output/test_proportional.png
-
-Unstaged changes:
-    Modified:   analysis/annotations.Rmd
-    Modified:   analysis/fig_01_quantitative_chip.Rmd
 
 </code></pre>
 <p>
@@ -593,6 +588,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/dc04f0935f2d92f398ddf4f8570b22df857389af/analysis/master_gene_table.Rmd" target="_blank">dc04f09</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-26
+</td>
+<td>
+wflow_publish(“./analysis/master_gene_table.Rmd”, verbose = T)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/elsasserlab/hesc-epigenomics/58564ac45a02620827088228a9606dfc666b36a2/docs/master_gene_table.html" target="_blank">58564ac</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-26
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -739,12 +768,83 @@ grey_colors &lt;- c(&quot;#cccccc&quot;, &quot;#aaaaaa&quot;, &quot;#888888&quot
 <div id="raw-pooled-values-at-tss-per-gene" class="section level1">
 <h1>Raw pooled values at TSS per gene</h1>
 <p>At this point kept area around TSS the same size even though K4 is narrower, so it’s fairer to put them all in the same table.</p>
+<pre class="r fold-show"><code>pooled_k4 &lt;- bw_loci(bwfiles_pooled$k4, genes_tss_broad, labels = gsub(&quot;_pooled.hg38.scaled.bw&quot;, &quot;&quot;, basename(bwfiles_pooled$k4)))
+pooled_k27 &lt;- bw_loci(bwfiles_pooled$k27, genes_tss_broad, labels = gsub(&quot;_pooled.hg38.scaled.bw&quot;, &quot;&quot;, basename(bwfiles_pooled$k27)))
+pooled_h2aub &lt;- bw_loci(bwfiles_pooled$k27, genes_tss_broad, labels = gsub(&quot;_pooled.hg38.scaled.bw&quot;, &quot;&quot;, basename(bwfiles_pooled$ub)))
+pooled_inp &lt;- bw_loci(bwfiles_pooled$input, genes_tss_broad, labels = gsub(&quot;_pooled.hg38.unscaled.bw&quot;, &quot;&quot;, basename(bwfiles_pooled$input)))
+
+merge_by_name &lt;- function(lociset) {
+  mcols_df &lt;- function(gr) { data.frame(mcols(gr)) }
+  
+  dfs &lt;- lapply(lociset, mcols_df)
+  dfs %&gt;% reduce(full_join, by = &quot;name&quot;)
+}
+
+pooled_df &lt;- merge_by_name(list(pooled_k4, pooled_k27, pooled_h2aub, pooled_inp))
+master_df &lt;- pooled_df</code></pre>
 </div>
 <div id="k27m3-diff-analysis" class="section level1">
 <h1>K27m3 diff analysis</h1>
 <div id="primed-vs-naive" class="section level2">
 <h2>Primed vs Naive</h2>
+<pre class="r fold-show"><code>c1 &lt;- bw_loci(bwfiles$k27_naive, genes_tss_broad)
+c2 &lt;- bw_loci(bwfiles$k27_primed, genes_tss_broad)
+
+diff &lt;- bw_granges_diff_analysis(c1, c2, &quot;Naive&quot;, &quot;Primed&quot;, estimate_size_factors = FALSE)
+
+diff_lfc &lt;- lfcShrink(diff, coef=&quot;condition_Primed_vs_Naive&quot;, type=&quot;apeglm&quot;)
+
+plotMA(diff_lfc)</code></pre>
 <p><img src="figure/master_gene_table.Rmd/k27m3-diff-pr-ni-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-k27m3-diff-pr-ni-1">
+Past versions of k27m3-diff-pr-ni-1.png
+</button>
+</p>
+<div id="fig-k27m3-diff-pr-ni-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/58564ac45a02620827088228a9606dfc666b36a2/docs/figure/master_gene_table.Rmd/k27m3-diff-pr-ni-1.png" target="_blank">58564ac</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r fold-show"><code># 
+
+make_diff_df &lt;- function(diff_lfc, prefix) {
+  df_diff &lt;- data.frame(diff_lfc)
+  # DS stands for DeSeq
+  colnames(df_diff) &lt;- paste(prefix, colnames(df_diff), sep = &quot;_&quot;)
+  df_diff$name &lt;- rownames(df_diff)
+  df_diff
+}
+
+df_diff &lt;- make_diff_df(diff_lfc, &quot;H3K27m3_DS_Pr_vs_Ni&quot;)
+master_df &lt;- left_join(master_df, df_diff, by = &quot;name&quot;)</code></pre>
 </div>
 <div id="ezh2i-vs-naive-and-primed" class="section level2">
 <h2>EZH2i vs Naive and primed</h2>
@@ -755,48 +855,483 @@ grey_colors &lt;- c(&quot;#cccccc&quot;, &quot;#aaaaaa&quot;, &quot;#888888&quot
 <h1>H3K4m3 diff analysis</h1>
 <div id="primed-vs-naive-1" class="section level2">
 <h2>Primed vs Naive</h2>
+<pre class="r fold-show"><code>c1 &lt;- bw_loci(bwfiles$k4_naive, genes_tss_narrow)
+c2 &lt;- bw_loci(bwfiles$k4_primed, genes_tss_narrow)
+
+diff &lt;- bw_granges_diff_analysis(c1, c2, &quot;Naive&quot;, &quot;Primed&quot;, estimate_size_factors = FALSE)
+
+diff_lfc &lt;- lfcShrink(diff, coef=&quot;condition_Primed_vs_Naive&quot;, type=&quot;apeglm&quot;)
+# diff &lt;- results(diff, alpha = params$pval_cutoff)
+# 
+plotMA(diff_lfc)</code></pre>
 <p><img src="figure/master_gene_table.Rmd/k4m3-diff-pr-ni-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-k4m3-diff-pr-ni-1">
+Past versions of k4m3-diff-pr-ni-1.png
+</button>
+</p>
+<div id="fig-k4m3-diff-pr-ni-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/58564ac45a02620827088228a9606dfc666b36a2/docs/figure/master_gene_table.Rmd/k4m3-diff-pr-ni-1.png" target="_blank">58564ac</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r fold-show"><code>df_diff &lt;- make_diff_df(diff_lfc, &quot;H3K4m3_DS_Pr_vs_Ni&quot;)
+master_df &lt;- left_join(master_df, df_diff, by = &quot;name&quot;)</code></pre>
 </div>
 <div id="ezh2i-vs-naive" class="section level2">
 <h2>EZH2i vs Naive</h2>
+<pre class="r fold-show"><code>c1 &lt;- bw_loci(bwfiles$k4_naive, genes_tss_narrow)
+c2 &lt;- bw_loci(bwfiles$k4_naive_ezh2i, genes_tss_narrow)
+
+diff &lt;- bw_granges_diff_analysis(c1, c2, &quot;Naive&quot;, &quot;EZH2i&quot;, estimate_size_factors = FALSE)
+
+diff_lfc &lt;- lfcShrink(diff, coef=&quot;condition_EZH2i_vs_Naive&quot;, type=&quot;apeglm&quot;)
+
+
+plotMA(diff_lfc)</code></pre>
 <p><img src="figure/master_gene_table.Rmd/k4m3-diff-ezh2i-ni-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-k4m3-diff-ezh2i-ni-1">
+Past versions of k4m3-diff-ezh2i-ni-1.png
+</button>
+</p>
+<div id="fig-k4m3-diff-ezh2i-ni-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/58564ac45a02620827088228a9606dfc666b36a2/docs/figure/master_gene_table.Rmd/k4m3-diff-ezh2i-ni-1.png" target="_blank">58564ac</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r fold-show"><code>df_diff &lt;- make_diff_df(diff_lfc, &quot;H3K4m3_DS_EZH2i_vs_Ni&quot;)
+master_df &lt;- left_join(master_df, df_diff, by = &quot;name&quot;)</code></pre>
 </div>
 <div id="ezh2i-vs-primed" class="section level2">
 <h2>EZH2i vs Primed</h2>
+<pre class="r fold-show"><code>c1 &lt;- bw_loci(bwfiles$k4_primed, genes_tss_narrow)
+c2 &lt;- bw_loci(bwfiles$k4_primed_ezh2i, genes_tss_narrow)
+
+diff &lt;- bw_granges_diff_analysis(c1, c2, &quot;Primed&quot;, &quot;EZH2i&quot;, estimate_size_factors = FALSE)
+
+diff_lfc &lt;- lfcShrink(diff, coef=&quot;condition_EZH2i_vs_Primed&quot;, type=&quot;apeglm&quot;)
+
+plotMA(diff_lfc)</code></pre>
 <p><img src="figure/master_gene_table.Rmd/k4m3-diff-ezh2i-pr-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-k4m3-diff-ezh2i-pr-1">
+Past versions of k4m3-diff-ezh2i-pr-1.png
+</button>
+</p>
+<div id="fig-k4m3-diff-ezh2i-pr-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/58564ac45a02620827088228a9606dfc666b36a2/docs/figure/master_gene_table.Rmd/k4m3-diff-ezh2i-pr-1.png" target="_blank">58564ac</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r fold-show"><code>df_diff &lt;- make_diff_df(diff_lfc, &quot;H3K4m3_DS_EZH2i_vs_Pr&quot;)
+master_df &lt;- left_join(master_df, df_diff, by = &quot;name&quot;)</code></pre>
 </div>
 </div>
 <div id="h2aub-diff-analysis" class="section level1">
 <h1>H2AUb diff analysis</h1>
 <div id="primed-vs-naive-2" class="section level2">
 <h2>Primed vs Naive</h2>
+<pre class="r fold-show"><code>c1 &lt;- bw_loci(bwfiles$ub_naive, genes_tss_broad)
+c2 &lt;- bw_loci(bwfiles$ub_primed, genes_tss_broad)
+
+diff &lt;- bw_granges_diff_analysis(c1, c2, &quot;Naive&quot;, &quot;Primed&quot;, estimate_size_factors = FALSE)
+
+diff_lfc &lt;- lfcShrink(diff, coef=&quot;condition_Primed_vs_Naive&quot;, type=&quot;apeglm&quot;)
+
+plotMA(diff_lfc)</code></pre>
 <p><img src="figure/master_gene_table.Rmd/h2aub-diff-pr-ni-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h2aub-diff-pr-ni-1">
+Past versions of h2aub-diff-pr-ni-1.png
+</button>
+</p>
+<div id="fig-h2aub-diff-pr-ni-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/58564ac45a02620827088228a9606dfc666b36a2/docs/figure/master_gene_table.Rmd/h2aub-diff-pr-ni-1.png" target="_blank">58564ac</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r fold-show"><code>df_diff &lt;- make_diff_df(diff_lfc, &quot;H2Aub_DS_Pr_vs_Ni&quot;)
+master_df &lt;- left_join(master_df, df_diff, by = &quot;name&quot;)</code></pre>
 </div>
 <div id="ezh2i-vs-naive-1" class="section level2">
 <h2>EZH2i vs Naive</h2>
+<pre class="r fold-show"><code>c1 &lt;- bw_loci(bwfiles$ub_naive, genes_tss_broad)
+c2 &lt;- bw_loci(bwfiles$ub_naive_ezh2i, genes_tss_broad)
+
+diff &lt;- bw_granges_diff_analysis(c1, c2, &quot;Naive&quot;, &quot;EZH2i&quot;, estimate_size_factors = FALSE)
+diff_lfc &lt;- lfcShrink(diff, coef=&quot;condition_EZH2i_vs_Naive&quot;, type=&quot;apeglm&quot;)
+
+plotMA(diff_lfc)</code></pre>
 <p><img src="figure/master_gene_table.Rmd/h2aub-diff-ezh2i-ni-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h2aub-diff-ezh2i-ni-1">
+Past versions of h2aub-diff-ezh2i-ni-1.png
+</button>
+</p>
+<div id="fig-h2aub-diff-ezh2i-ni-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/58564ac45a02620827088228a9606dfc666b36a2/docs/figure/master_gene_table.Rmd/h2aub-diff-ezh2i-ni-1.png" target="_blank">58564ac</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r fold-show"><code>df_diff &lt;- make_diff_df(diff_lfc, &quot;H2Aub_DS_EZH2i_vs_Ni&quot;)
+master_df &lt;- left_join(master_df, df_diff, by = &quot;name&quot;)</code></pre>
 </div>
 <div id="ezh2i-vs-primed-1" class="section level2">
 <h2>EZH2i vs Primed</h2>
+<pre class="r fold-show"><code>c1 &lt;- bw_loci(bwfiles$ub_primed, genes_tss_broad)
+c2 &lt;- bw_loci(bwfiles$ub_primed_ezh2i, genes_tss_broad)
+
+diff &lt;- bw_granges_diff_analysis(c1, c2, &quot;Primed&quot;, &quot;EZH2i&quot;, estimate_size_factors = FALSE)
+
+diff_lfc &lt;- lfcShrink(diff, coef=&quot;condition_EZH2i_vs_Primed&quot;, type=&quot;apeglm&quot;)
+
+plotMA(diff_lfc)</code></pre>
 <p><img src="figure/master_gene_table.Rmd/h2aub-diff-ezh2i-pr-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h2aub-diff-ezh2i-pr-1">
+Past versions of h2aub-diff-ezh2i-pr-1.png
+</button>
+</p>
+<div id="fig-h2aub-diff-ezh2i-pr-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/58564ac45a02620827088228a9606dfc666b36a2/docs/figure/master_gene_table.Rmd/h2aub-diff-ezh2i-pr-1.png" target="_blank">58564ac</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r fold-show"><code>df_diff &lt;- make_diff_df(diff_lfc, &quot;H2Aub_DS_EZH2i_vs_Pr&quot;)
+master_df &lt;- left_join(master_df, df_diff, by = &quot;name&quot;)
+
+columns &lt;- colnames(master_df)
+order &lt;- c(&quot;name&quot;, sort(columns[!(columns %in% &quot;name&quot;)]))
+write.table(
+  format(master_df[, order], digits = 4),
+  file = &quot;./data/meta/Kumar_2020_master_gene_table_histones.tsv&quot;,
+  sep = &quot;\t&quot;,
+  col.names = T,
+  quote = F,
+  row.names = F
+)</code></pre>
 </div>
 </div>
 <div id="rna-seq-diff-analysis" class="section level1">
 <h1>RNA-seq diff analysis</h1>
 <div id="primed-vs-naive-3" class="section level2">
 <h2>Primed vs Naive</h2>
+<pre class="r fold-show"><code>ni_pr_diff &lt;- ni_pr_expression_analysis(params$datadir)
+plotMA(ni_pr_diff)</code></pre>
 <p><img src="figure/master_gene_table.Rmd/expr-diff-pr-ni-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-expr-diff-pr-ni-1">
+Past versions of expr-diff-pr-ni-1.png
+</button>
+</p>
+<div id="fig-expr-diff-pr-ni-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/58564ac45a02620827088228a9606dfc666b36a2/docs/figure/master_gene_table.Rmd/expr-diff-pr-ni-1.png" target="_blank">58564ac</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="ezh2i-vs-naive-2" class="section level2">
 <h2>EZH2i vs Naive</h2>
+<pre class="r fold-show"><code>ni_ezh2i_diff &lt;- ni_ezh2i_expression_analysis(params$datadir)
+plotMA(ni_ezh2i_diff)</code></pre>
 <p><img src="figure/master_gene_table.Rmd/expr-diff-ezh2i-ni-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-expr-diff-ezh2i-ni-1">
+Past versions of expr-diff-ezh2i-ni-1.png
+</button>
+</p>
+<div id="fig-expr-diff-ezh2i-ni-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/58564ac45a02620827088228a9606dfc666b36a2/docs/figure/master_gene_table.Rmd/expr-diff-ezh2i-ni-1.png" target="_blank">58564ac</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="ezh2i-vs-primed-2" class="section level2">
 <h2>EZH2i vs Primed</h2>
+<pre class="r fold-show"><code>pr_ezh2i_diff &lt;- pr_ezh2i_expression_analysis(params$datadir)
+plotMA(pr_ezh2i_diff)</code></pre>
 <p><img src="figure/master_gene_table.Rmd/expr-diff-ezh2i-pr-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-expr-diff-ezh2i-pr-1">
+Past versions of expr-diff-ezh2i-pr-1.png
+</button>
+</p>
+<div id="fig-expr-diff-ezh2i-pr-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/58564ac45a02620827088228a9606dfc666b36a2/docs/figure/master_gene_table.Rmd/expr-diff-ezh2i-pr-1.png" target="_blank">58564ac</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="expression-table" class="section level2">
 <h2>Expression table</h2>
+<pre class="r fold-show"><code>make_df &lt;- function(diffres, name_suffix) {
+  df &lt;- data.frame(diffres)
+  colnames(df) &lt;- paste(colnames(df), name_suffix, sep = &quot;_&quot;)
+  df$gene &lt;- rownames(df)
+  df
+}
+
+dfs &lt;- list(make_diff_df(ni_pr_diff, &quot;RNASeq_DS_Pr_vs_Ni&quot;),
+            make_diff_df(ni_ezh2i_diff, &quot;RNASeq_DS_EZH2i_vs_Ni&quot;),
+            make_diff_df(pr_ezh2i_diff, &quot;RNASeq_DS_EZH2i_vs_Pr&quot;))
+
+expr_results_all &lt;- reduce(dfs, full_join, by = &quot;name&quot;)
+
+
+columns &lt;- colnames(expr_results_all)
+order &lt;- c(&quot;name&quot;, sort(columns[!(columns %in% &quot;name&quot;)]))
+write.table(
+  format(expr_results_all[, order], digits = 4),
+  file = &quot;./data/meta/Kumar_2020_master_gene_table_expression.tsv&quot;,
+  sep = &quot;\t&quot;,
+  col.names = T,
+  quote = F,
+  row.names = F
+)</code></pre>
 </div>
 </div>
 <div id="final-table" class="section level1">
@@ -807,9 +1342,18 @@ loci &lt;- data.frame(genes_tss_broad)
 final &lt;- full_join(final, loci, by = &quot;name&quot;)
 
 columns &lt;- colnames(final)
-order &lt;- c(c(&quot;name&quot;, &quot;seqnames&quot;, &quot;start&quot;, &quot;end&quot;, &quot;strand&quot;), sort(columns[!(columns %in% c(&quot;name&quot;, &quot;seqnames&quot;, &quot;start&quot;, &quot;end&quot;, &quot;strand&quot;))]))
+order &lt;-
+  c(c(&quot;name&quot;, &quot;seqnames&quot;, &quot;start&quot;, &quot;end&quot;, &quot;strand&quot;),
+    sort(columns[!(columns %in% c(&quot;name&quot;, &quot;seqnames&quot;, &quot;start&quot;, &quot;end&quot;, &quot;strand&quot;))]))
 
-write.table(format(final[, order], digits = 4), file = &quot;./data/meta/Kumar_2020_master_gene_table.tsv&quot;, sep = &quot;\t&quot;, col.names = T, quote = F, row.names = F)</code></pre>
+write.table(
+  format(final[, order], digits = 4),
+  file = &quot;./data/meta/Kumar_2020_master_gene_table.tsv&quot;,
+  sep = &quot;\t&quot;,
+  col.names = T,
+  quote = F,
+  row.names = F
+)</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
