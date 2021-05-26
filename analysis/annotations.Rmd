@@ -15,7 +15,6 @@ params:
   pval_cutoff: 0.05
   fc_cutoff: 1
   bin_size: 10000
-  rnaseqdir: ./data/rnaseq/Collier_2017
   length_cutoff: 500
   value_cutoff: 0.01
   deciding_stat: "TPM"
@@ -31,9 +30,12 @@ were calculated.
 * **Differential TSS per histone mark**: [H2AUb](../data/bed/Kumar_2020/gene_stats/Kumar_2020_H2Aub_diff_tss.bed) and [H3K4m3](../data/bed/Kumar_2020/gene_stats/Kumar_2020_H3K4m3_diff_tss.bed) +/- 1500 bp used. [H3K27m3](../data/bed/Kumar_2020/gene_stats/Kumar_2020_H3K27m3_diff_tss.bed): +/- 2500bp used, as this is a broader mark. DESeq2 [@love2014moderated] was used ad-hoc for our Minute-ChIP data. See deseq_functions.R for more details. Naïve condition was used as reference for enrichment / depletion. Genes were selected if adjusted 
 p value from DESeq2 was lower than `r params$pval_cutoff` and absolute value of log2 fold change was > `r params$fc_cutoff`. A separate annotation was created for genes selected by this procedure that overlapped with **bivalent genes**: [H2AUb](../data/bed/Kumar_2020/gene_stats/Kumar_2020_H2Aub_diff_bivalent.bed), [H3K4m3](../data/bed/Kumar_2020/gene_stats/Kumar_2020_H3K4m3_diff_bivalent.bed), [H3K27m3](../data/bed/Kumar_2020/gene_stats/Kumar_2020_H3K27m3_diff_bivalent.bed).
 * **Differential `r params$bin_size` bp bins per histone mark**: DESeq2 was used in the same way as differential TSS. Bins were selected by p-value only. These results are cached and / or skipped in this notebook because this is a very memory-demanding step: [H2AUb](../data/bed/Kumar_2020/bins_stats/Kumar_2020_H2AUb_signif_ni_05.bed), [H3K4m3](../data/bed/Kumar_2020/bins_stats/Kumar_2020_H3K4m3_signif_ni_05.bed), [H3K27m3](../data/bed/Kumar_2020/bins_stats/Kumar_2020_H3K27m3_signif_ni_05.bed).
-* **Gene expression groups**: Data from [@collier2017] was used to select top-med-low groups of genes by expression. Genes
-were pre-filtered by transcript length (> `r params$length_cutoff`) and minimum `r params$deciding_stat` (`r params$value_cutoff`) and top, med and low 10% of genes were retained per replicate. Genes were annotated to each of these categories if they appeared in all three replicates within the given range. Downloads: Naïve [top](../data/bed/Collier_2017/Collier_2017_Naive_top.bed), [med](../data/bed/Collier_2017/Collier_2017_Naive_med.bed) and [low](../data/bed/Collier_2017/Collier_2017_Naive_low.bed). Primed [top](../data/bed/Collier_2017/Collier_2017_Primed_top.bed), [med](../data/bed/Collier_2017/Collier_2017_Primed_med.bed) and [low](../data/bed/Collier_2017/Collier_2017_Primed_low.bed).
-* **Differentially expressed genes**: Data from [@collier2017] was analysed with DESeq2 to obtain Naïve vs. Primed differentially expressed genes. Genes were selected if adjusted p value from DESeq2 was lower than `r params$pval_cutoff` and absolute value of log2 fold change was > `r params$fc_cutoff`. Downloads: [Naïve_up](../data/bed/Collier_2017/Collier_2017_Naive_down_05_logfc1.bed), [Naïve_down](../data/bed/Collier_2017/Collier_2017_Naive_up_05_logfc1.bed).
+
+* **Gene expression groups**: Our RNA-seq data was used to select top-med-low groups of genes by expression. Genes
+were pre-filtered by transcript length (> `r params$length_cutoff`) and minimum `r params$deciding_stat` (`r params$value_cutoff`) and top, med and low 10% of genes were retained per replicate. Genes were annotated to each of these categories if they appeared in all three replicates within the given range. Downloads: Naïve [top](../data/bed/Kumar_2020/Kumar_2020_Naive_top.bed), [med](../data/bed/Kumar_2020/Kumar_2020_Naive_med.bed) and [low](../data/bed/Kumar_2020/Kumar_2020_Naive_low.bed). Primed [top](../data/bed/Kumar_2020/Kumar_2020_Primed_top.bed), [med](../data/bed/Kumar_2020/Kumar_2020_Primed_med.bed) and [low](../data/bed/Kumar_2020/Kumar_2020_Primed_low.bed).
+* **Differentially expressed genes**: Our RNA-seq data was analysed with DESeq2 to obtain Naïve vs. Primed differentially expressed genes. Genes were selected if adjusted p value from DESeq2 was lower than `r params$pval_cutoff` and absolute value of log2 fold change was > `r params$fc_cutoff`. Downloads: [Naïve_up](../data/bed/Kumar_2020/Kumar_2020_Naive_down_05_logfc1.bed), [Naïve_down](../data/bed/Kumar_2020/Kumar_2020_Naive_up_05_logfc1.bed).
+
+
 * [**Master gene table**](../data/bed/Kumar_2020_gene_annotation_table.tsv). All gene-specific annotations above are summarized in a gene table. Each gene along with their locus has a column for each histone mark and also expression data.
 
 
@@ -76,6 +78,22 @@ select_signif <- function(diff_lfc, loci, p_cutoff = 0.05, fc_cutoff = 1) {
   diff_lfc <- diff_lfc[!is.na(diff_lfc$padj), ]
   signif_tss <- diff_lfc[diff_lfc$padj <= p_cutoff & abs(diff_lfc$log2FoldChange) > fc_cutoff, ]
 
+  mcols(loci) <- NULL
+  signif_gr <- loci[as.numeric(rownames(signif_tss)), ]
+  signif_gr$score <- signif_tss$log2FoldChange
+  signif_gr
+}
+
+select_groups <- function(diff_lfc, loci, p_cutoff = 0.05, fc_cutoff = 1, mean_cutoff = 10) {
+  # Here I don't want to discard the NAs as they will go to the unenriched group. I
+  # replace those with a 1
+  diff_lfc[is.na(diff_lfc$padj), "padj"] <- 1
+  
+  signif_up_tss <- diff_lfc[diff_lfc$padj <= p_cutoff & diff_lfc$log2FoldChange > fc_cutoff, ]
+  signif_down_tss <- diff_lfc[diff_lfc$padj <= p_cutoff & diff_lfc$log2FoldChange < -fc_cutoff, ]
+  
+  always_up <- diff_lfc[diff_lfc$baseMean > mean_cutoff, ]
+  
   mcols(loci) <- NULL
   signif_gr <- loci[as.numeric(rownames(signif_tss)), ]
   signif_gr$score <- signif_tss$log2FoldChange
@@ -139,6 +157,62 @@ quantile_group <- function(counts, min_q, max_q,
     q <- quantile(counts[, field], probs = c(min_q, max_q))
     dplyr::filter(counts, .data[[field]] >= q[1] & .data[[field]] <= q[2])
 }
+
+
+
+rsem_deseq_analysis <- function(counts_file, c1_columns, c2_columns, c1_name, c2_name, reference, alpha = 0.05) {
+  if (! reference %in% c(c1_name, c2_name)) {
+    stop(paste(reference, "must be", c1_name, "or", c2_name))
+  }
+  
+  counts <- read.table(counts_file, sep = "\t", header = T)
+  
+  columns <- c(c1_columns, c2_columns)
+  
+  samples <- data.frame(row.names = columns, condition = factor(c(rep(c1_name, length(c1_columns)), rep(c2_name, length(c2_columns)))))
+  samples$condition <- relevel(samples$condition, ref = reference)
+  
+  counts_only <- round(counts[, columns])
+  rownames(counts_only) <- counts$gene_id
+  
+  dds <- DESeqDataSetFromMatrix(countData = counts_only,
+                                colData = samples,
+                                design = ~ condition)
+  dds <- DESeq(dds)
+  res <- results(dds, alpha=alpha)
+  res
+}
+
+ni_pr_expression_analysis <- function(datadir, alpha = 0.05) {
+  counts_file <- file.path(datadir, "rnaseq/Kumar_2020/rsem.merged.gene_counts.tsv")
+  c1_columns <- paste("Kumar_2020_Naive", c("R1", "R2", "R3"), sep = "_")
+  c2_columns <- paste("Kumar_2020_Primed", c("R1", "R2", "R3"), sep = "_")
+  rsem_deseq_analysis(counts_file, c1_columns, c2_columns, "Naive", "Primed", "Naive", alpha)
+}
+
+ni_ezh2i_expression_analysis <- function(datadir, alpha = 0.05) {
+  counts_file <- file.path(datadir, "rnaseq/Kumar_2020/rsem.merged.gene_counts.tsv")
+  c1_columns <- paste("Kumar_2020_Naive", c("R1", "R2", "R3"), sep = "_")
+  c2_columns <- paste("Kumar_2020_Naive_EZH2i", c("R1", "R2", "R3"), sep = "_")
+  rsem_deseq_analysis(counts_file, c1_columns, c2_columns, "Naive", "EZH2i", "Naive", alpha)
+}
+
+pr_ezh2i_expression_analysis <- function(datadir, alpha = 0.05) {
+  counts_file <- file.path(datadir, "rnaseq/Kumar_2020/rsem.merged.gene_counts.tsv")
+  c1_columns <- paste("Kumar_2020_Primed", c("R1", "R2", "R3"), sep = "_")
+  c2_columns <- paste("Kumar_2020_Primed_EZH2i", c("R1", "R2", "R3"), sep = "_")
+  rsem_deseq_analysis(counts_file, c1_columns, c2_columns, "Naive", "EZH2i", "Naive", alpha)
+}
+
+
+make_df <- function(diffres, name_suffix) {
+  df <- data.frame(diffres)
+  colnames(df) <- paste(colnames(df), name_suffix, sep = "_")
+  df$gene <- rownames(df)
+  df
+}
+
+
 ```
 
 
@@ -246,6 +320,8 @@ hits <- findOverlaps(signif_gr, all_hg38_genes)
 signif_gr_w_name <- signif_gr
 signif_gr_w_name$name <- "None"
 signif_gr_w_name[queryHits(hits), ]$name <- all_hg38_genes[subjectHits(hits), ]$name
+
+# I need: Naive >> Primed, Primed >> Naive, Always high, always low.
 
 export(signif_gr_w_name, file.path(params$outgenes, "Kumar_2020_H3K27m3_diff_tss.bed"))
 
@@ -481,21 +557,7 @@ c1 <- c1[c1$padj <= p_cutoff]
 export(c1, file.path(params$outbins,"Kumar_2020_H2AUb_signif_ni_05.bed"))
 ```
 
-
-# Gene expression levels on Naïve and Primed hESC cells
-
-**Data**: Used public data from [@collier2017]: H9 embryonic stem cells in
-Naïve and Primed state, three biological replicates.
-
-```{r rnaseq-sample-table, results="asis", echo=FALSE}
-samples_file <- file.path(params$datadir, "meta",
-                          "Kumar_2020_public_data_plus_layout.csv")
-
-samples <- read.table(samples_file, header = T, sep=",")
-# 
-samples <- samples[samples$dataset_id == "Collier_2017", ]
-kable(samples, caption="Sample info")
-```
+# RNA-seq analysis
 
 ## Primary analysis
 
@@ -509,7 +571,7 @@ Reference genome used was `hg38`, downloaded from illumina iGenomes:
 
 ## Gene expression groups
 
-```{r categorize-genes}
+```{r categorize-genes-kumar}
 rsem_files <- list(
   naive = list.files(params$rnaseqdir,
                      pattern = "Naive.*genes.results", full.names = T),
@@ -581,7 +643,23 @@ export_gene_set(primed_low, file.path("./data/bed/Collier_2017", "Collier_2017_P
 
 ## Differentially expressed genes
 
-```{r deseq2, warning=FALSE, echo=FALSE, message=FALSE}
+```{r deseq2-kumar-2, warning=FALSE, echo=FALSE, message=FALSE}
+
+ni_pr_diff <- ni_pr_expression_analysis(params$datadir)
+ni_ezh2i_diff <- ni_ezh2i_expression_analysis(params$datadir)
+pr_ezh2i_diff <- pr_ezh2i_expression_analysis(params$datadir)
+
+dfs <- list(make_df(ni_pr_diff, "Ni_Pr"),
+            make_df(ni_ezh2i_diff, "Ni_EZH2i"),
+            make_df(pr_ezh2i_diff, "Pr_EZH2i"))
+
+expr_results_all <- reduce(dfs, full_join, by = "gene")
+
+```
+
+
+
+```{r deseq2-kumar, warning=FALSE, echo=FALSE, message=FALSE}
 counts_file <- file.path(params$datadir, "rnaseq/Collier_2017/rsem.merged.gene_counts.tsv")
 counts <- read.table(counts_file, sep = "\t", header = T)
 
@@ -624,6 +702,11 @@ gr_dw <- genes_all[genes_all$name %in% rownames(genes_dw), ]
 export(gr_up, "./data/bed/Collier_2017/Collier_2017_Naive_up_05_logfc1.bed")
 export(gr_dw, "./data/bed/Collier_2017/Collier_2017_Naive_down_05_logfc1.bed")
 ```
+
+# Aggregate table
+
+Here all the calculated values are merged in a single table.
+
 
 # Aggregate annotation
 

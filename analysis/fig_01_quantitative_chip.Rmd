@@ -129,9 +129,9 @@ inrc_barplot <- function(inrc, ip, colors, font = 16) {
     ylim(-max_v, max_v)
 }
 
-colors_list <- c("Naive_EZH2i"="#5F9EA0",
+colors_list <- c("Naive_EZH2i"="#82c5c6",
                  "Naive_Untreated"="#278b8b",
-                 "Primed_EZH2i"="#f47770",
+                 "Primed_EZH2i"="#f49797",
                  "Primed_Untreated"="#f44b34")
 
 ```
@@ -172,38 +172,38 @@ You can download data values here: `r embed_last_plot_data(name="H3K4m3_global.t
 
 Here global average per ChromHMM categories are shown.
 
-## H3K27m3
+<!-- ## H3K27m3 -->
 
-```{r chromhmm-h3k27m3, fig.width = 13, fig.height = 14}
-bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020"), pattern = "H3K27m3.*pooled.*hg38.scaled", full.names = T)
-labels <- gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles))
-labels <- gsub("_H9", "", labels)
+<!-- ```{r chromhmm-h3k27m3, fig.width = 13, fig.height = 14} -->
+<!-- bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020"), pattern = "H3K27m3.*pooled.*hg38.scaled", full.names = T) -->
+<!-- labels <- gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles)) -->
+<!-- labels <- gsub("_H9", "", labels) -->
 
-chromhmm <- params$chromhmm
+<!-- chromhmm <- params$chromhmm -->
 
-plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001)
-```
+<!-- plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001) -->
+<!-- ``` -->
 
-## H3K4m3
+<!-- ## H3K4m3 -->
 
-```{r chromhmm-h3k4m3, fig.width = 13, fig.height = 14}
-bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020"), pattern = "H3K4m3.*pooled.*hg38.scaled", full.names = T)
-labels <- gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles))
-labels <- gsub("_H9", "", labels)
+<!-- ```{r chromhmm-h3k4m3, fig.width = 13, fig.height = 14} -->
+<!-- bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020"), pattern = "H3K4m3.*pooled.*hg38.scaled", full.names = T) -->
+<!-- labels <- gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles)) -->
+<!-- labels <- gsub("_H9", "", labels) -->
 
-plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001)
-```
+<!-- plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001) -->
+<!-- ``` -->
 
 
-## H2AUb
+<!-- ## H2AUb -->
 
-```{r chromhmm-h2aub, fig.width = 13, fig.height = 14}
-bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020"), pattern = "H2Aub.*pooled.*hg38.scaled", full.names = T)
-labels <- gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles))
-labels <- gsub("_H9", "", labels)
+<!-- ```{r chromhmm-h2aub, fig.width = 13, fig.height = 14} -->
+<!-- bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020"), pattern = "H2Aub.*pooled.*hg38.scaled", full.names = T) -->
+<!-- labels <- gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles)) -->
+<!-- labels <- gsub("_H9", "", labels) -->
 
-chromhmm <- params$chromhmm
+<!-- chromhmm <- params$chromhmm -->
 
-plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001)
-```
+<!-- plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001) -->
+<!-- ``` -->
 

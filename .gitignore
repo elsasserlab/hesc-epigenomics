@@ -9,5 +9,11 @@ analysis/*png
 analysis/*html
 analysis/*_cache
 analysis/site_libs
-data/*
+data/bed
+data/igv
+data/bw
+data/other
+data/liftover
+data/rnaseq
+data/peaks
 *_extended.Rmd
