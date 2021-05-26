@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Carmen Navarro" />
+
+<meta name="date" content="2021-05-26" />
+
+<title>Master gene table</title>
+
+<script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/lumen.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">hesc-epigenomics</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/elsasserlab/hesc-epigenomics">
+    <span class="fas fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Master gene table</h1>
+<h4 class="author">Carmen Navarro</h4>
+<h4 class="date">2021-05-26</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2021-05-26
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>hesc-epigenomics/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210202code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20210202)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210202code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210202)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreee6efbe9b8140c8a48320082d5abf04f46c374155targetblanke6efbe9a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/e6efbe9b8140c8a48320082d5abf04f46c374155" target="_blank">e6efbe9</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreee6efbe9b8140c8a48320082d5abf04f46c374155targetblanke6efbe9a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/e6efbe9b8140c8a48320082d5abf04f46c374155" target="_blank">e6efbe9</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/200510_chromosomes_extended.Rmd
+    Ignored:    analysis/210413_bivalent_groups_extended.Rmd
+    Ignored:    analysis/210518_gene_group_categories_extended.Rmd
+    Ignored:    analysis/annotations_cache/
+    Ignored:    analysis/annotations_extended.Rmd
+    Ignored:    analysis/gene_set_analysis_extended.Rmd
+    Ignored:    analysis/global_bins_extended.Rmd
+    Ignored:    analysis/histone_marks_vs_expression_extended.Rmd
+    Ignored:    analysis/kumar_2020_comparison_extended.Rmd
+    Ignored:    analysis/messmer_2019_gene_groups_extended.Rmd
+    Ignored:    data/bed/
+    Ignored:    data/bw
+    Ignored:    data/igv/
+    Ignored:    data/liftover/
+    Ignored:    data/meta/
+    Ignored:    data/other/
+    Ignored:    data/peaks
+    Ignored:    data/rnaseq/
+
+Untracked files:
+    Untracked:  code/heatmap_panels.R
+    Untracked:  output/01_profiles.svg
+    Untracked:  output/01_proportional_w_h2aub.svg
+    Untracked:  output/01_proportional_w_h2aub_and_not_enriched_manual.svg
+    Untracked:  output/01_proportional_w_h2aub_not_enriched.svg
+    Untracked:  output/01_proportional_w_k4.png
+    Untracked:  output/01_proportional_w_k4.svg
+    Untracked:  output/01_sizes.svg
+    Untracked:  output/Kumar_2020/
+    Untracked:  output/gene_groups_k27_enriched_selected_by_shrunk_lfc.png
+    Untracked:  output/gene_groups_k27_k4_enriched_plus_h2aub.png
+    Untracked:  output/gene_groups_k27_k4_ni_enriched_selected_by_shrunk_lfc.png
+    Untracked:  output/gene_groups_k27_up_subsets.png
+    Untracked:  output/gene_groups_panel_by_k27.png
+    Untracked:  output/gene_groups_panel_by_k27_regardless_k4_high_plus_h2aub.png
+    Untracked:  output/gene_groups_panel_by_k4.png
+    Untracked:  output/gene_groups_panel_only_k4_intersecting.png
+    Untracked:  output/gene_groups_panel_only_k4_ni_high.png
+    Untracked:  output/gene_groups_panel_only_k4_ni_high_plus_h2aub.png
+    Untracked:  output/gene_groups_panel_only_k4_pr_high_plus_h2aub.png
+    Untracked:  output/gene_groups_panel_w_k4.png
+    Untracked:  output/gene_groups_panel_w_k4_enriched_naive.png
+    Untracked:  output/gene_groups_panel_w_k4_naive.png
+    Untracked:  output/h3k27m3_h2aub_panel_at_differential_k27_all_k4_enriched.png
+    Untracked:  output/test_proportional.png
+
+Unstaged changes:
+    Modified:   analysis/annotations.Rmd
+    Modified:   analysis/fig_01_quantitative_chip.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/master_gene_table.Rmd</code>) and HTML (<code>docs/master_gene_table.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/e6efbe9b8140c8a48320082d5abf04f46c374155/analysis/master_gene_table.Rmd" target="_blank">e6efbe9</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-26
+</td>
+<td>
+wflow_publish(“./analysis/master_gene_table.Rmd”, verbose = T)
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="summary" class="section level1">
+<h1>Summary</h1>
+<p>This notebook shows how the master gene table is generated. Essentially, genes from <code>hg38</code> human genome annotation are retrieved and the region around their TSS is scored for H3K4m3, H3K27m3 and H2AUb. DeSeq2 is applied in a Minute-ChIP specific manner and genes are annotated as differential across conditions: Primed vs Naïve, EZH2i treated Naïve vs Naïve and EZH2i treated Primed vs Primed. Final table includes these values, fold change differences and statistical significance scores for all genes.</p>
+<p>Additionally, expression values are also used to do a DeSeq2 analysis and such scores are incorporated to the table.</p>
+<ul>
+<li><strong>Gene annotation</strong>: Genes obtained from illumina iGenomes UCSC <code>hg38</code> refFlat.txt file that was also used for the RNA-seq primary analysis: <a href="http://igenomes.illumina.com.s3-website-us-east-1.amazonaws.com/Homo_sapiens/UCSC/hg38/Homo_sapiens_UCSC_hg38.tar.gz" class="uri">http://igenomes.illumina.com.s3-website-us-east-1.amazonaws.com/Homo_sapiens/UCSC/hg38/Homo_sapiens_UCSC_hg38.tar.gz</a></li>
+</ul>
+<p>The annotation file used is the one coming from Annotations/Genes/refFlat.txt.</p>
+<p>Additionally, since all isoforms available are annotated, one is selected per gene to do the TSS analysis. If corresponding identifier in knownCanonical from UCSC data tables exists, then corresponding isoform is used. If more than one identifier corresponds, the longest annotation is selected. For the rest, longest annotation is selected.</p>
+<ul>
+<li><a href="../data/meta/Kumar_2020_master_gene_table.tsv"><strong>Master gene table</strong></a>.</li>
+</ul>
+</div>
+<div id="helper-functions" class="section level1">
+<h1>Helper functions</h1>
+<pre class="r"><code>rsem_deseq_analysis &lt;- function(counts_file, c1_columns, c2_columns, c1_name, c2_name, reference, alpha = 0.05, shrunk = TRUE) {
+  if (! reference %in% c(c1_name, c2_name)) {
+    stop(paste(reference, &quot;must be&quot;, c1_name, &quot;or&quot;, c2_name))
+  }
+  
+  counts &lt;- read.table(counts_file, sep = &quot;\t&quot;, header = T)
+  
+  columns &lt;- c(c1_columns, c2_columns)
+  
+  samples &lt;- data.frame(row.names = columns, condition = factor(c(rep(c1_name, length(c1_columns)), rep(c2_name, length(c2_columns)))))
+  samples$condition &lt;- relevel(samples$condition, ref = reference)
+  
+  counts_only &lt;- round(counts[, columns])
+  rownames(counts_only) &lt;- counts$gene_id
+  
+  dds &lt;- DESeqDataSetFromMatrix(countData = counts_only,
+                                colData = samples,
+                                design = ~ condition)
+  dds &lt;- DESeq(dds)
+  res &lt;- NULL
+  if (shrunk == TRUE) {
+    coef_name &lt;- paste(&quot;condition&quot;, c2_name, &quot;vs&quot;, c1_name, sep = &quot;_&quot;)
+    res &lt;- lfcShrink(dds, coef=coef_name, type=&quot;apeglm&quot;)
+  } else {
+    res &lt;- results(dds, alpha=alpha)  
+  }
+  
+  res
+}
+
+ni_pr_expression_analysis &lt;- function(datadir, alpha = 0.05) {
+  counts_file &lt;- file.path(datadir, &quot;rnaseq/Kumar_2020/rsem.merged.gene_counts.tsv&quot;)
+  c1_columns &lt;- paste(&quot;Kumar_2020_Naive&quot;, c(&quot;R1&quot;, &quot;R2&quot;, &quot;R3&quot;), sep = &quot;_&quot;)
+  c2_columns &lt;- paste(&quot;Kumar_2020_Primed&quot;, c(&quot;R1&quot;, &quot;R2&quot;, &quot;R3&quot;), sep = &quot;_&quot;)
+  rsem_deseq_analysis(counts_file, c1_columns, c2_columns, &quot;Naive&quot;, &quot;Primed&quot;, &quot;Naive&quot;, alpha)
+}
+
+ni_ezh2i_expression_analysis &lt;- function(datadir, alpha = 0.05) {
+  counts_file &lt;- file.path(datadir, &quot;rnaseq/Kumar_2020/rsem.merged.gene_counts.tsv&quot;)
+  c1_columns &lt;- paste(&quot;Kumar_2020_Naive&quot;, c(&quot;R1&quot;, &quot;R2&quot;, &quot;R3&quot;), sep = &quot;_&quot;)
+  c2_columns &lt;- paste(&quot;Kumar_2020_Naive_EZH2i&quot;, c(&quot;R1&quot;, &quot;R2&quot;, &quot;R3&quot;), sep = &quot;_&quot;)
+  rsem_deseq_analysis(counts_file, c1_columns, c2_columns, &quot;Naive&quot;, &quot;EZH2i&quot;, &quot;Naive&quot;, alpha)
+}
+
+pr_ezh2i_expression_analysis &lt;- function(datadir, alpha = 0.05) {
+  counts_file &lt;- file.path(datadir, &quot;rnaseq/Kumar_2020/rsem.merged.gene_counts.tsv&quot;)
+  c1_columns &lt;- paste(&quot;Kumar_2020_Primed&quot;, c(&quot;R1&quot;, &quot;R2&quot;, &quot;R3&quot;), sep = &quot;_&quot;)
+  c2_columns &lt;- paste(&quot;Kumar_2020_Primed_EZH2i&quot;, c(&quot;R1&quot;, &quot;R2&quot;, &quot;R3&quot;), sep = &quot;_&quot;)
+  rsem_deseq_analysis(counts_file, c1_columns, c2_columns, &quot;Naive&quot;, &quot;EZH2i&quot;, &quot;Naive&quot;, alpha)
+}
+
+make_df &lt;- function(diffres, name_suffix) {
+  df &lt;- data.frame(diffres)
+  colnames(df) &lt;- paste(colnames(df), name_suffix, sep = &quot;_&quot;)
+  df$gene &lt;- rownames(df)
+  df
+}</code></pre>
+</div>
+<div id="config-analysis" class="section level1">
+<h1>Config analysis</h1>
+<pre class="r fold-show"><code># genes &lt;- genes_hg38()
+genes &lt;- canonical_genes_hg38(file.path(params$datadir, &quot;bed/Kumar_2020/refFlat.txt&quot;),
+                              file.path(params$datadir, &quot;bed/Kumar_2020/knownCanonical.txt&quot;))
+
+export(genes, &quot;./data/bed/Kumar_2020/Kumar_2020_genes_hg38_UCSC.bed&quot;)
+
+genes_tss_broad &lt;- promoters(genes, upstream = params$tss_wide, downstream = params$tss_wide)
+genes_tss_narrow &lt;- promoters(genes, upstream = params$tss_narrow, downstream = params$tss_narrow)
+
+# bwfiles per histone mark
+bwdir &lt;- file.path(params$datadir, &quot;bw/Kumar_2020&quot;)
+bwfiles &lt;-
+  list(
+    k4_naive = list.files(bwdir, pattern = &quot;H3K4m3_H9_Ni_rep[1-3].hg38.scaled.bw&quot;, full.names = T),
+    k4_naive_ezh2i = list.files(bwdir, pattern = &quot;H3K4m3_H9_Ni-EZH2i_rep[1-3].hg38.scaled.bw&quot;, full.names = T),
+    k4_primed = list.files(bwdir, pattern = &quot;H3K4m3_H9_Pr_rep[1-3].hg38.scaled.bw&quot;, full.names = T),
+    k4_primed_ezh2i = list.files(bwdir, pattern = &quot;H3K4m3_H9_Pr-EZH2i_rep[1-3].hg38.scaled.bw&quot;, full.names = T),
+    k27_naive = list.files(bwdir, pattern = &quot;H3K27m3_H9_Ni_rep[1-3].hg38.scaled.bw&quot;, full.names = T),
+    k27_primed = list.files(bwdir, pattern = &quot;H3K27m3_H9_Pr_rep[1-3].hg38.scaled.bw&quot;, full.names = T),
+    ub_naive = list.files(bwdir, pattern = &quot;H2Aub_H9_Ni_rep[1-3].hg38.scaled.bw&quot;, full.names = T),
+    ub_naive_ezh2i = list.files(bwdir, pattern = &quot;H2Aub_H9_Ni-EZH2i_rep[1-3].hg38.scaled.bw&quot;, full.names = T),
+    ub_primed = list.files(bwdir, pattern = &quot;H2Aub_H9_Pr_rep[1-3].hg38.scaled.bw&quot;, full.names = T),
+    ub_primed_ezh2i = list.files(bwdir, pattern = &quot;H2Aub_H9_Pr-EZH2i_rep[1-3].hg38.scaled.bw&quot;, full.names = T),
+    in_naive = list.files(bwdir, pattern = &quot;IN_H9_Ni.*rep[1-3].hg38.*.bw&quot;, full.names = T),
+    in_naive_ezh2i = list.files(bwdir, pattern = &quot;IN_H9_Ni-EZH2i.*rep[1-3].hg38.*.bw&quot;, full.names = T),
+    in_primed = list.files(bwdir, pattern = &quot;IN_H9_Pr_rep[1-3].hg38.*.bw&quot;, full.names = T),
+    in_primed_ezh2i = list.files(bwdir, pattern = &quot;IN_H9_Pr-EZH2i.*rep[1-3].hg38.*.bw&quot;, full.names = T)
+  )
+
+bwfiles_pooled &lt;-
+  list(
+    k4 = list.files(bwdir, pattern = &quot;H3K4m3.*pooled.hg38.scaled.*&quot;, full.names = T),
+    k27 = list.files(bwdir, pattern = &quot;H3K27m3.*pooled.hg38.scaled.*&quot;, full.names = T),
+    ub = list.files(bwdir, pattern = &quot;H2Aub.*pooled.hg38.scaled.*&quot;, full.names = T),
+    input = list.files(bwdir, pattern = &quot;IN.*pooled.hg38.*&quot;, full.names = T)
+  )
+
+sorted_colors &lt;- unname(c(gl_condition_colors[&quot;Naive_Untreated&quot;],
+                        gl_condition_colors[&quot;Naive_EZH2i&quot;],
+                        gl_condition_colors[&quot;Primed_Untreated&quot;],
+                        gl_condition_colors[&quot;Primed_EZH2i&quot;]))
+
+grey_colors &lt;- c(&quot;#cccccc&quot;, &quot;#aaaaaa&quot;, &quot;#888888&quot;, &quot;#555555&quot;)</code></pre>
+</div>
+<div id="raw-pooled-values-at-tss-per-gene" class="section level1">
+<h1>Raw pooled values at TSS per gene</h1>
+<p>At this point kept area around TSS the same size even though K4 is narrower, so it’s fairer to put them all in the same table.</p>
+</div>
+<div id="k27m3-diff-analysis" class="section level1">
+<h1>K27m3 diff analysis</h1>
+<div id="primed-vs-naive" class="section level2">
+<h2>Primed vs Naive</h2>
+<p><img src="figure/master_gene_table.Rmd/k27m3-diff-pr-ni-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="ezh2i-vs-naive-and-primed" class="section level2">
+<h2>EZH2i vs Naive and primed</h2>
+<p>These are skipped, as EZH2i treatment wipes all H3K27me3 so it does not make any sense to do the differential analysis in this context.</p>
+</div>
+</div>
+<div id="h3k4m3-diff-analysis" class="section level1">
+<h1>H3K4m3 diff analysis</h1>
+<div id="primed-vs-naive-1" class="section level2">
+<h2>Primed vs Naive</h2>
+<p><img src="figure/master_gene_table.Rmd/k4m3-diff-pr-ni-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="ezh2i-vs-naive" class="section level2">
+<h2>EZH2i vs Naive</h2>
+<p><img src="figure/master_gene_table.Rmd/k4m3-diff-ezh2i-ni-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="ezh2i-vs-primed" class="section level2">
+<h2>EZH2i vs Primed</h2>
+<p><img src="figure/master_gene_table.Rmd/k4m3-diff-ezh2i-pr-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="h2aub-diff-analysis" class="section level1">
+<h1>H2AUb diff analysis</h1>
+<div id="primed-vs-naive-2" class="section level2">
+<h2>Primed vs Naive</h2>
+<p><img src="figure/master_gene_table.Rmd/h2aub-diff-pr-ni-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="ezh2i-vs-naive-1" class="section level2">
+<h2>EZH2i vs Naive</h2>
+<p><img src="figure/master_gene_table.Rmd/h2aub-diff-ezh2i-ni-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="ezh2i-vs-primed-1" class="section level2">
+<h2>EZH2i vs Primed</h2>
+<p><img src="figure/master_gene_table.Rmd/h2aub-diff-ezh2i-pr-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="rna-seq-diff-analysis" class="section level1">
+<h1>RNA-seq diff analysis</h1>
+<div id="primed-vs-naive-3" class="section level2">
+<h2>Primed vs Naive</h2>
+<p><img src="figure/master_gene_table.Rmd/expr-diff-pr-ni-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="ezh2i-vs-naive-2" class="section level2">
+<h2>EZH2i vs Naive</h2>
+<p><img src="figure/master_gene_table.Rmd/expr-diff-ezh2i-ni-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="ezh2i-vs-primed-2" class="section level2">
+<h2>EZH2i vs Primed</h2>
+<p><img src="figure/master_gene_table.Rmd/expr-diff-ezh2i-pr-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="expression-table" class="section level2">
+<h2>Expression table</h2>
+</div>
+</div>
+<div id="final-table" class="section level1">
+<h1>Final table</h1>
+<pre class="r fold-show"><code>final &lt;- full_join(master_df, expr_results_all, by = &quot;name&quot;)
+# Add TSS broad coords
+loci &lt;- data.frame(genes_tss_broad)
+final &lt;- full_join(final, loci, by = &quot;name&quot;)
+
+columns &lt;- colnames(final)
+order &lt;- c(c(&quot;name&quot;, &quot;seqnames&quot;, &quot;start&quot;, &quot;end&quot;, &quot;strand&quot;), sort(columns[!(columns %in% c(&quot;name&quot;, &quot;seqnames&quot;, &quot;start&quot;, &quot;end&quot;, &quot;strand&quot;))]))
+
+write.table(format(final[, order], digits = 4), file = &quot;./data/meta/Kumar_2020_master_gene_table.tsv&quot;, sep = &quot;\t&quot;, col.names = T, quote = F, row.names = F)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r fold-show"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.0 (2021-05-18)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 20.04.2 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=sv_SE.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=sv_SE.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=sv_SE.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=sv_SE.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats4    parallel  stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] biomaRt_2.48.0                          
+ [2] DESeq2_1.32.0                           
+ [3] SummarizedExperiment_1.22.0             
+ [4] MatrixGenerics_1.4.0                    
+ [5] matrixStats_0.58.0                      
+ [6] tidyr_1.1.3                             
+ [7] cowplot_1.1.1                           
+ [8] xfun_0.23                               
+ [9] dplyr_1.0.6                             
+[10] purrr_0.3.4                             
+[11] rtracklayer_1.52.0                      
+[12] org.Hs.eg.db_3.13.0                     
+[13] TxDb.Hsapiens.UCSC.hg38.knownGene_3.13.0
+[14] GenomicFeatures_1.44.0                  
+[15] AnnotationDbi_1.54.0                    
+[16] Biobase_2.52.0                          
+[17] GenomicRanges_1.44.0                    
+[18] GenomeInfoDb_1.28.0                     
+[19] IRanges_2.26.0                          
+[20] S4Vectors_0.30.0                        
+[21] BiocGenerics_0.38.0                     
+[22] knitr_1.33                              
+[23] ggplot2_3.3.3                           
+[24] wigglescout_0.13.1                      
+[25] workflowr_1.6.2                         
+
+loaded via a namespace (and not attached):
+  [1] colorspace_2.0-1         rjson_0.2.20             ellipsis_0.3.2          
+  [4] rprojroot_2.0.2          XVector_0.32.0           fs_1.5.0                
+  [7] listenv_0.8.0            furrr_0.2.2              bit64_4.0.5             
+ [10] mvtnorm_1.1-1            apeglm_1.14.0            fansi_0.5.0             
+ [13] xml2_1.3.2               splines_4.1.0            codetools_0.2-18        
+ [16] cachem_1.0.5             geneplotter_1.70.0       jsonlite_1.7.2          
+ [19] Rsamtools_2.8.0          annotate_1.70.0          dbplyr_2.1.1            
+ [22] png_0.1-7                compiler_4.1.0           httr_1.4.2              
+ [25] assertthat_0.2.1         Matrix_1.3-3             fastmap_1.1.0           
+ [28] later_1.2.0              htmltools_0.5.1.1        prettyunits_1.1.1       
+ [31] tools_4.1.0              coda_0.19-4              gtable_0.3.0            
+ [34] glue_1.4.2               GenomeInfoDbData_1.2.6   reshape2_1.4.4          
+ [37] rappdirs_0.3.3           Rcpp_1.0.6               bbmle_1.0.23.1          
+ [40] jquerylib_0.1.4          vctrs_0.3.8              Biostrings_2.60.0       
+ [43] stringr_1.4.0            globals_0.14.0           lifecycle_1.0.0         
+ [46] restfulr_0.0.13          XML_3.99-0.6             future_1.21.0           
+ [49] MASS_7.3-54              zlibbioc_1.38.0          scales_1.1.1            
+ [52] hms_1.1.0                promises_1.2.0.1         RColorBrewer_1.1-2      
+ [55] yaml_2.2.1               curl_4.3.1               memoise_2.0.0           
+ [58] emdbook_1.3.12           sass_0.4.0               bdsmatrix_1.3-4         
+ [61] stringi_1.6.2            RSQLite_2.2.7            highr_0.9               
+ [64] genefilter_1.74.0        BiocIO_1.2.0             filelock_1.0.2          
+ [67] BiocParallel_1.26.0      rlang_0.4.11             pkgconfig_2.0.3         
+ [70] bitops_1.0-7             evaluate_0.14            lattice_0.20-44         
+ [73] GenomicAlignments_1.28.0 bit_4.0.4                tidyselect_1.1.1        
+ [76] parallelly_1.25.0        plyr_1.8.6               magrittr_2.0.1          
+ [79] R6_2.5.0                 generics_0.1.0           DelayedArray_0.18.0     
+ [82] DBI_1.1.1                pillar_1.6.1             whisker_0.4             
+ [85] withr_2.4.2              survival_3.2-11          KEGGREST_1.32.0         
+ [88] RCurl_1.98-1.3           tibble_3.1.2             crayon_1.4.1            
+ [91] utf8_1.2.1               BiocFileCache_2.0.0      rmarkdown_2.8           
+ [94] progress_1.2.2           locfit_1.5-9.4           grid_4.1.0              
+ [97] blob_1.2.1               git2r_0.28.0             digest_0.6.27           
+[100] xtable_1.8-4             numDeriv_2016.8-1.1      httpuv_1.6.1            
+[103] munsell_0.5.0            bslib_0.2.5.1           </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
