@@ -186,7 +186,7 @@ grey_colors <- c("#cccccc", "#aaaaaa", "#888888", "#555555")
 At this point kept area around TSS the same size even though K4 is narrower,
 so it's fairer to put them all in the same table.
 
-```{r raw-pooled, echo=F, warning=F, message=F}
+```{r raw-pooled, warning=F, message=F}
 pooled_k4 <- bw_loci(bwfiles_pooled$k4, genes_tss_broad, labels = gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles_pooled$k4)))
 pooled_k27 <- bw_loci(bwfiles_pooled$k27, genes_tss_broad, labels = gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles_pooled$k27)))
 pooled_h2aub <- bw_loci(bwfiles_pooled$k27, genes_tss_broad, labels = gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles_pooled$ub)))
@@ -208,7 +208,7 @@ master_df <- pooled_df
 
 ## Primed vs Naive
 
-```{r k27m3-diff-pr-ni, echo=F, warning=F, message=F}
+```{r k27m3-diff-pr-ni, warning=F, message=F}
 c1 <- bw_loci(bwfiles$k27_naive, genes_tss_broad)
 c2 <- bw_loci(bwfiles$k27_primed, genes_tss_broad)
 
@@ -242,7 +242,7 @@ any sense to do the differential analysis in this  context.
 
 ## Primed vs Naive
 
-```{r k4m3-diff-pr-ni, echo=F, warning=F, message=F}
+```{r k4m3-diff-pr-ni, warning=F, message=F}
 c1 <- bw_loci(bwfiles$k4_naive, genes_tss_narrow)
 c2 <- bw_loci(bwfiles$k4_primed, genes_tss_narrow)
 
@@ -261,15 +261,15 @@ master_df <- left_join(master_df, df_diff, by = "name")
 
 ## EZH2i vs Naive
 
-```{r k4m3-diff-ezh2i-ni, echo=F, warning=F, message=F}
+```{r k4m3-diff-ezh2i-ni, warning=F, message=F}
 c1 <- bw_loci(bwfiles$k4_naive, genes_tss_narrow)
 c2 <- bw_loci(bwfiles$k4_naive_ezh2i, genes_tss_narrow)
 
 diff <- bw_granges_diff_analysis(c1, c2, "Naive", "EZH2i", estimate_size_factors = FALSE)
 
 diff_lfc <- lfcShrink(diff, coef="condition_EZH2i_vs_Naive", type="apeglm")
-# diff <- results(diff, alpha = params$pval_cutoff)
-# 
+
+
 plotMA(diff_lfc)
 
 df_diff <- make_diff_df(diff_lfc, "H3K4m3_DS_EZH2i_vs_Ni")
@@ -279,15 +279,14 @@ master_df <- left_join(master_df, df_diff, by = "name")
 
 ## EZH2i vs Primed
 
-```{r k4m3-diff-ezh2i-pr, echo=F, warning=F, message=F}
+```{r k4m3-diff-ezh2i-pr, warning=F, message=F}
 c1 <- bw_loci(bwfiles$k4_primed, genes_tss_narrow)
 c2 <- bw_loci(bwfiles$k4_primed_ezh2i, genes_tss_narrow)
 
 diff <- bw_granges_diff_analysis(c1, c2, "Primed", "EZH2i", estimate_size_factors = FALSE)
 
 diff_lfc <- lfcShrink(diff, coef="condition_EZH2i_vs_Primed", type="apeglm")
-# diff <- results(diff, alpha = params$pval_cutoff)
-# 
+
 plotMA(diff_lfc)
 
 df_diff <- make_diff_df(diff_lfc, "H3K4m3_DS_EZH2i_vs_Pr")
@@ -298,7 +297,7 @@ master_df <- left_join(master_df, df_diff, by = "name")
 # H2AUb diff analysis
 ## Primed vs Naive
 
-```{r h2aub-diff-pr-ni, echo=F, warning=F, message=F}
+```{r h2aub-diff-pr-ni, warning=F, message=F}
 c1 <- bw_loci(bwfiles$ub_naive, genes_tss_broad)
 c2 <- bw_loci(bwfiles$ub_primed, genes_tss_broad)
 
@@ -316,7 +315,7 @@ master_df <- left_join(master_df, df_diff, by = "name")
 
 ## EZH2i vs Naive
 
-```{r h2aub-diff-ezh2i-ni, echo=F, warning=F, message=F}
+```{r h2aub-diff-ezh2i-ni, warning=F, message=F}
 c1 <- bw_loci(bwfiles$ub_naive, genes_tss_broad)
 c2 <- bw_loci(bwfiles$ub_naive_ezh2i, genes_tss_broad)
 
@@ -332,15 +331,14 @@ master_df <- left_join(master_df, df_diff, by = "name")
 
 ## EZH2i vs Primed
 
-```{r h2aub-diff-ezh2i-pr, echo=F, warning=F, message=F}
+```{r h2aub-diff-ezh2i-pr, warning=F, message=F}
 c1 <- bw_loci(bwfiles$ub_primed, genes_tss_broad)
 c2 <- bw_loci(bwfiles$ub_primed_ezh2i, genes_tss_broad)
 
 diff <- bw_granges_diff_analysis(c1, c2, "Primed", "EZH2i", estimate_size_factors = FALSE)
 
 diff_lfc <- lfcShrink(diff, coef="condition_EZH2i_vs_Primed", type="apeglm")
-# diff <- results(diff, alpha = params$pval_cutoff)
-# 
+
 plotMA(diff_lfc)
 
 df_diff <- make_diff_df(diff_lfc, "H2Aub_DS_EZH2i_vs_Pr")
@@ -348,14 +346,21 @@ master_df <- left_join(master_df, df_diff, by = "name")
 
 columns <- colnames(master_df)
 order <- c("name", sort(columns[!(columns %in% "name")]))
-write.table(format(master_df[, order], digits = 4), file = "./data/meta/Kumar_2020_master_gene_table_histones.tsv", sep = "\t", col.names = T, quote = F, row.names = F)
+write.table(
+  format(master_df[, order], digits = 4),
+  file = "./data/meta/Kumar_2020_master_gene_table_histones.tsv",
+  sep = "\t",
+  col.names = T,
+  quote = F,
+  row.names = F
+)
 ```
 
 # RNA-seq diff analysis
 
 ## Primed vs Naive
 
-```{r expr-diff-pr-ni, echo=F, warning=F, message=F}
+```{r expr-diff-pr-ni, warning=F, message=F}
 ni_pr_diff <- ni_pr_expression_analysis(params$datadir)
 plotMA(ni_pr_diff)
 
@@ -363,21 +368,21 @@ plotMA(ni_pr_diff)
 
 ## EZH2i vs Naive
 
-```{r expr-diff-ezh2i-ni, echo=F, warning=F, message=F}
+```{r expr-diff-ezh2i-ni, warning=F, message=F}
 ni_ezh2i_diff <- ni_ezh2i_expression_analysis(params$datadir)
 plotMA(ni_ezh2i_diff)
 ```
 
 ## EZH2i vs Primed
 
-```{r expr-diff-ezh2i-pr, echo=F, warning=F, message=F}
+```{r expr-diff-ezh2i-pr, warning=F, message=F}
 pr_ezh2i_diff <- pr_ezh2i_expression_analysis(params$datadir)
 plotMA(pr_ezh2i_diff)
 ```
 
 ## Expression table
 
-```{r expr-diff-table, echo=F, warning=F, message=F}
+```{r expr-diff-table, warning=F, message=F}
 
 make_df <- function(diffres, name_suffix) {
   df <- data.frame(diffres)
@@ -392,9 +397,17 @@ dfs <- list(make_diff_df(ni_pr_diff, "RNASeq_DS_Pr_vs_Ni"),
 
 expr_results_all <- reduce(dfs, full_join, by = "name")
 
+
 columns <- colnames(expr_results_all)
 order <- c("name", sort(columns[!(columns %in% "name")]))
-write.table(format(expr_results_all[, order], digits = 4), file = "./data/meta/Kumar_2020_master_gene_table_expression.tsv", sep = "\t", col.names = T, quote = F, row.names = F)
+write.table(
+  format(expr_results_all[, order], digits = 4),
+  file = "./data/meta/Kumar_2020_master_gene_table_expression.tsv",
+  sep = "\t",
+  col.names = T,
+  quote = F,
+  row.names = F
+)
 
 ```
 
@@ -407,9 +420,18 @@ loci <- data.frame(genes_tss_broad)
 final <- full_join(final, loci, by = "name")
 
 columns <- colnames(final)
-order <- c(c("name", "seqnames", "start", "end", "strand"), sort(columns[!(columns %in% c("name", "seqnames", "start", "end", "strand"))]))
+order <-
+  c(c("name", "seqnames", "start", "end", "strand"),
+    sort(columns[!(columns %in% c("name", "seqnames", "start", "end", "strand"))]))
 
-write.table(format(final[, order], digits = 4), file = "./data/meta/Kumar_2020_master_gene_table.tsv", sep = "\t", col.names = T, quote = F, row.names = F)
+write.table(
+  format(final[, order], digits = 4),
+  file = "./data/meta/Kumar_2020_master_gene_table.tsv",
+  sep = "\t",
+  col.names = T,
+  quote = F,
+  row.names = F
+)
 
 ```
 
