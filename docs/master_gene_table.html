@@ -397,7 +397,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-05-26
+<strong>Last updated:</strong> 2021-05-27
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -488,16 +488,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreedc04f0935f2d92f398ddf4f8570b22df857389aftargetblankdc04f09a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/dc04f0935f2d92f398ddf4f8570b22df857389af" target="_blank">dc04f09</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree3c72dd4c2698191b9a3ac88bcf993b28cb8f8cbetargetblank3c72dd4a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/3c72dd4c2698191b9a3ac88bcf993b28cb8f8cbe" target="_blank">3c72dd4</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreedc04f0935f2d92f398ddf4f8570b22df857389aftargetblankdc04f09a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree3c72dd4c2698191b9a3ac88bcf993b28cb8f8cbetargetblank3c72dd4a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/dc04f0935f2d92f398ddf4f8570b22df857389af" target="_blank">dc04f09</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/3c72dd4c2698191b9a3ac88bcf993b28cb8f8cbe" target="_blank">3c72dd4</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -526,6 +526,7 @@ Ignored files:
 
 Untracked files:
     Untracked:  code/heatmap_panels.R
+    Untracked:  data/meta/Kumar_2020_master_gene_table.zip
     Untracked:  output/01_profiles.svg
     Untracked:  output/01_proportional_w_h2aub.svg
     Untracked:  output/01_proportional_w_h2aub_and_not_enriched_manual.svg
@@ -550,6 +551,9 @@ Untracked files:
     Untracked:  output/gene_groups_panel_w_k4_naive.png
     Untracked:  output/h3k27m3_h2aub_panel_at_differential_k27_all_k4_enriched.png
     Untracked:  output/test_proportional.png
+
+Unstaged changes:
+    Deleted:    data/meta/.~lock.Kumar_2020_master_gene_table.tsv#
 
 </code></pre>
 <p>
@@ -588,6 +592,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/3c72dd4c2698191b9a3ac88bcf993b28cb8f8cbe/analysis/master_gene_table.Rmd" target="_blank">3c72dd4</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-27
+</td>
+<td>
+wflow_publish(“./analysis/master_gene_table.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/elsasserlab/hesc-epigenomics/847f990ad51c34280a45cb9f32782854a2fa3d28/docs/master_gene_table.html" target="_blank">847f990</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-26
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1308,7 +1346,21 @@ cnluzon
 </div>
 <div id="expression-table" class="section level2">
 <h2>Expression table</h2>
-<pre class="r fold-show"><code>make_df &lt;- function(diffres, name_suffix) {
+<pre class="r fold-show"><code>counts_file &lt;- file.path(params$datadir, &quot;rnaseq/Kumar_2020/rsem.merged.gene_tpm.tsv&quot;)
+tpm_counts &lt;- read.table(counts_file, sep = &quot;\t&quot;, header = TRUE)
+
+columns &lt;- colnames(tpm_counts)[!colnames(tpm_counts) %in% c(&quot;transcript_id.s.&quot;)]
+tpm_counts &lt;- tpm_counts[, columns]
+
+new_values &lt;- paste(&quot;RNASeq_TPM&quot;,
+                    gsub(&quot;Kumar_2020_&quot;, &quot;&quot;, columns[2:length(columns)]), sep = &quot;_&quot;)
+new_values &lt;- gsub(&quot;Naive&quot;, &quot;Ni&quot;, new_values)
+new_values &lt;- gsub(&quot;Primed&quot;, &quot;Pr&quot;, new_values)
+new_columns &lt;- c(&quot;name&quot;, new_values)
+
+colnames(tpm_counts) &lt;- new_columns
+
+make_df &lt;- function(diffres, name_suffix) {
   df &lt;- data.frame(diffres)
   colnames(df) &lt;- paste(colnames(df), name_suffix, sep = &quot;_&quot;)
   df$gene &lt;- rownames(df)
@@ -1317,7 +1369,8 @@ cnluzon
 
 dfs &lt;- list(make_diff_df(ni_pr_diff, &quot;RNASeq_DS_Pr_vs_Ni&quot;),
             make_diff_df(ni_ezh2i_diff, &quot;RNASeq_DS_EZH2i_vs_Ni&quot;),
-            make_diff_df(pr_ezh2i_diff, &quot;RNASeq_DS_EZH2i_vs_Pr&quot;))
+            make_diff_df(pr_ezh2i_diff, &quot;RNASeq_DS_EZH2i_vs_Pr&quot;),
+            tpm_counts)
 
 expr_results_all &lt;- reduce(dfs, full_join, by = &quot;name&quot;)
 
