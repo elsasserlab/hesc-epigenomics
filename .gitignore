@@ -16,4 +16,5 @@ data/other
 data/liftover
 data/rnaseq
 data/peaks
+.~lock*
 *_extended.Rmd
