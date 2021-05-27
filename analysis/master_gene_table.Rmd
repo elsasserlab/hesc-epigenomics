@@ -384,6 +384,20 @@ plotMA(pr_ezh2i_diff)
 
 ```{r expr-diff-table, warning=F, message=F}
 
+counts_file <- file.path(params$datadir, "rnaseq/Kumar_2020/rsem.merged.gene_tpm.tsv")
+tpm_counts <- read.table(counts_file, sep = "\t", header = TRUE)
+
+columns <- colnames(tpm_counts)[!colnames(tpm_counts) %in% c("transcript_id.s.")]
+tpm_counts <- tpm_counts[, columns]
+
+new_values <- paste("RNASeq_TPM",
+                    gsub("Kumar_2020_", "", columns[2:length(columns)]), sep = "_")
+new_values <- gsub("Naive", "Ni", new_values)
+new_values <- gsub("Primed", "Pr", new_values)
+new_columns <- c("name", new_values)
+
+colnames(tpm_counts) <- new_columns
+
 make_df <- function(diffres, name_suffix) {
   df <- data.frame(diffres)
   colnames(df) <- paste(colnames(df), name_suffix, sep = "_")
@@ -393,7 +407,8 @@ make_df <- function(diffres, name_suffix) {
 
 dfs <- list(make_diff_df(ni_pr_diff, "RNASeq_DS_Pr_vs_Ni"),
             make_diff_df(ni_ezh2i_diff, "RNASeq_DS_EZH2i_vs_Ni"),
-            make_diff_df(pr_ezh2i_diff, "RNASeq_DS_EZH2i_vs_Pr"))
+            make_diff_df(pr_ezh2i_diff, "RNASeq_DS_EZH2i_vs_Pr"),
+            tpm_counts)
 
 expr_results_all <- reduce(dfs, full_join, by = "name")
 
