@@ -1,0 +1,415 @@
+---
+title: "Master bins table"
+author: "Carmen Navarro"
+date: "2021-05-26"
+output:
+  workflowr::wflow_html:
+    code_folding: show
+editor_options:
+  chunk_output_type: console
+params:
+  datadir: ./data/
+  pval_cutoff: 0.05
+  fc_cutoff: 1
+  bin_size: 10000
+  shrink: FALSE
+---
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
+library(wigglescout)
+library(ggplot2)
+library(knitr)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+library(org.Hs.eg.db)
+library(rtracklayer)
+library(GenomicRanges)
+library(purrr)
+library(dplyr)
+library(xfun)
+library(cowplot)
+library(tidyr)
+library(DESeq2)
+
+source("./code/ucsc_annotations.R")
+source("./code/deseq_functions.R")
+source("./code/embed_functions.R")
+source("./code/globals.R")
+
+knitr::opts_chunk$set(dev = c('png'))
+knitr::opts_chunk$set(class.source='fold-show')
+
+table_name <- "Kumar_2020_master_bins_10kb_table"
+
+if (params$shrink) {
+  table_name <- paste(table_name, "_shrunk", ".tsv", sep = "")
+} else {
+  table_name <- paste(table_name, "_raw", ".tsv", sep = "")
+}
+
+table_file <- file.path("./data/meta", table_name)
+
+table_path_html <- file.path("../data/meta", table_name)
+```
+
+
+This notebook shows how the master bins table is generated. Essentially, `hg38`
+human genome is partitioned into `r params$bin_size` bp windows and their mean
+coverage value is calculated for H3K4m3, H3K27m3 and H2AUb. DeSeq2 is applied in
+a Minute-ChIP specific manner and bins are annotated as differential across
+conditions:
+
+* Primed vs Naïve,
+* EZH2i treated Naïve vs Naïve and
+* EZH2i treated Primed vs Primed.
+
+Additionally, also a cross-comparison between H2Aub and H3K27m3 marks is done,
+both for Naïve state and Primed state.
+
+Final table includes these values, fold-change differences and statistical
+significance scores for all genes.
+
+* [**Master bins table**](`r table_path_html`).
+
+# Helper functions
+
+```{r helper-functions, class.source = NULL}
+
+calculate_results <- function(diff, shrink, pval) {
+  diff_lfc <- NULL
+  if (shrink == TRUE) {
+    diff_lfc <- lfcShrink(diff, coef="condition_Primed_vs_Naive", type="apeglm")
+  } else {
+    diff_lfc <- results(diff, alpha = pval)
+  }
+  diff_lfc
+}
+
+make_diff_df <- function(diff_lfc, loci, prefix) {
+  df_diff <- data.frame(diff_lfc)
+  # DS stands for DeSeq
+  colnames(df_diff) <- paste(prefix, colnames(df_diff), sep = "_")
+  # df_diff$name <- rownames(df_diff)
+
+  cbind(data.frame(loci)[, c("seqnames", "start", "end", "strand")], df_diff)
+}
+
+make_label <- function(fnames) {
+  labs <- gsub("_pooled.hg38.*scaled.bw", "", basename(fnames))
+  # Remove the uncomfortable . in EZH2i elements
+  labs <- gsub("-", "_", labs)
+  labs <- gsub("H9_", "", labs)
+  paste(labs, "mean_cov", sep = "_")
+}
+
+
+make_label2 <- function(fnames) {
+  labs <- gsub(".hg38.*scaled.bw", "", basename(fnames))
+  # Remove the uncomfortable . in EZH2i elements
+  labs <- gsub("-", "_", labs)
+  labs <- gsub("H9_", "", labs)
+  paste(labs, "mean_cov", sep = "_")
+}
+
+
+gr_cbind <- function(lociset) {
+  mcols_df <- function(gr) { data.frame(mcols(gr)) }
+  
+  dfs <- lapply(lociset, mcols_df)
+  values <- dfs %>% reduce(cbind)
+  cbind(data.frame(lociset[[1]])[, c("seqnames", "start", "end", "strand")], values)
+}
+
+diff_analysis <- function(bwfiles_c1, bwfiles_c2, gr, name_c1, name_c2, shrink, pval) {
+  c1 <- bw_loci(bwfiles_c1, bins_gr)
+  c2 <- bw_loci(bwfiles_c2, bins_gr)
+
+  diff <- bw_granges_diff_analysis(c1, c2, "Naive", "Primed",
+                                   estimate_size_factors = FALSE)
+  
+  diff_lfc <- calculate_results(diff, shrink, pval)
+  diff_lfc
+}
+
+```
+
+# Config analysis
+
+```{r config-analysis}
+get_bw_files <- function(pattern) {
+  bwdir <- file.path(params$datadir, "bw/Kumar_2020")
+  list.files(bwdir, pattern = pattern, full.names = T)
+}
+
+bivalent_gr <- import(file.path(params$datadir, "bed/Bivalent_Court2017.hg38.bed"))
+bins_gr <- build_bins(bin_size = params$bin_size, genome = "hg38")
+
+# Subsample for testing
+# bins_gr <- sort(bins_gr[sample(1:length(bins_gr), 2000), ])
+
+bwfiles <-
+  list(
+    k4_naive = get_bw_files("H3K4m3_H9_Ni_rep[1-3].hg38.scaled.bw"),
+    k4_naive_ezh2i = get_bw_files("H3K4m3_H9_Ni-EZH2i_rep[1-3].hg38.scaled.bw"),
+    k4_primed = get_bw_files("H3K4m3_H9_Pr_rep[1-3].hg38.scaled.bw"),
+    k4_primed_ezh2i = get_bw_files("H3K4m3_H9_Pr-EZH2i_rep[1-3].hg38.scaled.bw"),
+    k27_naive = get_bw_files("H3K27m3_H9_Ni_rep[1-3].hg38.scaled.bw"),
+    k27_primed = get_bw_files("H3K27m3_H9_Pr_rep[1-3].hg38.scaled.bw"),
+    ub_naive = get_bw_files("H2Aub_H9_Ni_rep[1-3].hg38.scaled.bw"),
+    ub_naive_ezh2i = get_bw_files("H2Aub_H9_Ni-EZH2i_rep[1-3].hg38.scaled.bw"),
+    ub_primed = get_bw_files("H2Aub_H9_Pr_rep[1-3].hg38.scaled.bw"),
+    ub_primed_ezh2i = get_bw_files("H2Aub_H9_Pr-EZH2i_rep[1-3].hg38.scaled.bw"),
+    in_naive = get_bw_files("IN_H9_Ni.*rep[1-3].hg38.*.bw"),
+    in_naive_ezh2i = get_bw_files("IN_H9_Ni-EZH2i.*rep[1-3].hg38.*.bw"),
+    in_primed = get_bw_files("IN_H9_Pr_rep[1-3].hg38.*.bw"),
+    in_primed_ezh2i = get_bw_files("IN_H9_Pr-EZH2i.*rep[1-3].hg38.*.bw")
+  )
+
+bwfiles_pooled <-
+  list(
+    k4 = get_bw_files("H3K4m3.*pooled.hg38.scaled.*"),
+    k27 = get_bw_files("H3K27m3.*pooled.hg38.scaled.*"),
+    ub = get_bw_files("H2Aub.*pooled.hg38.scaled.*"),
+    input = get_bw_files("IN.*pooled.hg38.*")
+  )
+
+```
+
+# Raw pooled values at bins
+
+```{r raw-pooled, warning=F, message=F}
+pooled_k4 <- bw_loci(bwfiles_pooled$k4, bins_gr, labels = make_label(bwfiles_pooled$k4))
+pooled_k27 <- bw_loci(bwfiles_pooled$k27, bins_gr, labels = make_label(bwfiles_pooled$k27))
+pooled_h2aub <- bw_loci(bwfiles_pooled$ub, bins_gr, labels = make_label(bwfiles_pooled$ub))
+pooled_inp <- bw_loci(bwfiles_pooled$input, bins_gr, labels = make_label(bwfiles_pooled$input))
+
+pooled_df <- gr_cbind(list(pooled_k4, pooled_k27, pooled_h2aub, pooled_inp))
+
+master_df <- pooled_df
+```
+
+# Raw replicates values at bins
+
+```{r raw-replicates, warning=F, message=F}
+reps_df <- bw_loci(unname(unlist(bwfiles)), loci = bins_gr, labels = make_label2(unname(unlist(bwfiles))))
+# In case we want the replicates as well in the master table
+master_df <- gr_cbind(list(pooled_k4, pooled_k27, pooled_h2aub, pooled_inp, reps_df))
+```
+
+
+# K27m3 diff analysis
+
+## Primed vs Naive
+
+```{r k27m3-diff-pr-ni, warning=F, message=F}
+diff_lfc <- diff_analysis(
+  bwfiles$k27_naive,
+  bwfiles$k27_primed,
+  bins_gr,
+  "Naive",
+  "Primed",
+  params$shrink,
+  params$pval_cutoff
+)
+
+plotMA(diff_lfc)
+
+df_diff <- make_diff_df(diff_lfc, bins_gr, "H3K27m3_DS_Pr_vs_Ni")
+
+master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+
+```
+
+## EZH2i vs Naive and primed
+
+These are skipped, as EZH2i treatment wipes all H3K27me3 so it does not make
+any sense to do the differential analysis in this  context.
+
+
+# H3K4m3 diff analysis
+
+## Primed vs Naive
+
+```{r k4m3-diff-pr-ni, warning=F, message=F}
+diff_lfc <- diff_analysis(
+  bwfiles$k4_naive,
+  bwfiles$k4_primed,
+  bins_gr,
+  "Naive",
+  "Primed",
+  params$shrink,
+  params$pval_cutoff
+)
+
+plotMA(diff_lfc)
+
+df_diff <- make_diff_df(diff_lfc, bins_gr, "H3K4m3_DS_Pr_vs_Ni")
+
+master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+
+```
+
+
+## EZH2i vs Naive
+
+```{r k4m3-diff-ezh2i-ni, warning=F, message=F}
+diff_lfc <- diff_analysis(
+  bwfiles$k4_naive,
+  bwfiles$k4_naive_ezh2i,
+  bins_gr,
+  "Naive",
+  "EZH2i",
+  params$shrink,
+  params$pval_cutoff
+)
+
+plotMA(diff_lfc)
+
+df_diff <- make_diff_df(diff_lfc, bins_gr, "H3K4m3_DS_EZH2i_vs_Ni")
+
+master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+
+```
+
+## EZH2i vs Primed
+
+```{r k4m3-diff-ezh2i-pr, warning=F, message=F}
+diff_lfc <- diff_analysis(
+  bwfiles$k4_primed,
+  bwfiles$k4_primed_ezh2i,
+  bins_gr,
+  "Primed",
+  "EZH2i",
+  params$shrink,
+  params$pval_cutoff
+)
+
+plotMA(diff_lfc)
+
+df_diff <- make_diff_df(diff_lfc, bins_gr, "H3K4m3_DS_EZH2i_vs_Pr")
+
+master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+
+```
+
+# H2AUb diff analysis
+## Primed vs Naive
+
+```{r h2aub-diff-pr-ni, warning=F, message=F}
+diff_lfc <- diff_analysis(
+  bwfiles$ub_naive,
+  bwfiles$ub_primed,
+  bins_gr,
+  "Naive",
+  "Primed",
+  params$shrink,
+  params$pval_cutoff
+)
+
+plotMA(diff_lfc)
+
+df_diff <- make_diff_df(diff_lfc, bins_gr, "H2Aub_DS_Pr_vs_Ni")
+
+master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+
+```
+
+
+## EZH2i vs Naive
+
+```{r h2aub-diff-ezh2i-ni, warning=F, message=F}
+diff_lfc <- diff_analysis(
+  bwfiles$ub_naive,
+  bwfiles$ub_naive_ezh2i,
+  bins_gr,
+  "Naive",
+  "EZH2i",
+  params$shrink,
+  params$pval_cutoff
+)
+
+plotMA(diff_lfc)
+
+df_diff <- make_diff_df(diff_lfc, bins_gr, "H2Aub_DS_EZH2i_vs_Ni")
+
+master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+
+```
+
+## EZH2i vs Primed
+
+```{r h2aub-diff-ezh2i-pr, warning=F, message=F}
+diff_lfc <- diff_analysis(
+  bwfiles$ub_primed,
+  bwfiles$ub_primed_ezh2i,
+  bins_gr,
+  "Primed",
+  "EZH2i",
+  params$shrink,
+  params$pval_cutoff
+)
+
+plotMA(diff_lfc)
+
+df_diff <- make_diff_df(diff_lfc, bins_gr, "H2Aub_DS_EZH2i_vs_Pr")
+
+master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+```
+
+# H3K27m3 vs H2AUb diff
+
+## Naïve
+
+```{r h2aub-diff-h3k27m3-ni, warning=F, message=F}
+diff_lfc <- diff_analysis(
+  bwfiles$ub_naive,
+  bwfiles$k27_naive,
+  bins_gr,
+  "H2Aub_Ni",
+  "H3K27m3_Ni",
+  params$shrink,
+  params$pval_cutoff
+)
+
+plotMA(diff_lfc)
+
+df_diff <- make_diff_df(diff_lfc, bins_gr, "DS_H3K27m3_Ni_vs_H2Aub_Ni")
+
+master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+```
+
+
+## Primed
+```{r h2aub-diff-h3k27m3-pr, warning=F, message=F}
+diff_lfc <- diff_analysis(
+  bwfiles$ub_primed,
+  bwfiles$k27_primed,
+  bins_gr,
+  "H2Aub_Pr",
+  "H3K27m3_Pr",
+  params$shrink,
+  params$pval_cutoff
+)
+
+plotMA(diff_lfc)
+
+df_diff <- make_diff_df(diff_lfc, bins_gr, "DS_H3K27m3_Pr_vs_H2Aub_Pr")
+
+master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+```
+
+
+# Final table
+
+```{r final-table}
+
+write.table(
+  format(master_df, digits = 4),
+  file = table_file, 
+  sep = "\t",
+  col.names = T,
+  quote = F,
+  row.names = F
+)
+
+```
+
