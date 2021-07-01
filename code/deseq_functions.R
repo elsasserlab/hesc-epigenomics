@@ -119,3 +119,52 @@ get_nreads_columns <- function(df, lengths, fraglen = 150, factor = 1) {
   cts <- round(cts*factor*(lengths / fraglen))
   cts
 }
+
+
+
+
+rsem_deseq_analysis <- function(counts_file, c1_columns, c2_columns, c1_name, c2_name, reference, alpha = 0.05, shrink = F) {
+  if (! reference %in% c(c1_name, c2_name)) {
+    stop(paste(reference, "must be", c1_name, "or", c2_name))
+  }
+
+  counts <- read.table(counts_file, sep = "\t", header = T)
+
+  columns <- c(c1_columns, c2_columns)
+
+  samples <- data.frame(row.names = columns, condition = factor(c(rep(c1_name, length(c1_columns)), rep(c2_name, length(c2_columns)))))
+  samples$condition <- relevel(samples$condition, ref = reference)
+
+  counts_only <- round(counts[, columns])
+  rownames(counts_only) <- counts$gene_id
+
+  dds <- DESeqDataSetFromMatrix(countData = counts_only,
+                                colData = samples,
+                                design = ~ condition)
+
+  coef_name <- paste("condition", setdiff(c(c1_name, c2_name), reference), "vs", reference, sep = "_")
+
+  deseq_analysis(dds, coef_name, alpha = alpha, shrink = shrink)
+}
+
+deseq_condition_table <- function(c1_columns, c2_columns, c1_name, c2_name, reference) {
+  columns <- c(c1_columns, c2_columns)
+
+  samples <- data.frame(row.names = columns, condition = factor(c(rep(c1_name, length(c1_columns)), rep(c2_name, length(c2_columns)))))
+  samples$condition <- relevel(samples$condition, ref = reference)
+  samples
+}
+
+deseq_analysis <- function(dds, coef_name, alpha = 0.05, shrink = F) {
+  dds <- DESeq(dds)
+  res <- NULL
+  if (shrink == FALSE) {
+    res <- results(dds, alpha=alpha)
+  } else {
+    res <- lfcShrink(dds, coef=coef_name, type="apeglm")
+  }
+
+  res
+}
+
+
