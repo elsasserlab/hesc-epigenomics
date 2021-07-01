@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Carmen Navarro" />
+
+<meta name="date" content="2021-07-01" />
+
+<title>Figure 3.</title>
+
+<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/lumen.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">hesc-epigenomics</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/elsasserlab/hesc-epigenomics">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Figure 3.</h1>
+<h4 class="author">Carmen Navarro</h4>
+<h4 class="date">2021-07-01</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2021-07-01
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>hesc-epigenomics/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210202code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20210202)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210202code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210202)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree70ee4557adf9a0a9b4dd5dfaa550ef025b857df5targetblank70ee455a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/70ee4557adf9a0a9b4dd5dfaa550ef025b857df5" target="_blank">70ee455</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree70ee4557adf9a0a9b4dd5dfaa550ef025b857df5targetblank70ee455a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/70ee4557adf9a0a9b4dd5dfaa550ef025b857df5" target="_blank">70ee455</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    data/bed/
+    Ignored:    data/bw
+    Ignored:    data/igv/
+    Ignored:    data/liftover/
+    Ignored:    data/other/
+    Ignored:    data/peaks
+    Ignored:    data/rnaseq/
+
+Untracked files:
+    Untracked:  analysis/master_bins_table.Rmd
+    Untracked:  code/fig3_k27_groups.R
+    Untracked:  data/meta/Kumar_2020_bins_panels_design.csv
+    Untracked:  data/meta/Kumar_2020_master_bins_10kb_table_raw.tsv
+    Untracked:  data/meta/Kumar_2020_master_bins_5kb_table_raw.tsv
+    Untracked:  data/meta/Kumar_2020_master_bins_5kb_table_raw.zip
+    Untracked:  data/meta/Kumar_2020_master_bins_5kb_table_replicates_only.tsv
+    Untracked:  data/meta/Kumar_2020_master_bins_5kb_table_shrunk.tsv
+    Untracked:  data/meta/Kumar_2020_master_bins_5kb_table_shrunk.zip
+    Untracked:  data/meta/Kumar_2020_master_gene_table.zip
+    Untracked:  data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk.tsv
+    Untracked:  data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.tsv
+    Untracked:  data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.zip
+    Untracked:  data/meta/Kumar_2020_promoters_panels_design.csv
+    Untracked:  data/meta/gene_names_bivalent.tsv
+    Untracked:  figures_data/
+    Untracked:  output/fig3_violin_rnaseq_ratios_naive_higher_than_pr.svg
+    Untracked:  output/fig3_violin_rnaseq_ratios_primed_higher_than_ni.svg
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/fig_03_h3k27m3_groups.Rmd</code>) and HTML (<code>docs/fig_03_h3k27m3_groups.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/70ee4557adf9a0a9b4dd5dfaa550ef025b857df5/analysis/fig_03_h3k27m3_groups.Rmd" target="_blank">70ee455</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2021-07-01
+</td>
+<td>
+wflow_publish(“./analysis/fig_03_h3k27m3_groups.Rmd”)
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="summary" class="section level1">
+<h1>Summary</h1>
+<p>This is the supplementary notebook for figure 3.</p>
+</div>
+<div id="h3k27m3-groups-heatmap-panels" class="section level1">
+<h1>H3K27m3 groups heatmap panels</h1>
+<pre class="r"><code>genes_loci &lt;- import(&quot;./data/bed/Kumar_2020/Kumar_2020_genes_hg38_UCSC.bed&quot;)
+genes_tss &lt;- promoters(genes_loci, upstream = 2500, downstream = 2500)
+
+filter_by_k27_group &lt;- function(gr, df, group) {
+  gr[gr$name %in% df[df$k27_bivalency_grp == group, &quot;name&quot;], ]
+}
+
+groups &lt;- levels(genes$k27_bivalency_grp)
+genes_k27_loci_groups &lt;- lapply(groups, filter_by_k27_group, gr=genes_tss, df = genes)
+names(genes_k27_loci_groups) &lt;- groups
+
+ns_gene_names &lt;- genes %&gt;% filter(k27_bivalency_grp == &quot;None&quot; &amp; (H3K4m3_Ni_mean_cov &gt; 2 | H3K4m3_Pr_mean_cov &gt; 2)) %&gt;% select(name)
+genes_k27_ns_w_k4 &lt;- genes_tss[genes_tss$name %in% ns_gene_names$name, ]
+
+plot_bw_heatmap_panel(
+    c(bwfiles$k27[c(1, 3)], bwfiles$ub[c(1, 3)]),
+    list(genes_k27_loci_groups$Pr_higher_than_Ni,
+         genes_k27_loci_groups$Ni_higher_than_Pr,
+         genes_k27_loci_groups$Always_up
+    ),
+    c(&quot;H3K27m3_Ni&quot;, &quot;H3K27m3_Pr&quot;, &quot;H2Aub_Ni&quot;, &quot;H2Aub_Pr&quot;),
+    c(&quot;Primed &gt;&gt; Naive&quot;, &quot;Naive &gt;&gt; Primed&quot;, &quot;Always up&quot;),
+    global_scale = TRUE,
+    proportional = TRUE,
+    mode = &quot;center&quot;
+)</code></pre>
+<p><img src="figure/fig_03_h3k27m3_groups.Rmd/heatmap-groups-1-1.png" width="1344" style="display: block; margin: auto;" /></p>
+<p>Plot the second part of the heatmap panel.</p>
+<pre class="r"><code>plot_bw_heatmap_panel(
+  c(bwfiles$k27[c(1, 3)], bwfiles$ub[c(1, 3)]),
+  list(genes_k27_loci_groups$Ni_higher_than_Pr, genes_k27_ns_w_k4),
+  c(&quot;H3K27m3_Ni&quot;, &quot;H3K27m3_Pr&quot;, &quot;H2Aub_Ni&quot;, &quot;H2Aub_Pr&quot;),
+  c(&quot;Primed &gt;&gt; Naive&quot;, &quot;Rest&quot;),
+  global_scale = TRUE,
+  proportional = TRUE,
+  mode = &quot;center&quot;,
+  zmin = 0,
+  zmax = 23
+)</code></pre>
+<p><img src="figure/fig_03_h3k27m3_groups.Rmd/heatmap-groups-2-1.png" width="1344" style="display: block; margin: auto;" /></p>
+</div>
+<div id="rna-seq-ratios-at-h3k27m3-groups" class="section level1">
+<h1>RNA-seq ratios at H3K27m3 groups</h1>
+<div id="h327m3-naive-primed" class="section level2">
+<h2>H327m3 Naive &gt;&gt; Primed</h2>
+<pre class="r"><code>df &lt;-
+  genes[, c(
+    &quot;name&quot;,
+    &quot;RNASeq_DS_Pr_vs_Ni_log2FoldChange&quot;,
+    &quot;RNASeq_DS_EZH2i_vs_Ni_log2FoldChange&quot;,
+    &quot;RNASeq_DS_EZH2i_vs_Pr_log2FoldChange&quot;
+  )]
+
+colnames(df) &lt;- c(&quot;name&quot;, &quot;Primed vs Naive&quot;, &quot;EZH2i vs Naive&quot;, &quot;EZH2i vs Primed&quot;)
+df_k27_up &lt;- df[df$name %in% genes_k27_loci_groups$Ni_higher_than_Pr$name, ]
+
+df_long &lt;- df %&gt;% pivot_longer(!name, names_to = &quot;group&quot;, values_to = &quot;fc&quot;)
+df_long_k27 &lt;- df_k27_up %&gt;% pivot_longer(!name, names_to = &quot;group&quot;, values_to = &quot;fc&quot;)
+
+df_long$group &lt;- factor(df_long$group, levels = c(&quot;Primed vs Naive&quot;, &quot;EZH2i vs Naive&quot;, &quot;EZH2i vs Primed&quot;))
+df_long_k27$group &lt;- factor(df_long_k27$group, levels = c(&quot;Primed vs Naive&quot;, &quot;EZH2i vs Naive&quot;, &quot;EZH2i vs Primed&quot;))
+
+# Stats subset vs global
+ni_pr_test &lt;- wilcox.test(df_k27_up[, &quot;Primed vs Naive&quot;],
+  df[!df$name %in% df_k27_up$name , &quot;Primed vs Naive&quot;], na.rm = T)
+
+ni_pr_effect &lt;- cohen.d(df_k27_up[, &quot;Primed vs Naive&quot;],
+  df[!df$name %in% df_k27_up$name , &quot;Primed vs Naive&quot;], na.rm = T)
+
+col &lt;- &quot;EZH2i vs Naive&quot;
+ni_ezh2i_test &lt;- wilcox.test(df_k27_up[, col],
+  df[!df$name %in% df_k27_up$name , col], na.rm = T)
+
+ni_ezh2i_effect &lt;- cohen.d(df_k27_up[, col],
+  df[!df$name %in% df_k27_up$name , col], na.rm = T)
+
+col &lt;- &quot;EZH2i vs Primed&quot;
+pr_ezh2i_test &lt;- wilcox.test(df_k27_up[, col],
+  df[!df$name %in% df_k27_up$name , col], na.rm = T)
+
+pr_ezh2i_effect &lt;- cohen.d(df_k27_up[, col],
+  df[!df$name %in% df_k27_up$name , col], na.rm = T)
+
+stats_caption &lt;- paste(&quot;Wilcoxon global vs. selection&quot;,
+  paste(&quot;Ni_Pr:&quot;, format(ni_pr_test$p.value, digits=8),
+        &quot;Cohen D:&quot;, round(ni_pr_effect$estimate, digits = 4),
+        &quot;(&quot;, ni_pr_effect$magnitude, &quot;)&quot;),
+  paste(&quot;Ni_EZH2i:&quot;, format(ni_ezh2i_test$p.value, digits=8),
+        &quot;Cohen D:&quot;, round(ni_ezh2i_effect$estimate, digits = 4),
+        &quot;(&quot;, ni_ezh2i_effect$magnitude, &quot;)&quot;),
+  paste(&quot;Pr_EZH2i:&quot;, format(pr_ezh2i_test$p.value, digits=8),
+        &quot;Cohen D:&quot;, round(pr_ezh2i_effect$estimate, digits = 4),
+        &quot;(&quot;, pr_ezh2i_effect$magnitude, &quot;)&quot;),
+  sep = &quot;\n&quot;)
+
+my_comparisons &lt;- list(c(&quot;EZH2i vs Naive&quot;, &quot;EZH2i vs Primed&quot;),
+                       c(&quot;Primed vs Naive&quot;, &quot;EZH2i vs Naive&quot;),
+                       c(&quot;Primed vs Naive&quot;, &quot;EZH2i vs Primed&quot;))
+
+k27_up_color &lt;- &quot;#009784&quot;
+
+ggplot(data=df_long, aes(x = group, y = fc)) +
+  geom_violin(size = 0.8) +
+  stat_compare_means(data=df_long_k27,
+    comparisons = my_comparisons, method = &quot;wilcox.test&quot;, paired = TRUE) +
+  rasterize(
+    geom_jitter(data=df_long_k27, color = k27_up_color, alpha = 0.7, size = 0.1),
+    dpi = 300) +
+  geom_hline (yintercept = 0, linetype = &quot;dashed&quot;) + 
+  coord_cartesian(ylim = c(-13, 24)) +
+  theme_default(base_size = 14) + 
+  labs(x = &quot;Condition&quot;,
+       y = &quot;Log2 FC&quot;,
+       title = &quot;RNASeq expression changes&quot;,
+       subtitle = &quot;Global vs H3K27m3 Naïve &gt;&gt; Primed TSS&quot;,
+       caption = stats_caption)</code></pre>
+<p><img src="figure/fig_03_h3k27m3_groups.Rmd/rnaseq-ratio-violin-h3k27m3-ni-higher-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>write.table(df_long[!is.na(df_long$fc), ],
+  file = &quot;./figures_data/fig3_violin_k27_ni_higher_violin.tsv&quot;,
+  col.names = T, sep = &quot;\t&quot;, quote = F, row.names = F)
+
+write.table(df_long_k27[!is.na(df_long_k27$fc), ],
+  file = &quot;./figures_data/fig3_violin_k27_ni_higher_jitter_k27_values.tsv&quot;,
+  col.names = T, sep = &quot;\t&quot;, quote = F, row.names = F)</code></pre>
+</div>
+<div id="h327m3-primed-naive" class="section level2">
+<h2>H327m3 Primed &gt;&gt; Naive</h2>
+<pre class="r"><code>df &lt;-
+  genes[, c(
+    &quot;name&quot;,
+    &quot;RNASeq_DS_Pr_vs_Ni_log2FoldChange&quot;,
+    &quot;RNASeq_DS_EZH2i_vs_Ni_log2FoldChange&quot;,
+    &quot;RNASeq_DS_EZH2i_vs_Pr_log2FoldChange&quot;
+  )]
+
+colnames(df) &lt;- c(&quot;name&quot;, &quot;Primed vs Naive&quot;, &quot;EZH2i vs Naive&quot;, &quot;EZH2i vs Primed&quot;)
+
+df_k27_up &lt;- df[df$name %in% genes_k27_loci_groups$Pr_higher_than_Ni$name, ]
+
+df_k27_up$`Primed vs Naive` &lt;- -df_k27_up$`Primed vs Naive`
+df$`Primed vs Naive` &lt;- -df$`Primed vs Naive`
+
+df_long &lt;- df %&gt;% pivot_longer(!name, names_to = &quot;group&quot;, values_to = &quot;fc&quot;)
+df_long_k27 &lt;- df_k27_up %&gt;% pivot_longer(!name, names_to = &quot;group&quot;, values_to = &quot;fc&quot;)
+
+df_long$group &lt;- factor(df_long$group, levels = c(&quot;Primed vs Naive&quot;, &quot;EZH2i vs Naive&quot;, &quot;EZH2i vs Primed&quot;))
+df_long_k27$group &lt;- factor(df_long_k27$group, levels = c(&quot;Primed vs Naive&quot;, &quot;EZH2i vs Naive&quot;, &quot;EZH2i vs Primed&quot;))
+
+levels(df_long$group) &lt;- c(&quot;Naive vs Primed&quot;, &quot;EZH2i vs Naive&quot;, &quot;EZH2i vs Primed&quot;)
+levels(df_long_k27$group) &lt;- c(&quot;Naive vs Primed&quot;, &quot;EZH2i vs Naive&quot;, &quot;EZH2i vs Primed&quot;)
+
+my_comparisons &lt;- list(c(&quot;EZH2i vs Naive&quot;, &quot;EZH2i vs Primed&quot;),
+                       c(&quot;Naive vs Primed&quot;, &quot;EZH2i vs Naive&quot;),
+                       c(&quot;Naive vs Primed&quot;, &quot;EZH2i vs Primed&quot;))
+
+# Stats subset vs global
+ni_pr_test &lt;- wilcox.test(df_k27_up[, &quot;Primed vs Naive&quot;],
+  df[!df$name %in% df_k27_up$name , &quot;Primed vs Naive&quot;], na.rm = T)
+
+ni_pr_effect &lt;- cohen.d(df_k27_up[, &quot;Primed vs Naive&quot;],
+  df[!df$name %in% df_k27_up$name , &quot;Primed vs Naive&quot;], na.rm = T)
+
+col &lt;- &quot;EZH2i vs Naive&quot;
+ni_ezh2i_test &lt;- wilcox.test(df_k27_up[, col],
+  df[!df$name %in% df_k27_up$name , col], na.rm = T)
+
+ni_ezh2i_effect &lt;- cohen.d(df_k27_up[, col],
+  df[!df$name %in% df_k27_up$name , col], na.rm = T)
+
+col &lt;- &quot;EZH2i vs Primed&quot;
+pr_ezh2i_test &lt;- wilcox.test(df_k27_up[, col],
+  df[!df$name %in% df_k27_up$name , col], na.rm = T)
+
+pr_ezh2i_effect &lt;- cohen.d(df_k27_up[, col],
+  df[!df$name %in% df_k27_up$name , col], na.rm = T)
+
+stats_caption &lt;- paste(&quot;Wilcoxon global vs. selection&quot;,
+  paste(&quot;Ni_Pr:&quot;, format(ni_pr_test$p.value, digits=8),
+        &quot;Cohen D:&quot;, round(ni_pr_effect$estimate, digits = 4),
+        &quot;(&quot;, ni_pr_effect$magnitude, &quot;)&quot;),
+  paste(&quot;Ni_EZH2i:&quot;, format(ni_ezh2i_test$p.value, digits=8),
+        &quot;Cohen D:&quot;, round(ni_ezh2i_effect$estimate, digits = 4),
+        &quot;(&quot;, ni_ezh2i_effect$magnitude, &quot;)&quot;),
+  paste(&quot;Pr_EZH2i:&quot;, format(pr_ezh2i_test$p.value, digits=8),
+        &quot;Cohen D:&quot;, round(pr_ezh2i_effect$estimate, digits = 4),
+        &quot;(&quot;, pr_ezh2i_effect$magnitude, &quot;)&quot;),
+  sep = &quot;\n&quot;)
+
+k27_up_color &lt;- &quot;#ff4b40&quot;
+
+ggplot(data=df_long, aes(x = group, y = fc)) +
+  geom_violin(size = 0.8) +
+  stat_compare_means(
+    data=df_long_k27, comparisons = my_comparisons,
+    method = &quot;wilcox.test&quot;, paired = TRUE) +
+  rasterize(
+    geom_jitter(data=df_long_k27, color = k27_up_color, alpha = 0.7, size = 0.1),
+    dpi = 300) +
+  geom_hline (yintercept = 0, linetype = &quot;dashed&quot;) + 
+  coord_cartesian(ylim = c(-13, 24)) +
+  theme_default(base_size = 14) + 
+  labs(x = &quot;Condition&quot;,
+       y = &quot;Log2 FC&quot;,
+       title = &quot;RNASeq expression changes&quot;,
+       subtitle = &quot;Global vs H3K27m3 Primed &gt;&gt; Naïve TSS&quot;,
+       caption = stats_caption)</code></pre>
+<p><img src="figure/fig_03_h3k27m3_groups.Rmd/rnaseq-ratio-violin-h3k27m3-pr-higher-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>write.table(df_long[!is.na(df_long$fc), ],
+  file = &quot;./figures_data/fig3_violin_k27_pr_higher_violin.tsv&quot;,
+  col.names = T, sep = &quot;\t&quot;, quote = F, row.names = F)
+
+write.table(df_long_k27[!is.na(df_long_k27$fc), ],
+  file = &quot;./figures_data/fig3_violin_k27_pr_higher_jitter_k27_values.tsv&quot;,
+  col.names = T, sep = &quot;\t&quot;, quote = F, row.names = F)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.0 (2021-05-18)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 20.04.2 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=sv_SE.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=sv_SE.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=sv_SE.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=sv_SE.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] parallel  stats4    stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] svglite_2.0.0        wigglescout_0.13.1   cowplot_1.1.1       
+ [4] ggrastr_0.2.3        ggpubr_0.4.0         effsize_0.8.1       
+ [7] forcats_0.5.1        stringr_1.4.0        dplyr_1.0.7         
+[10] purrr_0.3.4          readr_1.4.0          tidyr_1.1.3         
+[13] tibble_3.1.2         ggplot2_3.3.5        tidyverse_1.3.1     
+[16] rtracklayer_1.52.0   GenomicRanges_1.44.0 GenomeInfoDb_1.28.0 
+[19] IRanges_2.26.0       S4Vectors_0.30.0     BiocGenerics_0.38.0 
+[22] workflowr_1.6.2     
+
+loaded via a namespace (and not attached):
+  [1] ggbeeswarm_0.6.0            colorspace_2.0-2           
+  [3] ggsignif_0.6.2              rjson_0.2.20               
+  [5] ellipsis_0.3.2              rio_0.5.27                 
+  [7] rprojroot_2.0.2             XVector_0.32.0             
+  [9] fs_1.5.0                    rstudioapi_0.13            
+ [11] farver_2.1.0                listenv_0.8.0              
+ [13] furrr_0.2.3                 fansi_0.5.0                
+ [15] lubridate_1.7.10            xml2_1.3.2                 
+ [17] codetools_0.2-18            knitr_1.33                 
+ [19] jsonlite_1.7.2              Cairo_1.5-12.2             
+ [21] Rsamtools_2.8.0             broom_0.7.8                
+ [23] dbplyr_2.1.1                compiler_4.1.0             
+ [25] httr_1.4.2                  backports_1.2.1            
+ [27] assertthat_0.2.1            Matrix_1.3-4               
+ [29] cli_3.0.0                   later_1.2.0                
+ [31] htmltools_0.5.1.1           tools_4.1.0                
+ [33] gtable_0.3.0                glue_1.4.2                 
+ [35] GenomeInfoDbData_1.2.6      reshape2_1.4.4             
+ [37] Rcpp_1.0.6                  carData_3.0-4              
+ [39] Biobase_2.52.0              cellranger_1.1.0           
+ [41] jquerylib_0.1.4             vctrs_0.3.8                
+ [43] Biostrings_2.60.1           xfun_0.24                  
+ [45] globals_0.14.0              openxlsx_4.2.4             
+ [47] rvest_1.0.0                 lifecycle_1.0.0            
+ [49] restfulr_0.0.13             rstatix_0.7.0              
+ [51] XML_3.99-0.6                future_1.21.0              
+ [53] zlibbioc_1.38.0             scales_1.1.1               
+ [55] hms_1.1.0                   promises_1.2.0.1           
+ [57] MatrixGenerics_1.4.0        SummarizedExperiment_1.22.0
+ [59] RColorBrewer_1.1-2          yaml_2.2.1                 
+ [61] curl_4.3.2                  sass_0.4.0                 
+ [63] stringi_1.6.2               highr_0.9                  
+ [65] BiocIO_1.2.0                zip_2.2.0                  
+ [67] BiocParallel_1.26.0         systemfonts_1.0.2          
+ [69] rlang_0.4.11                pkgconfig_2.0.3            
+ [71] matrixStats_0.59.0          bitops_1.0-7               
+ [73] evaluate_0.14               lattice_0.20-44            
+ [75] labeling_0.4.2              GenomicAlignments_1.28.0   
+ [77] tidyselect_1.1.1            parallelly_1.26.1          
+ [79] plyr_1.8.6                  magrittr_2.0.1             
+ [81] R6_2.5.0                    generics_0.1.0             
+ [83] DelayedArray_0.18.0         DBI_1.1.1                  
+ [85] pillar_1.6.1                haven_2.4.1                
+ [87] whisker_0.4                 foreign_0.8-81             
+ [89] withr_2.4.2                 abind_1.4-5                
+ [91] RCurl_1.98-1.3              modelr_0.1.8               
+ [93] crayon_1.4.1                car_3.0-11                 
+ [95] utf8_1.2.1                  rmarkdown_2.9              
+ [97] grid_4.1.0                  readxl_1.3.1               
+ [99] data.table_1.14.0           git2r_0.28.0               
+[101] reprex_2.0.0                digest_0.6.27              
+[103] httpuv_1.6.1                munsell_0.5.0              
+[105] beeswarm_0.4.0              vipor_0.4.5                
+[107] bslib_0.2.5.1              </code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
