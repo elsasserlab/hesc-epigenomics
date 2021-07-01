@@ -1,7 +1,7 @@
 ---
-title: "Figure 1. Quantitative ChIP"
+title: "Figure 1. Global histone levels."
 author: "Carmen Navarro"
-date: "2021-03-12"
+date: "Updated: 2021-07-01"
 output:
   workflowr::wflow_html:
     code_folding: show
@@ -14,15 +14,7 @@ params:
 
 # Summary
 
-This notebook includes the figures related to the quantitative side of ChIP:
-
-- Global Read count levels.
-- ChromHMM descriptive plots per mark (+ EZH2i?)
-
-
-Supplementary possibles:
-
-- Global ChIP comparison bin-based to other datasets, correlations.
+Supplementary code for panel 1 figures.
 
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 library(wigglescout)
@@ -36,7 +28,6 @@ my_svg <- function(file, width, height) {
   library(svglite)
   svglite(file = file, width = width, height = height, bg = "white")
 }
-
 
 knitr::opts_chunk$set(dev = c('png', 'my_svg'), fig.ext = c("png", "svg"), fig.width = 8, fig.height = 8)
 source("./code/embed_functions.R")
@@ -68,12 +59,20 @@ calculate_inrc <- function(counts, selector = "final_mapped") {
   colnames(references) <- c("ip", "ref_inrc")
   
   counts <- merge(counts, references, by="ip")
-  counts$norm_to_naive <- log2(counts$inrc / counts$ref_inrc)
+  counts$norm_to_naive <- counts$inrc / counts$ref_inrc
   
   id_vars <- c("ip", "treatment", "celltype", "condition", "replicate", "norm_to_naive")
   inrc <- counts[, c(id_vars)]
   
-  inrc$condition <- factor(inrc$condition, levels = c("Naive_Untreated", "Primed_Untreated", "Naive_EZH2i", "Primed_EZH2i"))
+  inrc$condition <- factor(
+    inrc$condition,
+    levels = c(
+      "Naive_Untreated",
+      "Primed_Untreated",
+      "Naive_EZH2i",
+      "Primed_EZH2i"
+    )
+  )
   
   inrc
 }
@@ -120,13 +119,13 @@ inrc_barplot <- function(inrc, ip, colors, font = 16) {
     scale_color_manual(values = colors) +
     labs(
       x = "",
-      y = 'log2(INRC vs Naïve)',
+      y = 'INRC fraction vs Naïve',
       title = paste(ip, "MINUTE-ChIP"),
       caption = paste(stats_method, "signif. test, paired")
     ) +
     theme_classic(base_size = font) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    ylim(-max_v, max_v)
+    ylim(0, 1.5)
 }
 
 colors_list <- c("Naive_EZH2i"="#82c5c6",
@@ -172,38 +171,42 @@ You can download data values here: `r embed_last_plot_data(name="H3K4m3_global.t
 
 Here global average per ChromHMM categories are shown.
 
-<!-- ## H3K27m3 -->
+## H3K27m3
 
-<!-- ```{r chromhmm-h3k27m3, fig.width = 13, fig.height = 14} -->
-<!-- bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020"), pattern = "H3K27m3.*pooled.*hg38.scaled", full.names = T) -->
-<!-- labels <- gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles)) -->
-<!-- labels <- gsub("_H9", "", labels) -->
+```{r chromhmm-h3k27m3, fig.width = 13, fig.height = 14}
+bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020"), pattern = "H3K27m3.*pooled.*hg38.scaled", full.names = T)
+labels <- gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles))
+labels <- gsub("_H9", "", labels)
 
-<!-- chromhmm <- params$chromhmm -->
+chromhmm <- params$chromhmm
 
-<!-- plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001) -->
-<!-- ``` -->
+plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001)
+```
 
-<!-- ## H3K4m3 -->
+You can download data values here: `r embed_last_plot_data(name="H3K27m3_chromhmm.tsv")`.
 
-<!-- ```{r chromhmm-h3k4m3, fig.width = 13, fig.height = 14} -->
-<!-- bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020"), pattern = "H3K4m3.*pooled.*hg38.scaled", full.names = T) -->
-<!-- labels <- gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles)) -->
-<!-- labels <- gsub("_H9", "", labels) -->
+## H3K4m3
 
-<!-- plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001) -->
-<!-- ``` -->
+```{r chromhmm-h3k4m3, fig.width = 13, fig.height = 14}
+bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020"), pattern = "H3K4m3.*pooled.*hg38.scaled", full.names = T)
+labels <- gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles))
+labels <- gsub("_H9", "", labels)
 
+plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001)
+```
 
-<!-- ## H2AUb -->
+You can download data values here: `r embed_last_plot_data(name="H3K4m3_chromhmm.tsv")`.
 
-<!-- ```{r chromhmm-h2aub, fig.width = 13, fig.height = 14} -->
-<!-- bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020"), pattern = "H2Aub.*pooled.*hg38.scaled", full.names = T) -->
-<!-- labels <- gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles)) -->
-<!-- labels <- gsub("_H9", "", labels) -->
+## H2AUb
 
-<!-- chromhmm <- params$chromhmm -->
+```{r chromhmm-h2aub, fig.width = 13, fig.height = 14}
+bwfiles <- list.files(file.path(params$datadir, "bw/Kumar_2020"), pattern = "H2Aub.*pooled.*hg38.scaled", full.names = T)
+labels <- gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles))
+labels <- gsub("_H9", "", labels)
 
-<!-- plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001) -->
-<!-- ``` -->
+chromhmm <- params$chromhmm
 
+plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.001)
+```
+
+You can download data values here: `r embed_last_plot_data(name="H2Aub_chromhmm.tsv")`.
