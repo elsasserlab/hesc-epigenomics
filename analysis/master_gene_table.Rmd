@@ -14,6 +14,8 @@ params:
   deciding_stat: "TPM"
   tss_wide: 2500
   tss_narrow: 1500
+  shrink_rnaseq: TRUE
+  shrink_histones: FALSE
 ---
 
 
@@ -64,63 +66,32 @@ source("./code/deseq_functions.R")
 source("./code/embed_functions.R")
 source("./code/globals.R")
 
-knitr::opts_chunk$set(dev = c('png', 'svg'))
+knitr::opts_chunk$set(dev = c('png'))
 knitr::opts_chunk$set(class.source='fold-show')
 ```
 
 # Helper functions
 
 ```{r helper-functions, class.source = NULL}
-
-rsem_deseq_analysis <- function(counts_file, c1_columns, c2_columns, c1_name, c2_name, reference, alpha = 0.05, shrunk = TRUE) {
-  if (! reference %in% c(c1_name, c2_name)) {
-    stop(paste(reference, "must be", c1_name, "or", c2_name))
-  }
-  
-  counts <- read.table(counts_file, sep = "\t", header = T)
-  
-  columns <- c(c1_columns, c2_columns)
-  
-  samples <- data.frame(row.names = columns, condition = factor(c(rep(c1_name, length(c1_columns)), rep(c2_name, length(c2_columns)))))
-  samples$condition <- relevel(samples$condition, ref = reference)
-  
-  counts_only <- round(counts[, columns])
-  rownames(counts_only) <- counts$gene_id
-  
-  dds <- DESeqDataSetFromMatrix(countData = counts_only,
-                                colData = samples,
-                                design = ~ condition)
-  dds <- DESeq(dds)
-  res <- NULL
-  if (shrunk == TRUE) {
-    coef_name <- paste("condition", c2_name, "vs", c1_name, sep = "_")
-    res <- lfcShrink(dds, coef=coef_name, type="apeglm")
-  } else {
-    res <- results(dds, alpha=alpha)  
-  }
-  
-  res
-}
-
-ni_pr_expression_analysis <- function(datadir, alpha = 0.05) {
+ni_pr_expression_analysis <- function(datadir, alpha = 0.05, shrink = TRUE) {
   counts_file <- file.path(datadir, "rnaseq/Kumar_2020/rsem.merged.gene_counts.tsv")
   c1_columns <- paste("Kumar_2020_Naive", c("R1", "R2", "R3"), sep = "_")
   c2_columns <- paste("Kumar_2020_Primed", c("R1", "R2", "R3"), sep = "_")
-  rsem_deseq_analysis(counts_file, c1_columns, c2_columns, "Naive", "Primed", "Naive", alpha)
+  rsem_deseq_analysis(counts_file, c1_columns, c2_columns, "Naive", "Primed", "Naive", alpha, shrink = shrink)
 }
 
-ni_ezh2i_expression_analysis <- function(datadir, alpha = 0.05) {
+ni_ezh2i_expression_analysis <- function(datadir, alpha = 0.05, shrink = TRUE) {
   counts_file <- file.path(datadir, "rnaseq/Kumar_2020/rsem.merged.gene_counts.tsv")
   c1_columns <- paste("Kumar_2020_Naive", c("R1", "R2", "R3"), sep = "_")
   c2_columns <- paste("Kumar_2020_Naive_EZH2i", c("R1", "R2", "R3"), sep = "_")
-  rsem_deseq_analysis(counts_file, c1_columns, c2_columns, "Naive", "EZH2i", "Naive", alpha)
+  rsem_deseq_analysis(counts_file, c1_columns, c2_columns, "Naive", "EZH2i", "Naive", alpha, shrink = shrink)
 }
 
-pr_ezh2i_expression_analysis <- function(datadir, alpha = 0.05) {
+pr_ezh2i_expression_analysis <- function(datadir, alpha = 0.05, shrink = TRUE) {
   counts_file <- file.path(datadir, "rnaseq/Kumar_2020/rsem.merged.gene_counts.tsv")
   c1_columns <- paste("Kumar_2020_Primed", c("R1", "R2", "R3"), sep = "_")
   c2_columns <- paste("Kumar_2020_Primed_EZH2i", c("R1", "R2", "R3"), sep = "_")
-  rsem_deseq_analysis(counts_file, c1_columns, c2_columns, "Naive", "EZH2i", "Naive", alpha)
+  rsem_deseq_analysis(counts_file, c1_columns, c2_columns, "Primed", "EZH2i", "Primed", alpha, shrink = shrink)
 }
 
 make_df <- function(diffres, name_suffix) {
@@ -128,6 +99,29 @@ make_df <- function(diffres, name_suffix) {
   colnames(df) <- paste(colnames(df), name_suffix, sep = "_")
   df$gene <- rownames(df)
   df
+}
+
+make_label <- function(fnames) {
+  labs <- gsub("_pooled.hg38.*scaled.bw", "", basename(fnames))
+  # Remove the uncomfortable . in EZH2i elements
+  labs <- gsub("-", "_", labs)
+  labs <- gsub("H9_", "", labs)
+  paste(labs, "mean_cov", sep = "_")
+}
+
+merge_by_name <- function(lociset) {
+  mcols_df <- function(gr) { data.frame(mcols(gr)) }
+  
+  dfs <- lapply(lociset, mcols_df)
+  dfs %>% reduce(full_join, by = "name")
+}
+
+make_diff_df <- function(diff_lfc, prefix) {
+  df_diff <- data.frame(diff_lfc)
+  # DS stands for DeSeq
+  colnames(df_diff) <- paste(prefix, colnames(df_diff), sep = "_")
+  df_diff$name <- rownames(df_diff)
+  df_diff
 }
 
 ```
@@ -187,17 +181,11 @@ At this point kept area around TSS the same size even though K4 is narrower,
 so it's fairer to put them all in the same table.
 
 ```{r raw-pooled, warning=F, message=F}
-pooled_k4 <- bw_loci(bwfiles_pooled$k4, genes_tss_broad, labels = gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles_pooled$k4)))
-pooled_k27 <- bw_loci(bwfiles_pooled$k27, genes_tss_broad, labels = gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles_pooled$k27)))
-pooled_h2aub <- bw_loci(bwfiles_pooled$k27, genes_tss_broad, labels = gsub("_pooled.hg38.scaled.bw", "", basename(bwfiles_pooled$ub)))
-pooled_inp <- bw_loci(bwfiles_pooled$input, genes_tss_broad, labels = gsub("_pooled.hg38.unscaled.bw", "", basename(bwfiles_pooled$input)))
 
-merge_by_name <- function(lociset) {
-  mcols_df <- function(gr) { data.frame(mcols(gr)) }
-  
-  dfs <- lapply(lociset, mcols_df)
-  dfs %>% reduce(full_join, by = "name")
-}
+pooled_k4 <- bw_loci(bwfiles_pooled$k4, genes_tss_broad, labels = make_label(bwfiles_pooled$k4))
+pooled_k27 <- bw_loci(bwfiles_pooled$k27, genes_tss_broad, labels = make_label(bwfiles_pooled$k27))
+pooled_h2aub <- bw_loci(bwfiles_pooled$ub, genes_tss_broad, labels = make_label(bwfiles_pooled$ub))
+pooled_inp <- bw_loci(bwfiles_pooled$input, genes_tss_broad, labels = make_label(bwfiles_pooled$input))
 
 pooled_df <- merge_by_name(list(pooled_k4, pooled_k27, pooled_h2aub, pooled_inp))
 master_df <- pooled_df
@@ -214,29 +202,19 @@ c2 <- bw_loci(bwfiles$k27_primed, genes_tss_broad)
 
 diff <- bw_granges_diff_analysis(c1, c2, "Naive", "Primed", estimate_size_factors = FALSE)
 
-diff_lfc <- lfcShrink(diff, coef="condition_Primed_vs_Naive", type="apeglm")
-
-plotMA(diff_lfc)
-# 
-
-make_diff_df <- function(diff_lfc, prefix) {
-  df_diff <- data.frame(diff_lfc)
-  # DS stands for DeSeq
-  colnames(df_diff) <- paste(prefix, colnames(df_diff), sep = "_")
-  df_diff$name <- rownames(df_diff)
-  df_diff
+if (params$shrink_histones == TRUE) {
+  diff_lfc <- lfcShrink(diff, coef="condition_Primed_vs_Naive", type="apeglm")
+  diff <- diff_lfc
+} else {
+  diff <- results(diff, alpha = params$pval_cutoff)
 }
 
-df_diff <- make_diff_df(diff_lfc, "H3K27m3_DS_Pr_vs_Ni")
+plotMA(diff)
+
+df_diff <- make_diff_df(diff, "H3K27m3_DS_Pr_vs_Ni")
 master_df <- left_join(master_df, df_diff, by = "name")
 
 ```
-
-## EZH2i vs Naive and primed
-
-These are skipped, as EZH2i treatment wipes all H3K27me3 so it does not make
-any sense to do the differential analysis in this  context.
-
 
 # H3K4m3 diff analysis
 
@@ -248,16 +226,19 @@ c2 <- bw_loci(bwfiles$k4_primed, genes_tss_narrow)
 
 diff <- bw_granges_diff_analysis(c1, c2, "Naive", "Primed", estimate_size_factors = FALSE)
 
-diff_lfc <- lfcShrink(diff, coef="condition_Primed_vs_Naive", type="apeglm")
-# diff <- results(diff, alpha = params$pval_cutoff)
-# 
-plotMA(diff_lfc)
+if (params$shrink_histones == TRUE) {
+  diff_lfc <- lfcShrink(diff, coef="condition_Primed_vs_Naive", type="apeglm")
+  diff <- diff_lfc
+} else {
+  diff <- results(diff, alpha = params$pval_cutoff)
+}
 
-df_diff <- make_diff_df(diff_lfc, "H3K4m3_DS_Pr_vs_Ni")
+plotMA(diff)
+
+df_diff <- make_diff_df(diff, "H3K4m3_DS_Pr_vs_Ni")
 master_df <- left_join(master_df, df_diff, by = "name")
 
 ```
-
 
 ## EZH2i vs Naive
 
@@ -267,12 +248,16 @@ c2 <- bw_loci(bwfiles$k4_naive_ezh2i, genes_tss_narrow)
 
 diff <- bw_granges_diff_analysis(c1, c2, "Naive", "EZH2i", estimate_size_factors = FALSE)
 
-diff_lfc <- lfcShrink(diff, coef="condition_EZH2i_vs_Naive", type="apeglm")
+if (params$shrink_histones == TRUE) {
+  diff_lfc <- lfcShrink(diff, coef="condition_EZH2i_vs_Naive", type="apeglm")
+  diff <- diff_lfc
+} else {
+  diff <- results(diff, alpha = params$pval_cutoff)
+}
 
-
-plotMA(diff_lfc)
-
-df_diff <- make_diff_df(diff_lfc, "H3K4m3_DS_EZH2i_vs_Ni")
+plotMA(diff)
+# 
+df_diff <- make_diff_df(diff, "H3K4m3_DS_EZH2i_vs_Ni")
 master_df <- left_join(master_df, df_diff, by = "name")
 
 ```
@@ -284,12 +269,16 @@ c1 <- bw_loci(bwfiles$k4_primed, genes_tss_narrow)
 c2 <- bw_loci(bwfiles$k4_primed_ezh2i, genes_tss_narrow)
 
 diff <- bw_granges_diff_analysis(c1, c2, "Primed", "EZH2i", estimate_size_factors = FALSE)
+if (params$shrink_histones == TRUE) {
+  diff_lfc <- lfcShrink(diff, coef="condition_EZH2i_vs_Primed", type="apeglm")
+  diff <- diff_lfc
+} else {
+  diff <- results(diff, alpha = params$pval_cutoff)
+}
 
-diff_lfc <- lfcShrink(diff, coef="condition_EZH2i_vs_Primed", type="apeglm")
-
-plotMA(diff_lfc)
-
-df_diff <- make_diff_df(diff_lfc, "H3K4m3_DS_EZH2i_vs_Pr")
+plotMA(diff)
+# 
+df_diff <- make_diff_df(diff, "H3K4m3_DS_EZH2i_vs_Pr")
 master_df <- left_join(master_df, df_diff, by = "name")
 
 ```
@@ -303,15 +292,19 @@ c2 <- bw_loci(bwfiles$ub_primed, genes_tss_broad)
 
 diff <- bw_granges_diff_analysis(c1, c2, "Naive", "Primed", estimate_size_factors = FALSE)
 
-diff_lfc <- lfcShrink(diff, coef="condition_Primed_vs_Naive", type="apeglm")
+if (params$shrink_histones == TRUE) {
+  diff_lfc <- lfcShrink(diff, coef="condition_Primed_vs_Naive", type="apeglm")
+  diff <- diff_lfc
+} else {
+  diff <- results(diff, alpha = params$pval_cutoff)
+}
 
-plotMA(diff_lfc)
+plotMA(diff)
 
-df_diff <- make_diff_df(diff_lfc, "H2Aub_DS_Pr_vs_Ni")
+df_diff <- make_diff_df(diff, "H2Aub_DS_Pr_vs_Ni")
 master_df <- left_join(master_df, df_diff, by = "name")
 
 ```
-
 
 ## EZH2i vs Naive
 
@@ -320,11 +313,16 @@ c1 <- bw_loci(bwfiles$ub_naive, genes_tss_broad)
 c2 <- bw_loci(bwfiles$ub_naive_ezh2i, genes_tss_broad)
 
 diff <- bw_granges_diff_analysis(c1, c2, "Naive", "EZH2i", estimate_size_factors = FALSE)
-diff_lfc <- lfcShrink(diff, coef="condition_EZH2i_vs_Naive", type="apeglm")
+if (params$shrink_histones == TRUE) {
+  diff_lfc <- lfcShrink(diff, coef="condition_EZH2i_vs_Naive", type="apeglm")
+  diff <- diff_lfc
+} else {
+  diff <- results(diff, alpha = params$pval_cutoff)
+}
 
-plotMA(diff_lfc)
+plotMA(diff)
 
-df_diff <- make_diff_df(diff_lfc, "H2Aub_DS_EZH2i_vs_Ni")
+df_diff <- make_diff_df(diff, "H2Aub_DS_EZH2i_vs_Ni")
 master_df <- left_join(master_df, df_diff, by = "name")
 
 ```
@@ -336,24 +334,18 @@ c1 <- bw_loci(bwfiles$ub_primed, genes_tss_broad)
 c2 <- bw_loci(bwfiles$ub_primed_ezh2i, genes_tss_broad)
 
 diff <- bw_granges_diff_analysis(c1, c2, "Primed", "EZH2i", estimate_size_factors = FALSE)
+if (params$shrink_histones == TRUE) {
+  diff_lfc <- lfcShrink(diff, coef="condition_EZH2i_vs_Primed", type="apeglm")
+  diff <- diff_lfc
+} else {
+  diff <- results(diff, alpha = params$pval_cutoff)
+}
 
-diff_lfc <- lfcShrink(diff, coef="condition_EZH2i_vs_Primed", type="apeglm")
+plotMA(diff)
 
-plotMA(diff_lfc)
-
-df_diff <- make_diff_df(diff_lfc, "H2Aub_DS_EZH2i_vs_Pr")
+df_diff <- make_diff_df(diff, "H2Aub_DS_EZH2i_vs_Pr")
 master_df <- left_join(master_df, df_diff, by = "name")
 
-columns <- colnames(master_df)
-order <- c("name", sort(columns[!(columns %in% "name")]))
-write.table(
-  format(master_df[, order], digits = 4),
-  file = "./data/meta/Kumar_2020_master_gene_table_histones.tsv",
-  sep = "\t",
-  col.names = T,
-  quote = F,
-  row.names = F
-)
 ```
 
 # RNA-seq diff analysis
@@ -361,7 +353,7 @@ write.table(
 ## Primed vs Naive
 
 ```{r expr-diff-pr-ni, warning=F, message=F}
-ni_pr_diff <- ni_pr_expression_analysis(params$datadir)
+ni_pr_diff <- ni_pr_expression_analysis(params$datadir, alpha = params$pval_cutoff, shrink = params$shrink_rnaseq)
 plotMA(ni_pr_diff)
 
 ```
@@ -369,21 +361,20 @@ plotMA(ni_pr_diff)
 ## EZH2i vs Naive
 
 ```{r expr-diff-ezh2i-ni, warning=F, message=F}
-ni_ezh2i_diff <- ni_ezh2i_expression_analysis(params$datadir)
+ni_ezh2i_diff <- ni_ezh2i_expression_analysis(params$datadir, alpha = params$pval_cutoff, shrink = params$shrink_rnaseq)
 plotMA(ni_ezh2i_diff)
 ```
 
 ## EZH2i vs Primed
 
 ```{r expr-diff-ezh2i-pr, warning=F, message=F}
-pr_ezh2i_diff <- pr_ezh2i_expression_analysis(params$datadir)
+pr_ezh2i_diff <- pr_ezh2i_expression_analysis(params$datadir, alpha = params$pval_cutoff, shrink = params$shrink_rnaseq)
 plotMA(pr_ezh2i_diff)
 ```
 
 ## Expression table
 
 ```{r expr-diff-table, warning=F, message=F}
-
 counts_file <- file.path(params$datadir, "rnaseq/Kumar_2020/rsem.merged.gene_tpm.tsv")
 tpm_counts <- read.table(counts_file, sep = "\t", header = TRUE)
 
@@ -412,18 +403,6 @@ dfs <- list(make_diff_df(ni_pr_diff, "RNASeq_DS_Pr_vs_Ni"),
 
 expr_results_all <- reduce(dfs, full_join, by = "name")
 
-
-columns <- colnames(expr_results_all)
-order <- c("name", sort(columns[!(columns %in% "name")]))
-write.table(
-  format(expr_results_all[, order], digits = 4),
-  file = "./data/meta/Kumar_2020_master_gene_table_expression.tsv",
-  sep = "\t",
-  col.names = T,
-  quote = F,
-  row.names = F
-)
-
 ```
 
 # Final table
@@ -439,9 +418,18 @@ order <-
   c(c("name", "seqnames", "start", "end", "strand"),
     sort(columns[!(columns %in% c("name", "seqnames", "start", "end", "strand"))]))
 
+filename <- "./data/meta/Kumar_2020_master_gene_table"
+if (params$shrink_rnaseq == TRUE) {
+  filename <- paste(filename, "rnaseq_shrunk", sep = "_")
+}
+if (params$shrink_histones == TRUE) {
+  filename <- paste(filename, "hist_shrunk", sep = "_")
+}
+filename <- paste0(filename, ".tsv")
+
 write.table(
   format(final[, order], digits = 4),
-  file = "./data/meta/Kumar_2020_master_gene_table.tsv",
+  file = filename,
   sep = "\t",
   col.names = T,
   quote = F,
