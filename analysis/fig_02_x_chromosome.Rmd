@@ -1,32 +1,39 @@
 ---
-title: "Histone mark density per chromosome"
+title: "X-chromosome analysis"
 author: "Carmen Navarro"
-date: "2021-02-08"
+date: "2021-07-06"
 output:
   workflowr::wflow_html:
     code_folding: hide
 editor_options:
   chunk_output_type: console
 params:
-  bwdir: ./data/bw/Kumar_2020/hu2/
+  bwdir: ./data/bw/Kumar_2020/
 ---
 
 # Summary
 
-Here we look to scaled global levels of coverage per chromosome.
+Corresponding figures for chromosome X analysis.
 
 ```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(wigglescout)
 library(rtracklayer)
 library(treemap)
 library(purrr)
+library(ggridges)
+library(tidyverse)
+library(karyoploteR)
 library(cowplot)
+library(ggrepel)
+library(scales)
 
 source("./code/globals.R")
 source("./code/embed_functions.R")
 
 knitr::opts_chunk$set(dev = c('png', 'svg'))
 knitr::opts_chunk$set(class.source='fold-show')
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
 ```
 
 # Helper functions
@@ -59,7 +66,7 @@ scaled_reads_per_chromosome <- function(bwfile, chromosomes, fraglen = 150) {
   df[chromosomes, ]
 }
 
-chromosomes <- paste0("chr", c(1:22, "X", "Y"))
+chromosomes <- paste0("chr", c(1:22, "X"))
 
 # Fix some parameters on treemap function to remove some clutter from nb.
 chr_treeplot <- partial(
@@ -74,10 +81,154 @@ chr_treeplot <- partial(
   fontsize.legend = 16,
   fontsize.title = 20
 )
+
+
+ridges_chromosome_plot <- function(values, column, color, main_seqs = chromosomes, scale = 1.7) {
+  value_name <- column
+  df <- values[values$seqnames %in% main_seqs, c("seqnames", value_name)]
+  colnames(df) <- c("seqnames", "value")
+  df$value <- as.numeric(df$value)
+  df$seqnames <- factor(df$seqnames, levels = rev(main_seqs))
+
+  df_summary <- df %>% group_by(seqnames) %>%
+    summarise(value=median(value, na.rm = T))
+  x_nudge <- quantile(df$value, 0.02, na.rm = T)
+
+  ggplot(df, aes(x = value, y = seqnames, fill = seqnames)) +
+    geom_density_ridges(
+      rel_min_height = 0.001,
+      scale = 1.7,
+      calc_ecdf = TRUE,
+      quantile_lines = TRUE, quantiles = 2,
+    ) +
+    theme_default(base_size = 12) +
+    labs(y = "", x = "log2FC") +
+    scale_fill_manual(values = c(color, rep("#bbbbbb", 22))) + theme(legend.position = "none") +
+    geom_vline(xintercept = 0, linetype = "dashed", size = 0.2) +
+    geom_text(data=df_summary,
+              aes(label=sprintf("%1.2f", value)),
+              position=position_nudge(y=0.35, x = x_nudge), colour="black", size=3)
+}
+
+get_long_format_heatmap_data <- function(df, mark) {
+  columns <- grep("mean_cov", colnames(df), value = T)
+  main_seqs <- paste0("chr", c(1:22, "X"))
+  df <- df[df$seqnames %in% main_seqs, c("seqnames", columns)]
+  
+  summary_mat <- df %>% group_by(seqnames) %>% summarise_at(columns, mean, na.rm = TRUE)
+  
+  to_plot <- summary_mat %>% 
+    select("seqnames", contains(mark) & contains("mean_cov") & !contains("rep"))
+  
+  # Reorder chromosomes and conditions
+  conditions <- c("Ni", "Ni_EZH2i", "Pr", "Pr_EZH2i")
+  to_plot$seqnames <- gsub("chr", "", to_plot$seqnames)
+  to_plot$seqnames <- factor(to_plot$seqnames, levels = c(1:22, "X"))
+  colnames(to_plot) <- c("seqnames", conditions)
+  to_plot_melt <- pivot_longer(to_plot, !seqnames)
+  to_plot_melt$name <- factor(to_plot_melt$name, levels = rev(conditions))
+  to_plot_melt
+}
+
+```
+
+Read the main tables:
+
+```{r table-data-input}
+genes <- read.table("./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk.tsv",
+                    header = T, sep = "\t",
+                    colClasses = c(rep("character", 5), rep("numeric", 86)))
+
+bins <- read.table("./data/meta/Kumar_2020_master_bins_5kb_table_raw.tsv",
+                   header = T, sep = "\t",
+                   colClasses = c(rep("character", 4), rep("numeric", 112)))
+
+```
+
+# Heatmaps
+
+```{r h3k4m3-chromosome-heatmap, warning=F, message=F, fig.height = 3, fig.width = 8}
+to_plot_melt <- get_long_format_heatmap_data(bins, "H3K4m3")
+
+ggplot(to_plot_melt, aes(fill = value, x = seqnames, y = name)) +
+  geom_tile(color = "white", size = 1) +
+  coord_fixed() +
+  theme_minimal(base_size = 12) +
+  labs(x = "", y = "", title = "H3K4m3 mean of 5kb bins per chromosome") + 
+  scale_fill_gradient(low = "white", high = "#b64c28", limits = c(0, 4.5))
+
+```
+
+Download plot data: `r embed_last_plot_data()`
+
+```{r h3k27m3-chromosome-heatmap, warning=F, message=F, fig.height = 3, fig.width = 8}
+to_plot_melt <- get_long_format_heatmap_data(bins, "H3K27m3")
+
+ggplot(to_plot_melt, aes(fill = value, x = seqnames, y = name)) +
+  geom_tile(color = "white", size = 1) +
+  coord_fixed() +
+  theme_minimal(base_size = 12) +
+  labs(x = "", y = "", title = "H3K27m3 mean of 5kb bins per chromosome") + 
+  scale_fill_gradient(low = "white", high = gl_mark_colors$H3K27m3, limits = c(0, 3))
+```
+
+Download plot data: `r embed_last_plot_data()`
+
+```{r h2aub-chromosome-heatmap, warning=F, message=F, fig.height = 3, fig.width = 8}
+
+to_plot_melt <- get_long_format_heatmap_data(bins, "H2Aub")
+
+ggplot(to_plot_melt, aes(fill = value, x = seqnames, y = name)) +
+  geom_tile(color = "white", size = 1) +
+  coord_fixed() +
+  theme_minimal(base_size = 12) +
+  labs(x = "", y = "", title = "H2AUb mean of 5kb bins per chromosome") + 
+  scale_fill_gradient(low = "white", high = gl_mark_colors$H2Aub, limits = c(0, 2))
+
+```
+
+Download plot data: `r embed_last_plot_data()`
+
+```{r chromosomes-jitter, warning=F, message=F}
+columns <- grep("mean_cov", colnames(bins), value = T)
+main_seqs <- paste0("chr", c(1:22, "X"))
+df <- bins[bins$seqnames %in% main_seqs, c("seqnames", columns)]
+
+summary_mat <- df %>% group_by(seqnames) %>% summarise_at(columns, mean, na.rm = TRUE)
+
+to_plot <- summary_mat %>% select("seqnames", contains("mean_cov") & !contains("IN") & !contains("rep"))
+# Reorder chromosomes
+to_plot$seqnames <- gsub("chr", "", to_plot$seqnames)
+to_plot$seqnames <- factor(to_plot$seqnames, levels = c(1:22, "X"))
+to_plot_melt <- pivot_longer(to_plot, !seqnames)
+
+to_plot_melt$name <- gsub("_mean_cov", "", to_plot_melt$name)
+to_plot_melt$ip <- str_split_fixed(to_plot_melt$name, "_", 2)[, 1]
+to_plot_melt$condition <- str_split_fixed(to_plot_melt$name, "_", 2)[, 2]
+
+ggplot(to_plot_melt, aes(color = ip, x = condition, y = value, label = seqnames)) +
+  geom_boxplot(color = "gray", alpha = 0.9) +
+  geom_jitter(position = "dodge") +
+  geom_jitter(data = to_plot_melt %>% filter(seqnames == "X"), color = "black", size = 3.5, position = "dodge") +
+  geom_label_repel(data = to_plot_melt %>% filter(
+    seqnames == "X" & ip == "H3K27m3" & condition == "Ni"), color = "black", box.padding = 1.5) +
+  theme_default(base_size=12) + 
+  facet_wrap(. ~ ip, nrow = 1) +
+  geom_hline(yintercept = 1, linetype = "dashed", alpha = 0.8) +
+  scale_color_manual(
+    values = c("H2Aub" = gl_mark_colors$H2Aub,
+               "H3K27m3" = gl_mark_colors$H3K27m3,
+               "H3K4m3" = gl_mark_colors$H3K4m3)) +
+  labs(y="FPGC", title =
+         "Mean 5kb bin RPGC per chromosome and histone mark",
+       subtitle = "Chromosome X in black")
+
 ```
 
 
-# H3K27me3
+# Treemaps 
+
+## H3K27me3
 
 H3K27me3 is highly abundant on X chromosome on naïve cells.
 
@@ -86,8 +237,6 @@ If we take a look at coverage per chromosome for both Naïve and Primed cells:
 ```{r treemap-h3k27m3-naive, fig.width=8, fig.height=7, warning = FALSE}
 bw <- file.path(params$bwdir, "H3K27m3_H9_Ni_pooled.hg38.scaled.bw")
 values <- scaled_reads_per_chromosome(bw, chromosomes = chromosomes)
-
-
 
 chr_treeplot(
   values,
@@ -98,7 +247,7 @@ chr_treeplot(
 )
 ```
 
-Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+Values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
 
 In this and subsequent plots, each rectangle's size is proportional to the
 number of read mapped to its corresponding chromosome. Color intensity
@@ -120,7 +269,7 @@ chr_treeplot(
 )
 ```
 
-Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+Values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
 
 EZH2i-treated cells, in comparison, have H3K27m3 globally removed:
 
@@ -137,7 +286,7 @@ chr_treeplot(
 )
 ```
 
-Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+Values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
 
 ```{r treemap-h3k27m3-primed-ezh2i, fig.width=8, fig.height=7, warning = FALSE}
 bw <- file.path(params$bwdir, "H3K27m3_H9_Pr-EZH2i_pooled.hg38.scaled.bw")
@@ -152,11 +301,11 @@ chr_treeplot(
 )
 ```
 
-Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+Values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
 
 If we look at the rest of the histone marks:
 
-# H3K4me3 
+## H3K4me3 
 
 H3K4me3 does not show this X-chromosome specificity.
 
@@ -220,9 +369,7 @@ chr_treeplot(
 )
 ```
 
-# H2AUb
-
-H2AUb does not show this X-chromosome specificity either.
+## H2AUb
 
 ```{r treemap-H2aub-naive, fig.width=8, fig.height=7, warning = FALSE}
 bw <- file.path(params$bwdir, "H2Aub_H9_Ni_pooled.hg38.scaled.bw")
@@ -272,7 +419,7 @@ chr_treeplot(
 )
 ```
 
-Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+Values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
 
 ```{r treemap-h2aub-primed-ezh2i, fig.width=8, fig.height=7, warning = FALSE}
 bw <- file.path(params$bwdir, "H2Aub_H9_Pr-EZH2i_pooled.hg38.scaled.bw")
@@ -287,4 +434,186 @@ chr_treeplot(
 )
 ```
 
-Underlying values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+Values can be downloaded here: `r embed_df(values[, c("seqnames", "nreads", "score")])`.
+
+
+# Ridgeplots
+
+These figures are made using the package ggridges: https://wilkelab.org/ggridges/
+
+## Primed vs Naive
+### RNA-seq data
+
+```{r rnaseq-per-chr-pr-vs-ni-ridgeplot, warning = F, message = F}
+ridges_chromosome_plot(genes, "RNASeq_DS_Pr_vs_Ni_log2FoldChange", "#F08080") +
+  labs(title = "RNA Seq log2FC distribution Primed vs Naïve DESeq2") +
+  coord_cartesian(xlim=c(-7, 7))
+```
+
+`r embed_df(genes[, c("seqnames", "RNASeq_DS_Pr_vs_Ni_log2FoldChange")], name = "rnaseq_ridgeplot.tss", text = "Values")` used in this plot.
+
+### H3K27m3
+
+```{r h3k27m3-per-chr-pr-vs-ni-ridgeplot, warning = F, message = F}
+ridges_chromosome_plot(genes, "H3K27m3_DS_Pr_vs_Ni_log2FoldChange", "#3e5aa8") +
+  labs(title = "H3K27m3 log2FC distribution Primed vs Naïve DESeq2") + coord_cartesian(xlim=c(-7, 7))
+```
+
+`r embed_df(genes[, c("seqnames", "H3K27m3_DS_Pr_vs_Ni_log2FoldChange")], name = "rnaseq_ridgeplot.tss", text = "Values")` used in this plot.
+
+
+## EZH2i vs Naive
+### RNA-seq data
+
+```{r rnaseq-per-chr-ezh2i-vs-ni-ridgeplot, warning = F, message = F}
+ridges_chromosome_plot(genes, "RNASeq_DS_EZH2i_vs_Ni_log2FoldChange", "#F08080") +
+  labs(title = "RNA Seq log2FC distribution EZH2i vs Naïve DESeq2") +
+  coord_cartesian(xlim=c(-5, 5))
+```
+
+`r embed_df(genes[, c("seqnames", "RNASeq_DS_EZH2i_vs_Ni_log2FoldChange")], name = "rnaseq_ridgeplot.tss", text = "Values")` used in this plot.
+
+# MA plots
+
+```{r ma-plot-ni-vs-primed-chrx}
+# Too many points make huge svgs
+library(ggrastr)
+
+interest_genes <- c("XIST", "VGLL1", "HUWE1", "ATRX", "THOC2", "IDS", "MPP1", "RBM3")
+
+ggplot(genes, aes(x=RNASeq_DS_Pr_vs_Ni_baseMean, y=RNASeq_DS_Pr_vs_Ni_log2FoldChange)) +
+  rasterise(geom_point(size = 0.5, alpha = 0.8, color = "gray"), dpi = 300) +
+  rasterise(geom_point(data = genes %>% filter(seqnames == "chrX"), color = "black", size = 1.5), dpi = 300) +
+  theme_default(base_size = 12) +
+  labs(x = "Base mean",
+       y = "Log2 FC",
+       title = paste("MA plot - Primed vs Naive"),
+       subtitle = "Highlighted in black chrX genes") +
+  geom_hline(yintercept = 0, linetype = "dashed", alpha = 0.8) +
+  geom_label_repel(data = genes %>% filter(name %in% interest_genes), aes(label = name), box.padding = 0.5) +
+  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x)))
+```
+
+
+```{r ma-plot-ezh2i-vs-ni-chrx, warning = F, message = F}
+ggplot(genes, aes(x=RNASeq_DS_EZH2i_vs_Ni_baseMean, y=RNASeq_DS_EZH2i_vs_Ni_log2FoldChange)) +
+  rasterise(geom_point(size = 0.5, alpha = 0.8, color = "gray"), dpi = 300) +
+  rasterise(geom_point(data = genes %>% filter(seqnames == "chrX"), color = "black", size = 1.6), dpi = 300) +
+  theme_default(base_size = 12) +
+  labs(x = "Base mean",
+       y = "Log2 FC",
+       title = paste("MA plot - EZH2i vs Naive"),
+       subtitle = "Highlighted in black chrX genes") +
+  geom_hline(yintercept = 0, linetype = "dashed", alpha = 0.8) +
+  geom_label_repel(data = genes %>% filter(name %in% interest_genes), aes(label = name), box.padding = 0.5) +
+  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x)))
+```
+
+
+
+# Karyoplots
+
+These figures are made using the package karyoploteR: https://academic.oup.com/bioinformatics/article/33/19/3088/3857734
+
+## H3K27m3
+
+```{r h3k27m3-karyoplot, warning = F, message = F}
+bwfiles <- list(
+  k4 = list.files(params$bwdir, pattern = "H3K4m3.*pooled.hg38.scaled.*", full.names = T),
+  k27 = list.files(params$bwdir, pattern = "H3K27m3.*pooled.hg38.scaled.*", full.names = T),
+  ub = list.files(params$bwdir, pattern = "H2Aub.*pooled.hg38.scaled.*", full.names = T),
+  input = list.files(params$bwdir, pattern = "IN.*pooled.hg38.*", full.names = T))
+
+kp <-
+  plotKaryotype(
+    genome = "hg38",
+    plot.type = 1,
+    main = "H3K27m3 Naïve vs Primed",
+    chromosomes = c("chr7", "chrX")
+  )
+
+kpPlotDensity(
+  kp,
+  rtracklayer::import(bwfiles$k27[[1]]),
+  data.panel = 1,
+  col = "#092ba8",
+  chromosomes = c("chr7", "chrX"),
+  window.size = 500000
+)
+
+kpPlotDensity(
+  kp,
+  rtracklayer::import(bwfiles$k27[[3]]),
+  data.panel = 2,
+  col =
+    "#5d9ddd",
+  chromosomes = c("chr7", "chrX"),
+  window.size = 500000
+)
+
+```
+
+## H3K4m3
+```{r h3k4m3-karyoplot, warning = F, message = F}
+kp <-
+  plotKaryotype(
+    genome = "hg38",
+    plot.type = 1,
+    main = "H3K4m3 Naïve vs Primed",
+    chromosomes = c("chr7", "chrX")
+  )
+
+kpPlotDensity(
+  kp,
+  rtracklayer::import(bwfiles$k4[[1]]),
+  data.panel = 1,
+  col = "#e76e3b",
+  chromosomes = c("chr7", "chrX"),
+  window.size = 500000
+)
+
+kpPlotDensity(
+  kp,
+  rtracklayer::import(bwfiles$k4[[3]]),
+  data.panel = 2,
+  col =
+    "#ffab45",
+  chromosomes = c("chr7", "chrX"),
+  window.size = 500000
+)
+```
+
+
+## H2Aub
+```{r h2aub-karyoplot, warning = F, message = F}
+kp <-
+  plotKaryotype(
+    genome = "hg38",
+    plot.type = 1,
+    main = "H2Aub Naïve vs Primed",
+    chromosomes = c("chr7", "chrX")
+  )
+
+kpPlotDensity(
+  kp,
+  rtracklayer::import(bwfiles$ub[[1]]),
+  data.panel = 1,
+  col = "#400c84",
+  chromosomes = c("chr7", "chrX"),
+  window.size = 500000
+)
+
+kpPlotDensity(
+  kp,
+  rtracklayer::import(bwfiles$ub[[3]]),
+  data.panel = 2,
+  col =
+    "#a07af0",
+  chromosomes = c("chr7", "chrX"),
+  window.size = 500000
+)
+```
+
+
