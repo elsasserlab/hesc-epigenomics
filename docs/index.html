@@ -11,9 +11,9 @@
 
 
 
-<title>hESC Quantitative Epigenomics publication data</title>
+<title>H3K27me3 hESC Epigenomics data</title>
 
-<script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/lumen.min.css" rel="stylesheet" />
@@ -266,7 +266,7 @@ $(document).ready(function () {
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/elsasserlab/hesc-epigenomics">
-    <span class="fas fa-github"></span>
+    <span class="fa fa-github"></span>
      
     Source code
   </a>
@@ -280,7 +280,7 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">hESC Quantitative Epigenomics publication data</h1>
+<h1 class="title toc-ignore">H3K27me3 hESC Epigenomics data</h1>
 
 </div>
 
@@ -305,7 +305,7 @@ $(document).ready(function () {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-05-26
+<strong>Last updated:</strong> 2021-07-08
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -336,16 +336,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreefcc223ea6eb856ff3c0fdac68a4f3a59d6a3fc03targetblankfcc223ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/fcc223ea6eb856ff3c0fdac68a4f3a59d6a3fc03" target="_blank">fcc223e</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree2d5c9aa6b7b50d3c7ea5eeff8c62289496e9258dtargetblank2d5c9aaa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/2d5c9aa6b7b50d3c7ea5eeff8c62289496e9258d" target="_blank">2d5c9aa</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstreefcc223ea6eb856ff3c0fdac68a4f3a59d6a3fc03targetblankfcc223ea" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree2d5c9aa6b7b50d3c7ea5eeff8c62289496e9258dtargetblank2d5c9aaa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/fcc223ea6eb856ff3c0fdac68a4f3a59d6a3fc03" target="_blank">fcc223e</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/2d5c9aa6b7b50d3c7ea5eeff8c62289496e9258d" target="_blank">2d5c9aa</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -354,58 +354,65 @@ Note that you need to be careful to ensure that all relevant files for the analy
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    analysis/200510_chromosomes_extended.Rmd
-    Ignored:    analysis/210413_bivalent_groups_extended.Rmd
-    Ignored:    analysis/210518_gene_group_categories_extended.Rmd
-    Ignored:    analysis/annotations_cache/
-    Ignored:    analysis/annotations_extended.Rmd
-    Ignored:    analysis/gene_set_analysis_extended.Rmd
-    Ignored:    analysis/global_bins_extended.Rmd
-    Ignored:    analysis/histone_marks_vs_expression_extended.Rmd
-    Ignored:    analysis/kumar_2020_comparison_extended.Rmd
-    Ignored:    analysis/messmer_2019_gene_groups_extended.Rmd
     Ignored:    data/bed/
     Ignored:    data/bw
     Ignored:    data/igv/
     Ignored:    data/liftover/
-    Ignored:    data/meta/
     Ignored:    data/other/
     Ignored:    data/peaks
     Ignored:    data/rnaseq/
+    Ignored:    figures_data/
 
 Untracked files:
-    Untracked:  analysis/master_gene_table.Rmd
-    Untracked:  code/heatmap_panels.R
-    Untracked:  output/01_profiles.svg
-    Untracked:  output/01_proportional_w_h2aub.svg
-    Untracked:  output/01_proportional_w_h2aub_and_not_enriched_manual.svg
-    Untracked:  output/01_proportional_w_h2aub_not_enriched.svg
-    Untracked:  output/01_proportional_w_k4.png
-    Untracked:  output/01_proportional_w_k4.svg
-    Untracked:  output/01_sizes.svg
-    Untracked:  output/Kumar_2020/
-    Untracked:  output/gene_groups_k27_enriched_selected_by_shrunk_lfc.png
-    Untracked:  output/gene_groups_k27_k4_enriched_plus_h2aub.png
-    Untracked:  output/gene_groups_k27_k4_ni_enriched_selected_by_shrunk_lfc.png
-    Untracked:  output/gene_groups_k27_up_subsets.png
-    Untracked:  output/gene_groups_panel_by_k27.png
-    Untracked:  output/gene_groups_panel_by_k27_regardless_k4_high_plus_h2aub.png
-    Untracked:  output/gene_groups_panel_by_k4.png
-    Untracked:  output/gene_groups_panel_only_k4_intersecting.png
-    Untracked:  output/gene_groups_panel_only_k4_ni_high.png
-    Untracked:  output/gene_groups_panel_only_k4_ni_high_plus_h2aub.png
-    Untracked:  output/gene_groups_panel_only_k4_pr_high_plus_h2aub.png
-    Untracked:  output/gene_groups_panel_w_k4.png
-    Untracked:  output/gene_groups_panel_w_k4_enriched_naive.png
-    Untracked:  output/gene_groups_panel_w_k4_naive.png
-    Untracked:  output/h3k27m3_h2aub_panel_at_differential_k27_all_k4_enriched.png
-    Untracked:  output/test_proportional.png
+    Untracked:  data/meta/Kumar_2020_bins_panels_design.csv
+    Untracked:  data/meta/Kumar_2020_master_bins_10kb_table_final_raw.tar.gz
+    Untracked:  data/meta/Kumar_2020_master_bins_10kb_table_final_raw.tsv
+    Untracked:  data/meta/Kumar_2020_master_bins_10kb_table_final_raw.zip
+    Untracked:  data/meta/Kumar_2020_master_bins_10kb_table_raw (copy).tsv
+    Untracked:  data/meta/Kumar_2020_master_bins_10kb_table_raw.tsv
+    Untracked:  data/meta/Kumar_2020_master_bins_5kb_table_raw.tsv
+    Untracked:  data/meta/Kumar_2020_master_bins_5kb_table_raw.zip
+    Untracked:  data/meta/Kumar_2020_master_bins_5kb_table_replicates_only.tsv
+    Untracked:  data/meta/Kumar_2020_master_bins_5kb_table_shrunk.tsv
+    Untracked:  data/meta/Kumar_2020_master_bins_5kb_table_shrunk.zip
+    Untracked:  data/meta/Kumar_2020_master_gene_table.zip
+    Untracked:  data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk.tsv
+    Untracked:  data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.tsv
+    Untracked:  data/meta/Kumar_2020_promoters_panels_design.csv
+    Untracked:  data/meta/gene_names_bivalent.tsv
+    Untracked:  output/fig2_chr_means_boxplot.svg
+    Untracked:  output/fig3_violin_rnaseq_ratios_naive_higher_than_pr.svg
+    Untracked:  output/fig3_violin_rnaseq_ratios_primed_higher_than_ni.svg
+    Untracked:  output/fig4_lineage_makers_new.png
+    Untracked:  output/fig4_lineage_makers_new.svg
+    Untracked:  output/fig4_lineage_markers_new.png
+    Untracked:  output/fig4_lineage_markers_new.svg
+    Untracked:  output/fig4_lineage_markers_new_cluster.png
+    Untracked:  output/fig4_lineage_markers_new_cluster.svg
+    Untracked:  output/fig4_lineage_markers_new_k4.png
+    Untracked:  output/fig4_lineage_markers_new_k4.svg
+    Untracked:  output/fig4_messmer_top25.png
+    Untracked:  output/fig4_messmer_top25.svg
+    Untracked:  output/fig4_messmer_top25_down.png
+    Untracked:  output/fig4_messmer_top25_down.svg
+    Untracked:  output/fig4_messmer_top25_up.png
+    Untracked:  output/fig4_messmer_top25_up.svg
+    Untracked:  output/fig4_messmer_top50_down.png
+    Untracked:  output/fig4_messmer_top50_down.svg
+    Untracked:  output/fig4_messmer_top50_up.png
+    Untracked:  output/fig4_messmer_top50_up.svg
+    Untracked:  output/fig4_pca_all_plus_dong_data.svg
+    Untracked:  output/fig4_pca_only_our_samples.svg
+    Untracked:  output/fig4_pca_only_our_samples_labeled.svg
+    Untracked:  output/fig4_pluripotency_markers_new.png
+    Untracked:  output/fig4_pluripotency_markers_new.svg
+    Untracked:  output/fig4_pluripotency_markers_new_cluster.png
+    Untracked:  output/fig4_pluripotency_markers_new_cluster.svg
+    Untracked:  output/promoter_panels_final/
 
 Unstaged changes:
-    Modified:   analysis/annotations.Rmd
-    Modified:   analysis/fig_01_quantitative_chip.Rmd
-    Modified:   code/globals.R
-    Modified:   code/ucsc_annotations.R
+    Modified:   .gitignore
+    Modified:   analysis/rnaseq_comparison.Rmd
 
 </code></pre>
 <p>
@@ -444,6 +451,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/2d5c9aa6b7b50d3c7ea5eeff8c62289496e9258d/analysis/index.Rmd" target="_blank">2d5c9aa</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2021-07-08
+</td>
+<td>
+wflow_publish(“./analysis/index.Rmd”, verbose = T)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/elsasserlab/hesc-epigenomics/9e8b1a9327a1b3b4c38677f4bb346f610b402aa3/docs/index.html" target="_blank">9e8b1a9</a>
+</td>
+<td>
+cnluzon
+</td>
+<td>
+2021-05-26
+</td>
+<td>
+Metadata folder added
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -778,20 +819,26 @@ Start workflowr project.
 <div id="publication-figures" class="section level1">
 <h1>Publication figures</h1>
 <ul>
-<li><a href="annotations.html">Annotations</a>. Generation of relevant BED annotation files.</li>
-<li><a href="fig_01_quantitative_chip.html">Figure 1</a>. Figure 1. Minute-ChIP is quantitative.</li>
+<li><a href="fig_01_quantitative_chip.html">Figure 1</a>. High levels of H3K27m3 and H2AUb broadly cover the naïve pluripotent genome.</li>
+<li><a href="fig_02_x_chromosome.html">Figure 2</a>. X chromosome in naïve hESCs accumulate exceptional amounts of H3K27m3 without a globally repressive function.</li>
+<li><a href="fig_03_h3k27m3_groups.html">Figure 3</a>. H3K27m3 is adaptive to gene expression changes between naïve and primed pluripotent state and contributes to repression of non-state specific genes.</li>
+<li><a href="fig_04_intermediate.html">Figure 4</a>. Loss of H3K27m3 in naïve hESCs derepresses a set of genes that drive hESCs towards a rare naturally ocurring intermediate pluripotent state.</li>
+<li><a href="fig_04_intermediate.html">Figure 5</a>. Loss of H3K27m3 in naïve hESCs activates trophectoderm and placental gene expression programs.</li>
 </ul>
 </div>
-<div id="supplementary-analyses" class="section level1">
-<h1>Supplementary analyses</h1>
+<div id="supplementary-data-and-analyses" class="section level1">
+<h1>Supplementary data and analyses</h1>
 <ul>
-<li><a href="global_read_counts.html">Global read counts</a>. Read counts per sample normalized to input levels.</li>
-<li><a href="global_bins.html">Global bins analysis</a>. Genome-wide bin analysis per histone mark.</li>
-<li><a href="bivalent_chromatin.html">Bivalent chromatin</a>. Histone marks on bivalent-chromatin annotated regions.</li>
-<li><a href="x_chromosome.html">Read density per chromosome</a>. H3K27me3 shows high abundance on X chromosome in Naïve cells.</li>
-<li><a href="rna_seq_collier_2017.html">Public RNA-seq analysis</a>. Gene expression analysis on RNA-seq public data.</li>
-<li><a href="gene_expression_groups.html">Gene groups</a>. Gene expression analysis on groups (high-med-low expressed genes) obtained from <a href="rna_seq_collier_2017.html">Public RNA-seq data</a>.</li>
-<li><a href="histone_marks_vs_expression.html">RNA-seq expression data with histone marks</a>.</li>
+<li><a href="master_gene_table.html">Master gene table</a>. Notebook with the code that generates the master gene table.</li>
+<li><a href="master_bins_table.html">Master bins table</a>. Notebook with the code that generates the master bins table.</li>
+</ul>
+</div>
+<div id="main-data-files" class="section level1">
+<h1>Main data files</h1>
+<p>A large proportion of the figures shown in this publication can be drawn directly from values in the main tables:</p>
+<ul>
+<li><a href="../data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.zip">Gene table</a>. Contains histone mark values across 5kb regions around gene TSS in the hg38 genome, RNA-seq plus statistics on differentially decorated promoters and differentially expressed genes across conditions. differentially decorated regions.</li>
+<li><a href="../data/meta/Kumar_2020_master_bins_10kb_table_final_raw.zip">Bins table</a>. Gathers histone mark values across 10kb windows in the hg38 genome, plus statistics on differentially decorated regions across conditions.</li>
 </ul>
 </div>
 
