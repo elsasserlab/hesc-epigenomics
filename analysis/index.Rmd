@@ -1,5 +1,5 @@
 ---
-title: "hESC Quantitative Epigenomics publication data"
+title: "H3K27me3 hESC Epigenomics data"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
@@ -12,22 +12,38 @@ Supplementary code and analysis for publication.
 
 # Publication figures
 
-* [Annotations](annotations.html). Generation of relevant BED annotation files.
-* [Figure 1](fig_01_quantitative_chip.html). Figure 1. Minute-ChIP is quantitative.
+* [Figure 1](fig_01_quantitative_chip.html). High levels of H3K27m3
+and H2AUb broadly cover the naïve pluripotent genome.
+* [Figure 2](fig_02_x_chromosome.html). X chromosome in naïve hESCs 
+accumulate exceptional amounts of H3K27m3 without a globally repressive function.
+* [Figure 3](fig_03_h3k27m3_groups.html). H3K27m3 is adaptive to gene expression
+changes between naïve and primed pluripotent state and contributes to repression
+of non-state specific genes.
+* [Figure 4](fig_04_intermediate.html). Loss of H3K27m3 in naïve hESCs derepresses
+a set of genes that drive hESCs towards a rare naturally ocurring intermediate
+pluripotent state.
+* [Figure 5](fig_04_intermediate.html). Loss of H3K27m3 in naïve hESCs 
+activates trophectoderm and placental gene expression programs.
 
-# Supplementary analyses
+# Supplementary data and analyses
 
-* [Global read counts](global_read_counts.html). Read counts per sample normalized
-to input levels.
-* [Global bins analysis](global_bins.html). Genome-wide bin analysis per 
-histone mark.
-* [Bivalent chromatin](bivalent_chromatin.html). Histone marks on
-bivalent-chromatin annotated regions.
-* [Read density per chromosome](x_chromosome.html). H3K27me3 shows high abundance
-on X chromosome in Naïve cells.
-* [Public RNA-seq analysis](rna_seq_collier_2017.html). Gene expression analysis
-on RNA-seq public data.
-* [Gene groups](gene_expression_groups.html). Gene expression analysis
-on groups (high-med-low expressed genes) obtained from
-[Public RNA-seq data](rna_seq_collier_2017.html).
-* [RNA-seq expression data with histone marks](histone_marks_vs_expression.html).
+* [Master gene table](master_gene_table.html). Notebook with the code that 
+generates the master gene table. 
+* [Master bins table](master_bins_table.html). Notebook with the code that 
+generates the master bins table.
+
+# Main data files
+
+A large proportion of the figures shown in this publication can be drawn directly
+from values in the main tables:
+
+* [Gene table](../data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.zip).
+ Contains histone mark values across 5kb regions around gene TSS in the hg38 genome, RNA-seq
+ plus statistics on differentially decorated promoters and differentially expressed
+ genes across conditions.
+differentially decorated regions.
+* [Bins table](../data/meta/Kumar_2020_master_bins_10kb_table_final_raw.zip). Gathers
+histone mark values across 10kb windows in the hg38 genome, plus statistics on
+differentially decorated regions across conditions.
+
+
