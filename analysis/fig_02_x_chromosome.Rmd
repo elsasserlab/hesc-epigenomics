@@ -36,7 +36,7 @@ my_svg <- function(file, width, height) {
   svglite(file = file, width = width, height = height, bg = "white")
 }
 
-knitr::opts_chunk$set(dev = c('png', 'svg'))
+knitr::opts_chunk$set(dev = c('png', 'my_svg'), fig.ext = c("png", "svg"), fig.width = 8, fig.height = 8)
 knitr::opts_chunk$set(class.source='fold-show')
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
