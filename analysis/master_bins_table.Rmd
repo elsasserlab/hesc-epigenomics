@@ -38,7 +38,7 @@ source("./code/globals.R")
 knitr::opts_chunk$set(dev = c('png'))
 knitr::opts_chunk$set(class.source='fold-show')
 
-table_name <- "Kumar_2020_master_bins_10kb_table"
+table_name <- "Kumar_2020_master_bins_10kb_table_final"
 
 if (params$shrink) {
   table_name <- paste(table_name, "_shrunk", ".tsv", sep = "")
@@ -74,10 +74,10 @@ significance scores for all genes.
 
 ```{r helper-functions, class.source = NULL}
 
-calculate_results <- function(diff, shrink, pval) {
+calculate_results <- function(diff, shrink, pval, coef) {
   diff_lfc <- NULL
   if (shrink == TRUE) {
-    diff_lfc <- lfcShrink(diff, coef="condition_Primed_vs_Naive", type="apeglm")
+    diff_lfc <- lfcShrink(diff, coef=coef, type="apeglm")
   } else {
     diff_lfc <- results(diff, alpha = pval)
   }
@@ -112,21 +112,20 @@ make_label2 <- function(fnames) {
 
 
 gr_cbind <- function(lociset) {
-  mcols_df <- function(gr) { data.frame(mcols(gr)) }
-  
-  dfs <- lapply(lociset, mcols_df)
-  values <- dfs %>% reduce(cbind)
-  cbind(data.frame(lociset[[1]])[, c("seqnames", "start", "end", "strand")], values)
+  dfs <- lapply(lociset, data.frame)
+  values <- dfs %>% reduce(left_join, by=c("seqnames", "start", "end", "strand", "width"))
+  values
 }
 
 diff_analysis <- function(bwfiles_c1, bwfiles_c2, gr, name_c1, name_c2, shrink, pval) {
-  c1 <- bw_loci(bwfiles_c1, bins_gr)
-  c2 <- bw_loci(bwfiles_c2, bins_gr)
+  c1 <- bw_loci(bwfiles_c1, gr)
+  c2 <- bw_loci(bwfiles_c2, gr)
 
-  diff <- bw_granges_diff_analysis(c1, c2, "Naive", "Primed",
+  diff <- bw_granges_diff_analysis(c1, c2, name_c1, name_c2,
                                    estimate_size_factors = FALSE)
   
-  diff_lfc <- calculate_results(diff, shrink, pval)
+  coef <- paste0("condition_", name_c2, "_vs_", name_c1)
+  diff_lfc <- calculate_results(diff, shrink, pval, coef)
   diff_lfc
 }
 
@@ -201,6 +200,7 @@ master_df <- gr_cbind(list(pooled_k4, pooled_k27, pooled_h2aub, pooled_inp, reps
 ## Primed vs Naive
 
 ```{r k27m3-diff-pr-ni, warning=F, message=F}
+
 diff_lfc <- diff_analysis(
   bwfiles$k27_naive,
   bwfiles$k27_primed,
@@ -215,8 +215,8 @@ plotMA(diff_lfc)
 
 df_diff <- make_diff_df(diff_lfc, bins_gr, "H3K27m3_DS_Pr_vs_Ni")
 
-master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
-
+master_df <- left_join(master_df, df_diff,
+                       by = c("seqnames", "start", "end", "strand"))
 ```
 
 ## EZH2i vs Naive and primed
@@ -244,7 +244,8 @@ plotMA(diff_lfc)
 
 df_diff <- make_diff_df(diff_lfc, bins_gr, "H3K4m3_DS_Pr_vs_Ni")
 
-master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+master_df <- left_join(master_df, df_diff,
+                       by = c("seqnames", "start", "end", "strand"))
 
 ```
 
@@ -266,7 +267,8 @@ plotMA(diff_lfc)
 
 df_diff <- make_diff_df(diff_lfc, bins_gr, "H3K4m3_DS_EZH2i_vs_Ni")
 
-master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+master_df <- left_join(master_df, df_diff,
+                       by = c("seqnames", "start", "end", "strand"))
 
 ```
 
@@ -287,7 +289,8 @@ plotMA(diff_lfc)
 
 df_diff <- make_diff_df(diff_lfc, bins_gr, "H3K4m3_DS_EZH2i_vs_Pr")
 
-master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+master_df <- left_join(master_df, df_diff,
+                       by = c("seqnames", "start", "end", "strand"))
 
 ```
 
@@ -309,7 +312,8 @@ plotMA(diff_lfc)
 
 df_diff <- make_diff_df(diff_lfc, bins_gr, "H2Aub_DS_Pr_vs_Ni")
 
-master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+master_df <- left_join(master_df, df_diff,
+                       by = c("seqnames", "start", "end", "strand"))
 
 ```
 
@@ -331,7 +335,8 @@ plotMA(diff_lfc)
 
 df_diff <- make_diff_df(diff_lfc, bins_gr, "H2Aub_DS_EZH2i_vs_Ni")
 
-master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+master_df <- left_join(master_df, df_diff,
+                       by = c("seqnames", "start", "end", "strand"))
 
 ```
 
@@ -352,7 +357,8 @@ plotMA(diff_lfc)
 
 df_diff <- make_diff_df(diff_lfc, bins_gr, "H2Aub_DS_EZH2i_vs_Pr")
 
-master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+master_df <- left_join(master_df, df_diff,
+                       by = c("seqnames", "start", "end", "strand"))
 ```
 
 # H3K27m3 vs H2AUb diff
@@ -374,7 +380,8 @@ plotMA(diff_lfc)
 
 df_diff <- make_diff_df(diff_lfc, bins_gr, "DS_H3K27m3_Ni_vs_H2Aub_Ni")
 
-master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+master_df <- left_join(master_df, df_diff,
+                       by = c("seqnames", "start", "end", "strand"))
 ```
 
 
@@ -394,7 +401,8 @@ plotMA(diff_lfc)
 
 df_diff <- make_diff_df(diff_lfc, bins_gr, "DS_H3K27m3_Pr_vs_H2Aub_Pr")
 
-master_df <- cbind(master_df, df_diff[, c(5:length(colnames(df_diff)))])
+master_df <- left_join(master_df, df_diff,
+                       by = c("seqnames", "start", "end", "strand"))
 ```
 
 
