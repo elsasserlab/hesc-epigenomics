@@ -488,16 +488,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree2f76ac2d6cdd367074685e08e9ccbf85760f20c7targetblank2f76ac2a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/2f76ac2d6cdd367074685e08e9ccbf85760f20c7" target="_blank">2f76ac2</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree47461a37ea49b7377f0f3a8faf3ed13b4add729ctargetblank47461a3a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/47461a37ea49b7377f0f3a8faf3ed13b4add729c" target="_blank">47461a3</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree2f76ac2d6cdd367074685e08e9ccbf85760f20c7targetblank2f76ac2a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree47461a37ea49b7377f0f3a8faf3ed13b4add729ctargetblank47461a3a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/2f76ac2d6cdd367074685e08e9ccbf85760f20c7" target="_blank">2f76ac2</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/47461a37ea49b7377f0f3a8faf3ed13b4add729c" target="_blank">47461a3</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -602,6 +602,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/47461a37ea49b7377f0f3a8faf3ed13b4add729c/analysis/fig_02_x_chromosome.Rmd" target="_blank">47461a3</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2021-07-08
+</td>
+<td>
+wflow_publish(“./analysis/fig_02_x_chromosome.Rmd”, verbose = T)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/elsasserlab/hesc-epigenomics/3382297dca2611daf9498e5f03adf0f5b7f09a1a/docs/fig_02_x_chromosome.html" target="_blank">3382297</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2021-07-08
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -973,7 +1007,7 @@ ggplot(to_plot_melt, aes(color = ip, x = condition, y = value, label = seqnames)
   labs(y=&quot;FPGC&quot;, title =
          &quot;Mean 5kb bin RPGC per chromosome and histone mark&quot;,
        subtitle = &quot;Chromosome X in black&quot;)</code></pre>
-<p><img src="figure/fig_02_x_chromosome.Rmd/chromosomes-jitter-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/fig_02_x_chromosome.Rmd/chromosomes-jitter-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-chromosomes-jitter-1">
 Past versions of chromosomes-jitter-1.png
@@ -1762,7 +1796,7 @@ C. Navarro
 <pre class="r fold-show"><code>ridges_chromosome_plot(genes, &quot;RNASeq_DS_Pr_vs_Ni_log2FoldChange&quot;, &quot;#F08080&quot;) +
   labs(title = &quot;RNA Seq log2FC distribution Primed vs Naïve DESeq2&quot;) +
   coord_cartesian(xlim=c(-7, 7))</code></pre>
-<p><img src="figure/fig_02_x_chromosome.Rmd/rnaseq-per-chr-pr-vs-ni-ridgeplot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/fig_02_x_chromosome.Rmd/rnaseq-per-chr-pr-vs-ni-ridgeplot-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-rnaseq-per-chr-pr-vs-ni-ridgeplot-1">
 Past versions of rnaseq-per-chr-pr-vs-ni-ridgeplot-1.png
@@ -1806,7 +1840,7 @@ C. Navarro
 <h3>H3K27m3</h3>
 <pre class="r fold-show"><code>ridges_chromosome_plot(genes, &quot;H3K27m3_DS_Pr_vs_Ni_log2FoldChange&quot;, &quot;#3e5aa8&quot;) +
   labs(title = &quot;H3K27m3 log2FC distribution Primed vs Naïve DESeq2&quot;) + coord_cartesian(xlim=c(-7, 7))</code></pre>
-<p><img src="figure/fig_02_x_chromosome.Rmd/h3k27m3-per-chr-pr-vs-ni-ridgeplot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/fig_02_x_chromosome.Rmd/h3k27m3-per-chr-pr-vs-ni-ridgeplot-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k27m3-per-chr-pr-vs-ni-ridgeplot-1">
 Past versions of h3k27m3-per-chr-pr-vs-ni-ridgeplot-1.png
@@ -1854,7 +1888,7 @@ C. Navarro
 <pre class="r fold-show"><code>ridges_chromosome_plot(genes, &quot;RNASeq_DS_EZH2i_vs_Ni_log2FoldChange&quot;, &quot;#F08080&quot;) +
   labs(title = &quot;RNA Seq log2FC distribution EZH2i vs Naïve DESeq2&quot;) +
   coord_cartesian(xlim=c(-5, 5))</code></pre>
-<p><img src="figure/fig_02_x_chromosome.Rmd/rnaseq-per-chr-ezh2i-vs-ni-ridgeplot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/fig_02_x_chromosome.Rmd/rnaseq-per-chr-ezh2i-vs-ni-ridgeplot-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-rnaseq-per-chr-ezh2i-vs-ni-ridgeplot-1">
 Past versions of rnaseq-per-chr-ezh2i-vs-ni-ridgeplot-1.png
@@ -1915,7 +1949,7 @@ ggplot(genes, aes(x=RNASeq_DS_Pr_vs_Ni_baseMean, y=RNASeq_DS_Pr_vs_Ni_log2FoldCh
   geom_label_repel(data = genes %&gt;% filter(name %in% interest_genes), aes(label = name), box.padding = 0.5) +
   scale_x_log10(breaks = trans_breaks(&quot;log10&quot;, function(x) 10^x),
                 labels = trans_format(&quot;log10&quot;, math_format(10^.x)))</code></pre>
-<p><img src="figure/fig_02_x_chromosome.Rmd/ma-plot-ni-vs-primed-chrx-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/fig_02_x_chromosome.Rmd/ma-plot-ni-vs-primed-chrx-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ma-plot-ni-vs-primed-chrx-1">
 Past versions of ma-plot-ni-vs-primed-chrx-1.png
@@ -1965,7 +1999,7 @@ C. Navarro
   geom_label_repel(data = genes %&gt;% filter(name %in% interest_genes), aes(label = name), box.padding = 0.5) +
   scale_x_log10(breaks = trans_breaks(&quot;log10&quot;, function(x) 10^x),
                 labels = trans_format(&quot;log10&quot;, math_format(10^.x)))</code></pre>
-<p><img src="figure/fig_02_x_chromosome.Rmd/ma-plot-ezh2i-vs-ni-chrx-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/fig_02_x_chromosome.Rmd/ma-plot-ezh2i-vs-ni-chrx-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ma-plot-ezh2i-vs-ni-chrx-1">
 Past versions of ma-plot-ezh2i-vs-ni-chrx-1.png
@@ -2041,7 +2075,7 @@ kpPlotDensity(
   chromosomes = c(&quot;chr7&quot;, &quot;chrX&quot;),
   window.size = 500000
 )</code></pre>
-<p><img src="figure/fig_02_x_chromosome.Rmd/h3k27m3-karyoplot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/fig_02_x_chromosome.Rmd/h3k27m3-karyoplot-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k27m3-karyoplot-1">
 Past versions of h3k27m3-karyoplot-1.png
@@ -2108,7 +2142,7 @@ kpPlotDensity(
   chromosomes = c(&quot;chr7&quot;, &quot;chrX&quot;),
   window.size = 500000
 )</code></pre>
-<p><img src="figure/fig_02_x_chromosome.Rmd/h3k4m3-karyoplot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/fig_02_x_chromosome.Rmd/h3k4m3-karyoplot-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h3k4m3-karyoplot-1">
 Past versions of h3k4m3-karyoplot-1.png
@@ -2175,7 +2209,7 @@ kpPlotDensity(
   chromosomes = c(&quot;chr7&quot;, &quot;chrX&quot;),
   window.size = 500000
 )</code></pre>
-<p><img src="figure/fig_02_x_chromosome.Rmd/h2aub-karyoplot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/fig_02_x_chromosome.Rmd/h2aub-karyoplot-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-h2aub-karyoplot-1">
 Past versions of h2aub-karyoplot-1.png
@@ -2242,15 +2276,15 @@ attached base packages:
 [8] methods   base     
 
 other attached packages:
- [1] ggrastr_0.2.3        scales_1.1.1         ggrepel_0.9.1       
- [4] cowplot_1.1.1        karyoploteR_1.18.0   regioneR_1.24.0     
- [7] forcats_0.5.1        stringr_1.4.0        dplyr_1.0.7         
-[10] readr_1.4.0          tidyr_1.1.3          tibble_3.1.2        
-[13] ggplot2_3.3.5        tidyverse_1.3.1      ggridges_0.5.3      
-[16] purrr_0.3.4          treemap_2.4-2        rtracklayer_1.52.0  
-[19] GenomicRanges_1.44.0 GenomeInfoDb_1.28.1  IRanges_2.26.0      
-[22] S4Vectors_0.30.0     BiocGenerics_0.38.0  wigglescout_0.13.1  
-[25] workflowr_1.6.2     
+ [1] ggrastr_0.2.3        svglite_2.0.0        scales_1.1.1        
+ [4] ggrepel_0.9.1        cowplot_1.1.1        karyoploteR_1.18.0  
+ [7] regioneR_1.24.0      forcats_0.5.1        stringr_1.4.0       
+[10] dplyr_1.0.7          readr_1.4.0          tidyr_1.1.3         
+[13] tibble_3.1.2         ggplot2_3.3.5        tidyverse_1.3.1     
+[16] ggridges_0.5.3       purrr_0.3.4          treemap_2.4-2       
+[19] rtracklayer_1.52.0   GenomicRanges_1.44.0 GenomeInfoDb_1.28.1 
+[22] IRanges_2.26.0       S4Vectors_0.30.0     BiocGenerics_0.38.0 
+[25] wigglescout_0.13.1   workflowr_1.6.2     
 
 loaded via a namespace (and not attached):
   [1] utf8_1.2.1                  tidyselect_1.1.1           
@@ -2276,56 +2310,56 @@ loaded via a namespace (and not attached):
  [41] nnet_7.3-16                 beeswarm_0.4.0             
  [43] gtable_0.3.0                Cairo_1.5-12.2             
  [45] globals_0.14.0              ensembldb_2.16.2           
- [47] rlang_0.4.11                splines_4.1.0              
- [49] lazyeval_0.2.2              dichromat_2.0-0            
- [51] broom_0.7.8                 checkmate_2.0.0            
- [53] yaml_2.2.1                  reshape2_1.4.4             
- [55] modelr_0.1.8                GenomicFeatures_1.44.0     
- [57] backports_1.2.1             httpuv_1.6.1               
- [59] Hmisc_4.5-0                 tools_4.1.0                
- [61] gridBase_0.4-7              ellipsis_0.3.2             
- [63] jquerylib_0.1.4             RColorBrewer_1.1-2         
- [65] Rcpp_1.0.6                  plyr_1.8.6                 
- [67] base64enc_0.1-3             progress_1.2.2             
- [69] zlibbioc_1.38.0             RCurl_1.98-1.3             
- [71] prettyunits_1.1.1           rpart_4.1-15               
- [73] openssl_1.4.4               SummarizedExperiment_1.22.0
- [75] haven_2.4.1                 cluster_2.1.2              
- [77] fs_1.5.0                    furrr_0.2.3                
- [79] magrittr_2.0.1              data.table_1.14.0          
- [81] reprex_2.0.0                whisker_0.4                
- [83] ProtGenerics_1.24.0         matrixStats_0.59.0         
- [85] hms_1.1.0                   mime_0.11                  
- [87] evaluate_0.14               xtable_1.8-4               
- [89] XML_3.99-0.6                jpeg_0.1-8.1               
- [91] readxl_1.3.1                gridExtra_2.3              
- [93] compiler_4.1.0              biomaRt_2.48.2             
- [95] crayon_1.4.1                htmltools_0.5.1.1          
- [97] later_1.2.0                 Formula_1.2-4              
- [99] lubridate_1.7.10            DBI_1.1.1                  
-[101] dbplyr_2.1.1                rappdirs_0.3.3             
-[103] Matrix_1.3-4                cli_3.0.0                  
-[105] igraph_1.2.6                pkgconfig_2.0.3            
-[107] GenomicAlignments_1.28.0    foreign_0.8-81             
-[109] xml2_1.3.2                  vipor_0.4.5                
-[111] bslib_0.2.5.1               XVector_0.32.0             
-[113] rvest_1.0.0                 bezier_1.1.2               
-[115] VariantAnnotation_1.38.0    digest_0.6.27              
-[117] Biostrings_2.60.1           rmarkdown_2.9              
-[119] cellranger_1.1.0            htmlTable_2.2.1            
-[121] restfulr_0.0.13             curl_4.3.2                 
-[123] shiny_1.6.0                 Rsamtools_2.8.0            
-[125] rjson_0.2.20                lifecycle_1.0.0            
-[127] jsonlite_1.7.2              askpass_1.1                
-[129] BSgenome_1.60.0             fansi_0.5.0                
-[131] pillar_1.6.1                lattice_0.20-44            
-[133] KEGGREST_1.32.0             fastmap_1.1.0              
-[135] httr_1.4.2                  survival_3.2-11            
-[137] glue_1.4.2                  bamsignals_1.24.0          
-[139] png_0.1-7                   bit_4.0.4                  
-[141] stringi_1.6.2               sass_0.4.0                 
-[143] blob_1.2.1                  latticeExtra_0.6-29        
-[145] memoise_2.0.0              </code></pre>
+ [47] rlang_0.4.11                systemfonts_1.0.2          
+ [49] splines_4.1.0               lazyeval_0.2.2             
+ [51] dichromat_2.0-0             broom_0.7.8                
+ [53] checkmate_2.0.0             yaml_2.2.1                 
+ [55] reshape2_1.4.4              modelr_0.1.8               
+ [57] GenomicFeatures_1.44.0      backports_1.2.1            
+ [59] httpuv_1.6.1                Hmisc_4.5-0                
+ [61] tools_4.1.0                 gridBase_0.4-7             
+ [63] ellipsis_0.3.2              jquerylib_0.1.4            
+ [65] RColorBrewer_1.1-2          Rcpp_1.0.6                 
+ [67] plyr_1.8.6                  base64enc_0.1-3            
+ [69] progress_1.2.2              zlibbioc_1.38.0            
+ [71] RCurl_1.98-1.3              prettyunits_1.1.1          
+ [73] rpart_4.1-15                openssl_1.4.4              
+ [75] SummarizedExperiment_1.22.0 haven_2.4.1                
+ [77] cluster_2.1.2               fs_1.5.0                   
+ [79] furrr_0.2.3                 magrittr_2.0.1             
+ [81] data.table_1.14.0           reprex_2.0.0               
+ [83] whisker_0.4                 ProtGenerics_1.24.0        
+ [85] matrixStats_0.59.0          hms_1.1.0                  
+ [87] mime_0.11                   evaluate_0.14              
+ [89] xtable_1.8-4                XML_3.99-0.6               
+ [91] jpeg_0.1-8.1                readxl_1.3.1               
+ [93] gridExtra_2.3               compiler_4.1.0             
+ [95] biomaRt_2.48.2              crayon_1.4.1               
+ [97] htmltools_0.5.1.1           later_1.2.0                
+ [99] Formula_1.2-4               lubridate_1.7.10           
+[101] DBI_1.1.1                   dbplyr_2.1.1               
+[103] rappdirs_0.3.3              Matrix_1.3-4               
+[105] cli_3.0.0                   igraph_1.2.6               
+[107] pkgconfig_2.0.3             GenomicAlignments_1.28.0   
+[109] foreign_0.8-81              xml2_1.3.2                 
+[111] vipor_0.4.5                 bslib_0.2.5.1              
+[113] XVector_0.32.0              rvest_1.0.0                
+[115] bezier_1.1.2                VariantAnnotation_1.38.0   
+[117] digest_0.6.27               Biostrings_2.60.1          
+[119] rmarkdown_2.9               cellranger_1.1.0           
+[121] htmlTable_2.2.1             restfulr_0.0.13            
+[123] curl_4.3.2                  shiny_1.6.0                
+[125] Rsamtools_2.8.0             rjson_0.2.20               
+[127] lifecycle_1.0.0             jsonlite_1.7.2             
+[129] askpass_1.1                 BSgenome_1.60.0            
+[131] fansi_0.5.0                 pillar_1.6.1               
+[133] lattice_0.20-44             KEGGREST_1.32.0            
+[135] fastmap_1.1.0               httr_1.4.2                 
+[137] survival_3.2-11             glue_1.4.2                 
+[139] bamsignals_1.24.0           png_0.1-7                  
+[141] bit_4.0.4                   stringi_1.6.2              
+[143] sass_0.4.0                  blob_1.2.1                 
+[145] latticeExtra_0.6-29         memoise_2.0.0              </code></pre>
 </div>
 </div>
 </div>
