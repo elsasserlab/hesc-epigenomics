@@ -21,6 +21,7 @@ library(cowplot)
 library(dplyr)
 
 source("./code/globals.R")
+source("./code/embed_functions.R")
 source("./code/heatmap_panels.R")
 source("./code/heatmaply_functions.R")
 
@@ -37,7 +38,7 @@ genes <-
 ```
 
 # H3K27m3 promoter volcano plot
-```{r h3k27m3-promoter-volcano, fig.width = 7, fig.height = 7}
+```{r h3k27m3-promoter-volcano, fig.width = 5, fig.height = 5, warning = F, message = F}
 genes_tss <- makeGRangesFromDataFrame(genes, keep.extra.columns = T)
 court_peaks <- import("./data/bed/Bivalent_Court2017.hg38.bed")
 court_tss <- subsetByOverlaps(genes_tss, court_peaks)
@@ -205,16 +206,10 @@ ggplot(data=df_long, aes(x = group, y = fc)) +
        subtitle = "Global vs H3K27m3 Naïve >> Primed TSS",
        caption = stats_caption)
 
-write.table(df_long[!is.na(df_long$fc), ],
-  file = "./figures_data/fig3_violin_k27_ni_higher_violin.tsv",
-  col.names = T, sep = "\t", quote = F, row.names = F)
-
-write.table(df_long_k27[!is.na(df_long_k27$fc), ],
-  file = "./figures_data/fig3_violin_k27_ni_higher_jitter_k27_values.tsv",
-  col.names = T, sep = "\t", quote = F, row.names = F)
-
-
 ```
+
+Download values: `r embed_df(df_long[!is.na(df_long$fc), ], name="log2fc_distribution.tsv", text = "Distribution")`, 
+`r embed_df(df_long_k27[!is.na(df_long_k27$fc), ], name="k27_ni_higher_jitter.tsv", text="K27 higher naive points")`, 
 
 ## H327m3 Primed >> Naive
 
@@ -311,6 +306,8 @@ write.table(df_long_k27[!is.na(df_long_k27$fc), ],
 
 
 ```
+
+Download values: `r embed_df(df_long_k27[!is.na(df_long_k27$fc), ], name="k27_pr_higher_jitter.tsv", text = "K27 primed higher points")`. 
 
 # Combined heatmaps
 
