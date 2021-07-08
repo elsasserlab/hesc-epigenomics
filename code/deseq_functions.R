@@ -1,26 +1,14 @@
 merge_granges_plus_name <- function(granges_c1, granges_c2) {
-  # Bind first, get numbers after
-  granges_c1 <- sortSeqlevels(granges_c1)
-  granges_c1 <- sort(granges_c1)
 
-  granges_c2 <- sortSeqlevels(granges_c2)
-  granges_c2 <- sort(granges_c2)
+  df_1 <- data.frame(granges_c1)
+  df_2 <- data.frame(granges_c2)
 
-  fields <- names(mcols(granges_c1))
+  merged_df <- dplyr::full_join(
+    df_1, df_2,
+    by = c("seqnames", "start", "end", "width", "strand")
+  ) %>% dplyr::select(!dplyr::starts_with("name"))
 
-  if ("name" %in% fields) {
-    granges_c1 <- granges_c1[, fields[fields != "name"]]
-  }
-
-  fields <- names(mcols(granges_c2))
-  if ("name" %in% fields) {
-    granges_c2 <- granges_c2[, fields[fields != "name"]]
-  }
-
-  cts_df <- cbind(data.frame(granges_c1), mcols(granges_c2))
-
-  cts_df
-
+  merged_df
 
 }
 
@@ -73,7 +61,9 @@ bw_granges_diff_analysis <- function(granges_c1,
   complete <- complete.cases(cts_df)
   cts_df <- cts_df[complete, ]
 
+
   values_df <- cts_df[, 6:ncol(cts_df)] %>% dplyr::select(where(is.numeric))
+
   cts <- get_nreads_columns(values_df, cts_df$width, factor = length_factor)
 
   condition_labels <- c(rep(label_c1, used_values(granges_c1)),
@@ -119,8 +109,6 @@ get_nreads_columns <- function(df, lengths, fraglen = 150, factor = 1) {
   cts <- round(cts*factor*(lengths / fraglen))
   cts
 }
-
-
 
 
 rsem_deseq_analysis <- function(counts_file, c1_columns, c2_columns, c1_name, c2_name, reference, alpha = 0.05, shrink = F) {
