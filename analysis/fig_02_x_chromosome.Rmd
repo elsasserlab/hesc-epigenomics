@@ -30,6 +30,12 @@ library(scales)
 source("./code/globals.R")
 source("./code/embed_functions.R")
 
+
+my_svg <- function(file, width, height) {
+  library(svglite)
+  svglite(file = file, width = width, height = height, bg = "white")
+}
+
 knitr::opts_chunk$set(dev = c('png', 'svg'))
 knitr::opts_chunk$set(class.source='fold-show')
 knitr::opts_chunk$set(message = FALSE)
