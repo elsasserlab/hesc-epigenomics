@@ -1,0 +1,138 @@
+---
+title: "Figures 4 and 5"
+author: "Carmen Navarro"
+date: "2021-07-01"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+params:
+  rnaseqdir: "./data/rnaseq/"
+---
+
+# Summary
+
+This is the supplementary notebook for figures 4 and 5.
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+library(rtracklayer)
+library(tidyverse)
+library(ggrastr)
+library(DESeq2)
+library(cowplot)
+
+source("./code/globals.R")
+source("./code/embed_functions.R")
+source("./code/heatmaply_functions.R")
+
+knitr::opts_chunk$set(dev = c('png', 'my_svg'), fig.ext = c("png", "svg"), fig.width = 8, fig.height = 8)
+
+genes <-
+  read.table(
+    "./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.tsv",
+    header = T,
+    sep = "\t",
+    colClasses = c(rep("character", 5), rep("numeric", 86), rep("factor", 4))
+  )
+
+```
+
+# Figure 4
+
+## PCA analysis
+
+```{r plot-pca-vst, message = F, warning = F, fig.height = 7, fig.width = 7}
+read_counts_file <- function(f, id_col = 1, count_col = 3, sample_suffix = "") {
+  counts <- read.delim(file = f, header = TRUE)
+  counts <- counts[, c(id_col, count_col:ncol(counts)), drop = FALSE]
+  colnames(counts) <- gsub(sample_suffix, "", colnames(counts))
+  colnames(counts) <- gsub(pattern = '\\.$', replacement = '', colnames(counts))
+  counts
+}
+
+counts <-
+  read_counts_file(file.path(
+    params$rnaseqdir,
+    "Kumar_2020",
+    "rsem.merged.gene_counts.tsv"
+  ))
+rownames(counts) <- counts$gene_id
+counts$gene_id <- NULL
+
+samples.vec <- sort(colnames(counts))
+groups <- sub("_[^_]+$", "", samples.vec)
+
+counts  <- counts[, samples.vec, drop = FALSE]
+coldata <- data.frame(row.names = colnames(counts), condition = groups)
+
+dds <-
+  DESeqDataSetFromMatrix(
+    countData = round(counts),
+    colData = coldata,
+    design =  ~ condition
+  )
+
+dds <- DESeq(dds)
+
+manual_colors <- scale_color_manual(values = c(
+  Kumar_2020_Naive = gl_condition_colors[["Naive_Untreated"]],
+  Kumar_2020_Naive_EZH2i = gl_condition_colors[["Naive_EZH2i"]],
+  Kumar_2020_Primed = gl_condition_colors[["Primed_Untreated"]],
+  Kumar_2020_Primed_EZH2i = gl_condition_colors[["Primed_EZH2i"]]
+))
+
+vst <- varianceStabilizingTransformation(dds)
+
+plotPCA(vst, ntop=Inf, returnData = F) + 
+  manual_colors + 
+  theme_default() + 
+  labs(title = "RNA-Seq PCA")
+
+df <-plotPCA(vst, ntop=Inf, returnData = T)
+```
+
+Download PCA data `r embed_df(df, name="pca_values.tsv", text = "here")`.
+
+
+## Expression of intermediate population genes 
+
+### Top 50 up-regulated
+```{r messmer-heatmap-up-50, message=F, warning=F}
+genes_list <- read.table("./data/other/Messmer_2019/Messmer_intermediate_down_top50.txt",
+                         header = F)
+combined_heatmap(genes, genes_list[,1])
+```
+
+### Top 50 down-regulated
+```{r messmer-heatmap-down-50, message=F, warning=F}
+genes_list <- read.table("./data/other/Messmer_2019/Messmer_intermediate_up_top50.txt",
+                         header = F)
+combined_heatmap(genes, genes_list[,1])
+```
+
+# Figure 5
+
+## Expression of trophectoderm and placental-specific genes
+
+```{r lineage-markers-heatmap, message = F, warning = F}
+genes_list <-
+  c("EPAS1",
+    "MSX2",
+    "GATA3",
+    "CLDN4",
+    "GATA2",
+    "IGF2",
+    "CDX2",
+    "SLC40A1",
+    "KRT7",
+    "FRZB",
+    "CGA",
+    "ERP27",
+    "KRT23",
+    "CGB5",
+    "VGLL1",
+    "ENPEP",
+    "TP63"
+)
+combined_heatmap(genes, genes_list, cluster_rows = F)
+```
+
