@@ -29,7 +29,6 @@ combined_heatmap <-
     indices <- match(gene_list, values$name)
     # Skip missing
     indices <- indices[!is.na(indices)]
-
     subgroup <- values[indices, cols]
 
     rownames(subgroup) <- subgroup$name
@@ -64,7 +63,7 @@ combined_heatmap <-
                   "H3K27m3_Pr_mean_cov",
                   "H3K27m3_Pr_EZH2i_mean_cov")
 
-    k27_subgroup <- values[values$name %in% gene_list, k27_cols]
+    k27_subgroup <- values[indices, k27_cols]
     rownames(k27_subgroup) <- k27_subgroup$name
     k27_subgroup$name <- NULL
     colnames(k27_subgroup) <- c("H3K27m3_Ni" ,
@@ -88,7 +87,7 @@ combined_heatmap <-
 
     k4_colors <- colorRampPalette(c("white", "#b64c28"))(n = 1000)
 
-    k4_subgroup <- values[values$name %in% gene_list, k4_cols]
+    k4_subgroup <- values[indices, k4_cols]
 
     rownames(k4_subgroup) <- k4_subgroup$name
     k4_subgroup$name <- NULL
@@ -106,9 +105,5 @@ combined_heatmap <-
                     key.title = "H3K4m3", limits = k4m3_limits)
 
     fig <- subplot(k4, k27, h, widths = c(0.17, 0.2, 0.63), shareY = T)
-
-    # orca(fig, paste(filename, ".svg", sep = ""), width = 7, height = 9, more_args = c('--disable-gpu'))
-    # orca(fig, paste(filename, ".png", sep = ""), scale = 4, more_args = c('--disable-gpu'))
-    # htmlwidgets::saveWidget(as_widget(fig), file.path("./output/Lanner_groups/", paste(group_set, "html", sep = ".")))
     fig
   }
