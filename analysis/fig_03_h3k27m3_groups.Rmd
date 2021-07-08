@@ -18,9 +18,12 @@ library(effsize)
 library(ggpubr)
 library(ggrastr)
 library(cowplot)
+library(dplyr)
 
 source("./code/globals.R")
 source("./code/heatmap_panels.R")
+source("./code/heatmaply_functions.R")
+
 knitr::opts_chunk$set(dev = c('png', 'my_svg'), fig.ext = c("png", "svg"), fig.width = 8, fig.height = 8)
 
 genes <-
@@ -32,6 +35,28 @@ genes <-
   )
 
 ```
+
+# H3K27m3 promoter volcano plot
+```{r h3k27m3-promoter-volcano, fig.width = 7, fig.height = 7}
+genes_tss <- makeGRangesFromDataFrame(genes, keep.extra.columns = T)
+court_peaks <- import("./data/bed/Bivalent_Court2017.hg38.bed")
+court_tss <- subsetByOverlaps(genes_tss, court_peaks)
+
+court_tss_df <- data.frame(court_tss)
+
+ggplot(genes, aes(x=H3K27m3_DS_Pr_vs_Ni_log2FoldChange, y=-log10(H3K27m3_DS_Pr_vs_Ni_padj))) +
+    rasterise(geom_point(size = 1, alpha = 0.7, color = "gray"), dpi = 300) +
+    theme_default(base_size = 12) +
+
+    rasterise(geom_point(data = court_tss_df, size = 1, alpha = 0.8, color = "black"), dpi = 300) +
+      labs(x = "Log2 FC (primed/naive)",
+         y = "Log10 pval", title = "Promoter H3K27m3 - Court 2017 bivalent in black") +
+    geom_hline(yintercept = -log10(0.05), linetype = "dashed") +
+    geom_vline(xintercept = 0) +
+    coord_cartesian(xlim = c(-6,6), ylim = c(0, 20))
+
+```
+
 
 # H3K27m3 groups heatmap panels
 
@@ -48,7 +73,7 @@ groups <- levels(genes$k27_bivalency_grp)
 genes_k27_loci_groups <- lapply(groups, filter_by_k27_group, gr=genes_tss, df = genes)
 names(genes_k27_loci_groups) <- groups
 
-ns_gene_names <- genes %>% filter(k27_bivalency_grp == "None" & (H3K4m3_Ni_mean_cov > 2 | H3K4m3_Pr_mean_cov > 2)) %>% select(name)
+ns_gene_names <- genes %>% filter(k27_bivalency_grp == "None" & (H3K4m3_Ni_mean_cov > 2 | H3K4m3_Pr_mean_cov > 2)) %>% dplyr::select(name)
 genes_k27_ns_w_k4 <- genes_tss[genes_tss$name %in% ns_gene_names$name, ]
 
 plot_bw_heatmap_panel(
@@ -82,6 +107,25 @@ plot_bw_heatmap_panel(
 )
 
 ```
+
+Plot the H3K4m3 part, sorted by the same reference
+
+```{r heatmap-groups-3, warning=F, fig.width = 14, fig.height = 14}
+
+plot_bw_heatmap_panel(
+    c(bwfiles$k27[1], bwfiles$k4[c(1, 3)]),
+    list(genes_k27_loci_groups$Pr_higher_than_Ni,
+         genes_k27_loci_groups$Ni_higher_than_Pr,
+         genes_k27_loci_groups$Always_up
+    ),
+    c("H3K27m3_Ni", "H3K4m3_Ni", "H3K4m3_Pr"),
+    c("Primed >> Naive", "Naive >> Primed", "Always up"),
+    global_scale = TRUE,
+    proportional = TRUE,
+    mode = "center"
+)
+```
+
 
 # RNA-seq ratios at H3K27m3 groups
 
@@ -268,3 +312,44 @@ write.table(df_long_k27[!is.na(df_long_k27$fc), ],
 
 ```
 
+# Combined heatmaps
+
+## Naive markers
+
+```{r combined-summarized-heatmaps-naive, warning=F, message=F}
+naive_markers <-
+  c("KLF17",
+    "DPPA5",
+    "DNMT3L",
+    "GATA6",
+    "TBX3",
+    "IL6ST",
+    "DPPA3",
+    "KLF5",
+    "KLF4",
+    "HORMAD1",
+    "KHDC3L",
+    "ALPP",
+    "ALPPL2",
+    "ZNF729",
+    "TRIM60"
+  )
+combined_heatmap(genes, naive_markers) 
+```
+
+## Primed markers
+
+```{r combined-summarized-heatmaps-primed, warning=F, message=F}
+primed_markers <-
+  c("CD24",
+    "ZIC2",
+    "SFRP2",
+    "OTX2",
+    "CYTL1",
+    "HMX2",
+    "THY1",
+    "DUSP6",
+    "PTPRZ1"
+  )
+combined_heatmap(genes, primed_markers) 
+```
