@@ -37,7 +37,7 @@ generates the master bins table.
 A large proportion of the figures shown in this publication can be drawn directly
 from values in the main tables:
 
-* [Gene table](../data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.zip).
+* [Gene table](../data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.zip).
  Contains histone mark values across 5kb regions around gene TSS in the hg38 genome, RNA-seq
  plus statistics on differentially decorated promoters and differentially expressed
  genes across conditions.
