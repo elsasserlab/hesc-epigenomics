@@ -204,7 +204,9 @@ plot_bw_heatmap_panel(
     c("Primed >> Naive", "Naive >> Primed", "Always up"),
     global_scale = TRUE,
     proportional = TRUE,
-    mode = "center"
+    mode = "center",
+    zmin = 0,
+    zmax = 258
 )
 ```
 
@@ -217,9 +219,7 @@ plot_bw_heatmap_panel(
   c("Primed >> Naive", "Rest"),
   global_scale = TRUE,
   proportional = TRUE,
-  mode = "center",
-  zmin = 0,
-  zmax = 188
+  mode = "center"
 )
 
 ```
