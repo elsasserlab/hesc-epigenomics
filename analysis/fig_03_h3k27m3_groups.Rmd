@@ -16,6 +16,7 @@ library(rtracklayer)
 library(tidyverse)
 library(effsize)
 library(ggpubr)
+library(ggplot2)
 library(ggrastr)
 library(cowplot)
 library(dplyr)
@@ -26,16 +27,23 @@ source("./code/heatmap_panels.R")
 source("./code/heatmaply_functions.R")
 
 knitr::opts_chunk$set(dev = c('png', 'my_svg'), fig.ext = c("png", "svg"), fig.width = 8, fig.height = 8)
+knitr::opts_chunk$set(class.source='fold-show')
 
 genes <-
   read.table(
-    "./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.tsv",
+    "./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk.tsv",
     header = T,
     sep = "\t",
-    colClasses = c(rep("character", 5), rep("numeric", 86), rep("factor", 4))
+    colClasses = c(rep("character", 5), rep("numeric", 86))
   )
 
+
+make_gr_from_table <- function(df) {
+  makeGRangesFromDataFrame(df[, c("seqnames", "start", "end", "strand", "name")], keep.extra.columns = T)
+}
+
 ```
+
 
 # H3K27m3 promoter volcano plot
 ```{r h3k27m3-promoter-volcano, fig.width = 5, fig.height = 5, warning = F, message = F}
@@ -48,7 +56,6 @@ court_tss_df <- data.frame(court_tss)
 ggplot(genes, aes(x=H3K27m3_DS_Pr_vs_Ni_log2FoldChange, y=-log10(H3K27m3_DS_Pr_vs_Ni_padj))) +
     rasterise(geom_point(size = 1, alpha = 0.7, color = "gray"), dpi = 300) +
     theme_default(base_size = 12) +
-
     rasterise(geom_point(data = court_tss_df, size = 1, alpha = 0.8, color = "black"), dpi = 300) +
       labs(x = "Log2 FC (primed/naive)",
          y = "Log10 pval", title = "Promoter H3K27m3 - Court 2017 bivalent in black") +
@@ -56,32 +63,105 @@ ggplot(genes, aes(x=H3K27m3_DS_Pr_vs_Ni_log2FoldChange, y=-log10(H3K27m3_DS_Pr_v
     geom_vline(xintercept = 0) +
     coord_cartesian(xlim = c(-6,6), ylim = c(0, 20))
 
+
+df <- genes[, c("H3K27m3_DS_Pr_vs_Ni_log2FoldChange", "H3K27m3_DS_Pr_vs_Ni_padj")]
+df[, "H3K27m3_DS_Pr_vs_Ni_padj"] <- -log10(df[, "H3K27m3_DS_Pr_vs_Ni_padj"])
+
+write.table(df, "./figures_data/fig3_h3k27m3_promoter_volcano_all.tsv", sep = "\t", row.names = F)
+
+df <- court_tss_df[, c("H3K27m3_DS_Pr_vs_Ni_log2FoldChange", "H3K27m3_DS_Pr_vs_Ni_padj")]
+df[, "H3K27m3_DS_Pr_vs_Ni_padj"] <- -log10(df[, "H3K27m3_DS_Pr_vs_Ni_padj"])
+write.table(df, "./figures_data/fig3_h3k27m3_promoter_volcano_court.tsv", sep = "\t", row.names = F)
 ```
 
 
 # H3K27m3 groups heatmap panels
 
-```{r heatmap-groups-1, warning=F, fig.width = 14, fig.height = 14}
+## H3K27m3 group annotation
 
+```{r group-selection}
+select_groups <- function(df, pval_col, fc_col, basemean_col, quantile,
+                          p_cutoff = 0.05, fc_cutoff = 1, basemean_quantile = 0.1) {
+  # I don't want to discard the NAs as they will go to the unenriched group.
+  df[is.na(df[[pval_col]]), pval_col] <- 1
+  min_mean <- quantile(df[[basemean_col]], probs = basemean_quantile)
+
+  signif_up_tss <- df %>% filter(.data[[pval_col]] <= p_cutoff & .data[[fc_col]] > fc_cutoff & .data[[basemean_col]] > min_mean)
+  signif_down_tss <- df %>% filter(.data[[pval_col]] <= p_cutoff & .data[[fc_col]] < -fc_cutoff & .data[[basemean_col]] > min_mean)
+
+  not_signif <- df %>% filter(.data[[pval_col]] > p_cutoff)
+
+  # Top
+  mean_cutoff <- quantile(not_signif[[basemean_col]], quantile)
+  always_up <- not_signif %>% filter(.data[[basemean_col]] >= mean_cutoff)
+
+  rest <- not_signif %>% filter(.data[[basemean_col]] < mean_cutoff)
+
+  list(up = signif_up_tss,
+       down = signif_down_tss,
+       always_up = always_up,
+       not_enriched = rest)
+}
+
+select_groups_bivalent <- function(df, quantile = 0.8, p_cutoff = 0.05, fc_cutoff = 1, basemean_quantile = 0.1, min_k4 = 2) {
+  select_k4 <- function(df, min_k4) {
+    df %>% filter(.data[["H3K4m3_Pr_mean_cov"]] > min_k4 | .data[["H3K4m3_Ni_mean_cov"]] > min_k4)
+  }
+
+  groups <- select_groups(
+    df,
+    "H3K27m3_DS_Pr_vs_Ni_padj",
+    "H3K27m3_DS_Pr_vs_Ni_log2FoldChange",
+    "H3K27m3_DS_Pr_vs_Ni_baseMean",
+    quantile,
+    p_cutoff,
+    fc_cutoff,
+    basemean_quantile
+  )
+
+  lapply(groups, select_k4, min_k4 = min_k4)
+}
+
+k27_groups <- select_groups_bivalent(genes)
+
+# Annotate our groups
+genes$k27_bivalency_grp <- "None"
+genes[genes$name %in% k27_groups$up$name, "k27_bivalency_grp"] <- "Pr_higher_than_Ni"
+genes[genes$name %in% k27_groups$down$name, "k27_bivalency_grp"] <- "Ni_higher_than_Pr"
+genes[genes$name %in% k27_groups$always_up$name, "k27_bivalency_grp"] <- "Always_up"
+genes[genes$name %in% k27_groups$not_enriched$name, "k27_bivalency_grp"] <- "K4_only"
+
+# Annotate court
 genes_loci <- import("./data/bed/Kumar_2020/Kumar_2020_genes_hg38_UCSC.bed")
 genes_tss <- promoters(genes_loci, upstream = 2500, downstream = 2500)
 
-filter_by_k27_group <- function(gr, df, group) {
-  gr[gr$name %in% df[df$k27_bivalency_grp == group, "name"], ]
-}
+court_bivalent <- rtracklayer::import("./data/bed/Bivalent_Court2017.hg38.bed")
+court_biv_genes <- subsetByOverlaps(genes_tss, court_bivalent)
 
-groups <- levels(genes$k27_bivalency_grp)
-genes_k27_loci_groups <- lapply(groups, filter_by_k27_group, gr=genes_tss, df = genes)
-names(genes_k27_loci_groups) <- groups
+genes$court_bivalent <- "No"
+genes[genes$name %in% court_biv_genes$name, "court_bivalent"] <- "Yes"
 
-ns_gene_names <- genes %>% filter(k27_bivalency_grp == "None" & (H3K4m3_Ni_mean_cov > 2 | H3K4m3_Pr_mean_cov > 2)) %>% dplyr::select(name)
-genes_k27_ns_w_k4 <- genes_tss[genes_tss$name %in% ns_gene_names$name, ]
+write.table(genes, "./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.tsv")
 
+k27_groups_loci <- lapply(k27_groups, make_gr_from_table)
+
+rtracklayer::export(k27_groups_loci$up, "./figures_data/Kumar_2020_H3K27m3_Pr_higher_than_Ni_tss.bed")
+rtracklayer::export(k27_groups_loci$down, "./figures_data/Kumar_2020_H3K27m3_Ni_higher_than_Pr_tss.bed")
+rtracklayer::export(k27_groups_loci$always_up, "./figures_data/Kumar_2020_H3K27m3_always_up_tss.bed")
+rtracklayer::export(k27_groups_loci$not_enriched, "./figures_data/Kumar_2020_H3K27m3_not_enriched_tss.bed")
+
+```
+
+# H3K27m3 group heatmap panels
+
+## H3K27m3 and H2AUb
+
+```{r heatmap-groups-1, warning=F, fig.width = 14, fig.height = 14}
 plot_bw_heatmap_panel(
     c(bwfiles$k27[c(1, 3)], bwfiles$ub[c(1, 3)]),
-    list(genes_k27_loci_groups$Pr_higher_than_Ni,
-         genes_k27_loci_groups$Ni_higher_than_Pr,
-         genes_k27_loci_groups$Always_up
+    list(k27_groups_loci$up,
+         k27_groups_loci$down,
+         k27_groups_loci$always_up
     ),
     c("H3K27m3_Ni", "H3K27m3_Pr", "H2Aub_Ni", "H2Aub_Pr"),
     c("Primed >> Naive", "Naive >> Primed", "Always up"),
@@ -94,10 +174,9 @@ plot_bw_heatmap_panel(
 Plot the second part of the heatmap panel.
 
 ```{r heatmap-groups-2, warning=F, fig.width = 14, fig.height = 10}
-
 plot_bw_heatmap_panel(
   c(bwfiles$k27[c(1, 3)], bwfiles$ub[c(1, 3)]),
-  list(genes_k27_loci_groups$Ni_higher_than_Pr, genes_k27_ns_w_k4),
+  list(k27_groups_loci$up, k27_groups_loci$not_enriched),
   c("H3K27m3_Ni", "H3K27m3_Pr", "H2Aub_Ni", "H2Aub_Pr"),
   c("Primed >> Naive", "Rest"),
   global_scale = TRUE,
@@ -109,15 +188,17 @@ plot_bw_heatmap_panel(
 
 ```
 
+
+## H3K4m3
+
 Plot the H3K4m3 part, sorted by the same reference
 
 ```{r heatmap-groups-3, warning=F, fig.width = 14, fig.height = 14}
-
 plot_bw_heatmap_panel(
     c(bwfiles$k27[1], bwfiles$k4[c(1, 3)]),
-    list(genes_k27_loci_groups$Pr_higher_than_Ni,
-         genes_k27_loci_groups$Ni_higher_than_Pr,
-         genes_k27_loci_groups$Always_up
+    list(k27_groups_loci$up,
+         k27_groups_loci$down,
+         k27_groups_loci$always_up
     ),
     c("H3K27m3_Ni", "H3K4m3_Ni", "H3K4m3_Pr"),
     c("Primed >> Naive", "Naive >> Primed", "Always up"),
@@ -125,6 +206,95 @@ plot_bw_heatmap_panel(
     proportional = TRUE,
     mode = "center"
 )
+```
+
+
+```{r heatmap-groups-4, warning=F, fig.width = 14, fig.height = 10}
+plot_bw_heatmap_panel(
+  c(bwfiles$k27[1], bwfiles$k4[c(1, 3)]),
+  list(k27_groups_loci$up, k27_groups_loci$not_enriched),
+  c("H3K27m3_Ni", "H3K27m3_Pr", "H2Aub_Ni", "H2Aub_Pr"),
+  c("Primed >> Naive", "Rest"),
+  global_scale = TRUE,
+  proportional = TRUE,
+  mode = "center",
+  zmin = 0,
+  zmax = 188
+)
+
+```
+
+
+```{r heatmap-panel-data-tables, warning = F, message = F, class.source = NULL, echo = F}
+write_mat <- function(m, f) {
+  write.table(m, file = f, quote = F, sep = "\t", row.names = F)
+}
+
+select_order <- function(m, order) {
+  m[[1]][order, ]
+}
+
+bw_used <- c(bwfiles$k27[c(1,3)], bwfiles$k4[c(1,3)], bwfiles$ub[c(1,3)])
+bw_ref <- bwfiles$k27[1]
+
+heatmap_func <- purrr::partial(bw_heatmap, mode = "center", upstream = 2500, downstream = 2500)
+
+# Primed >> Naive
+heatmap_ref <- heatmap_func(bw_ref, loci = k27_groups_loci$up)
+order_ref <- order(rowMeans(heatmap_ref[[1]]), decreasing = T)
+
+mat_list <- lapply(bw_used, heatmap_func, loci = k27_groups_loci$up)
+# Reorder according to reference
+mat_list_sorted <- lapply(mat_list, select_order, order = order_ref)
+
+result <- purrr::map2(mat_list_sorted, 
+            file.path("./figures_data", paste0("fig3_heatmap_", gsub(".hg38.scaled.bw", "", basename(bw_used)), "_Pr_higher_Ni.tsv")),
+            write_mat)
+
+# Naive >> Primed
+heatmap_ref <- heatmap_func(bw_ref, loci = k27_groups_loci$down)
+order_ref <- order(rowMeans(heatmap_ref[[1]]), decreasing = T)
+
+mat_list <- lapply(bw_used, heatmap_func, loci = k27_groups_loci$down)
+# Reorder according to reference
+mat_list_sorted <- lapply(mat_list, select_order, order = order_ref)
+
+result <- purrr::map2(mat_list_sorted, 
+            file.path("./figures_data", paste0("fig3_heatmap_", gsub(".hg38.scaled.bw", "", basename(bw_used)), "_Ni_higher_Pr.tsv")),
+            write_mat)
+
+
+# Always up
+heatmap_ref <- heatmap_func(bw_ref, loci = k27_groups_loci$always_up)
+order_ref <- order(rowMeans(heatmap_ref[[1]]), decreasing = T)
+
+mat_list <- lapply(bw_used, heatmap_func, loci = k27_groups_loci$always_up)
+# Reorder according to reference
+mat_list_sorted <- lapply(mat_list, select_order, order = order_ref)
+
+result <- purrr::map2(mat_list_sorted, 
+            file.path("./figures_data", paste0("fig3_heatmap_", gsub(".hg38.scaled.bw", "", basename(bw_used)), "_always_up.tsv")),
+            write_mat)
+
+# Rest
+
+heatmap_ref <- heatmap_func(bw_ref, loci = k27_groups_loci$not_enriched)
+order_ref <- order(rowMeans(heatmap_ref[[1]]), decreasing = T)
+
+mat_list <- lapply(bw_used, heatmap_func, loci = k27_groups_loci$not_enriched)
+# Reorder according to reference
+mat_list_sorted <- lapply(mat_list, select_order, order = order_ref)
+
+result <- purrr::map2(mat_list_sorted, 
+            file.path("./figures_data", paste0("fig3_heatmap_", gsub(".hg38.scaled.bw", "", basename(bw_used)), "_not_enriched.tsv")),
+            write_mat)
+
+# Profiles
+write_mat(bw_profile(bw_used, loci = k27_groups_loci$down, mode = "center", upstream = 2500, downstream = 2500), "./figures_data/fig3_profile_all_Ni_higher_Pr.tsv")
+write_mat(bw_profile(bw_used, loci = k27_groups_loci$up, mode = "center", upstream = 2500, downstream = 2500), "./figures_data/fig3_profile_all_Pr_higher_Ni.tsv")
+write_mat(bw_profile(bw_used, loci = k27_groups_loci$always_up, mode = "center", upstream = 2500, downstream = 2500), "./figures_data/fig3_profile_all_always_up.tsv")
+write_mat(bw_profile(bw_used, loci = k27_groups_loci$not_enriched, mode = "center", upstream = 2500, downstream = 2500), "./figures_data/fig3_profile_all_not_enriched.tsv")
+
 ```
 
 
@@ -143,7 +313,7 @@ df <-
   )]
 
 colnames(df) <- c("name", "Primed vs Naive", "EZH2i vs Naive", "EZH2i vs Primed")
-df_k27_up <- df[df$name %in% genes_k27_loci_groups$Ni_higher_than_Pr$name, ]
+df_k27_up <- df[df$name %in% k27_groups_loci$down$name, ]
 
 df_long <- df %>% pivot_longer(!name, names_to = "group", values_to = "fc")
 df_long_k27 <- df_k27_up %>% pivot_longer(!name, names_to = "group", values_to = "fc")
@@ -225,7 +395,7 @@ df <-
 
 colnames(df) <- c("name", "Primed vs Naive", "EZH2i vs Naive", "EZH2i vs Primed")
 
-df_k27_up <- df[df$name %in% genes_k27_loci_groups$Pr_higher_than_Ni$name, ]
+df_k27_up <- df[df$name %in% k27_groups_loci$up$name, ]
 
 df_k27_up$`Primed vs Naive` <- -df_k27_up$`Primed vs Naive`
 df$`Primed vs Naive` <- -df$`Primed vs Naive`
@@ -331,7 +501,18 @@ naive_markers <-
     "ZNF729",
     "TRIM60"
   )
-combined_heatmap(genes, naive_markers) 
+combined_heatmap(genes, naive_markers, rnaseq_limits = c(0, 11.5), k4m3_limits = c(0, 90), k27m3_limits = c(0, 8), ub_limits = c(0, 11)) 
+
+tpm_cols <- grep("RNASeq_TPM", colnames(genes), value = T)
+cols_used <- c("name", "H3K27m3_Ni_mean_cov", "H3K27m3_Pr_mean_cov", "H3K27m3_Ni_EZH2i_mean_cov", "H3K27m3_Pr_EZH2i_mean_cov",
+               "H3K4m3_Ni_mean_cov", "H3K4m3_Pr_mean_cov", "H3K4m3_Ni_EZH2i_mean_cov", "H3K4m3_Pr_EZH2i_mean_cov",
+               "H2Aub_Ni_mean_cov", "H2Aub_Pr_mean_cov",  "H2Aub_Ni_EZH2i_mean_cov", "H2Aub_Pr_EZH2i_mean_cov",
+               tpm_cols)
+
+values <- genes[genes$name %in% naive_markers, cols_used]
+values[, tpm_cols] <- log2(values[, tpm_cols] + 1)
+
+write.table(values, "./figures_data/fig3_messmer_naive_heatmap_global_scale.tsv")
 ```
 
 ## Primed markers
@@ -348,5 +529,10 @@ primed_markers <-
     "DUSP6",
     "PTPRZ1"
   )
-combined_heatmap(genes, primed_markers) 
+combined_heatmap(genes, primed_markers, rnaseq_limits = c(0, 11.5), k4m3_limits = c(0, 90), k27m3_limits = c(0, 8), ub_limits = c(0, 11))
+
+values <- genes[genes$name %in% primed_markers, cols_used]
+values[, tpm_cols] <- log2(values[, tpm_cols] + 1)
+
+write.table(values, "./figures_data/fig3_messmer_primed_heatmap_global_scale.tsv")
 ```
