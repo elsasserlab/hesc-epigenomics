@@ -141,7 +141,7 @@ court_biv_genes <- subsetByOverlaps(genes_tss, court_bivalent)
 genes$court_bivalent <- "No"
 genes[genes$name %in% court_biv_genes$name, "court_bivalent"] <- "Yes"
 
-write.table(genes, "./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.tsv")
+write.table(genes, "./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.tsv", sep = "\t", row.names = F)
 
 k27_groups_loci <- lapply(k27_groups, make_gr_from_table)
 
@@ -215,7 +215,7 @@ plot_bw_heatmap_panel(
 plot_bw_heatmap_panel(
   c(bwfiles$k27[1], bwfiles$k4[c(1, 3)]),
   list(k27_groups_loci$up, k27_groups_loci$not_enriched),
-  c("H3K27m3_Ni", "H3K27m3_Pr", "H2Aub_Ni", "H2Aub_Pr"),
+  c("H3K27m3_Ni", "H3K4m3_Ni", "H2Aub_Pr"),
   c("Primed >> Naive", "Rest"),
   global_scale = TRUE,
   proportional = TRUE,
@@ -479,11 +479,115 @@ write.table(df_long_k27[!is.na(df_long_k27$fc), ],
 
 Download values: `r embed_df(df_long_k27[!is.na(df_long_k27$fc), ], name="k27_pr_higher_jitter.tsv", text = "K27 primed higher points")`. 
 
+
+
+
+
+
+## H327m3 always high
+
+```{r rnaseq-ratio-violin-h3k27m3-always-up, warning = F, message = F}
+
+df <-
+  genes[, c(
+    "name",
+    "RNASeq_DS_Pr_vs_Ni_log2FoldChange",
+    "RNASeq_DS_EZH2i_vs_Ni_log2FoldChange",
+    "RNASeq_DS_EZH2i_vs_Pr_log2FoldChange"
+  )]
+
+colnames(df) <- c("name", "Primed vs Naive", "EZH2i vs Naive", "EZH2i vs Primed")
+
+df_k27_up <- df[df$name %in% k27_groups_loci$always_up$name, ]
+
+df_k27_up$`Primed vs Naive` <- -df_k27_up$`Primed vs Naive`
+df$`Primed vs Naive` <- -df$`Primed vs Naive`
+
+df_long <- df %>% pivot_longer(!name, names_to = "group", values_to = "fc")
+df_long_k27 <- df_k27_up %>% pivot_longer(!name, names_to = "group", values_to = "fc")
+
+df_long$group <- factor(df_long$group, levels = c("Primed vs Naive", "EZH2i vs Naive", "EZH2i vs Primed"))
+df_long_k27$group <- factor(df_long_k27$group, levels = c("Primed vs Naive", "EZH2i vs Naive", "EZH2i vs Primed"))
+
+levels(df_long$group) <- c("Naive vs Primed", "EZH2i vs Naive", "EZH2i vs Primed")
+levels(df_long_k27$group) <- c("Naive vs Primed", "EZH2i vs Naive", "EZH2i vs Primed")
+
+my_comparisons <- list(c("EZH2i vs Naive", "EZH2i vs Primed"),
+                       c("Naive vs Primed", "EZH2i vs Naive"),
+                       c("Naive vs Primed", "EZH2i vs Primed"))
+
+# Stats subset vs global
+ni_pr_test <- wilcox.test(df_k27_up[, "Primed vs Naive"],
+  df[!df$name %in% df_k27_up$name , "Primed vs Naive"], na.rm = T)
+
+ni_pr_effect <- cohen.d(df_k27_up[, "Primed vs Naive"],
+  df[!df$name %in% df_k27_up$name , "Primed vs Naive"], na.rm = T)
+
+col <- "EZH2i vs Naive"
+ni_ezh2i_test <- wilcox.test(df_k27_up[, col],
+  df[!df$name %in% df_k27_up$name , col], na.rm = T)
+
+ni_ezh2i_effect <- cohen.d(df_k27_up[, col],
+  df[!df$name %in% df_k27_up$name , col], na.rm = T)
+
+col <- "EZH2i vs Primed"
+pr_ezh2i_test <- wilcox.test(df_k27_up[, col],
+  df[!df$name %in% df_k27_up$name , col], na.rm = T)
+
+pr_ezh2i_effect <- cohen.d(df_k27_up[, col],
+  df[!df$name %in% df_k27_up$name , col], na.rm = T)
+
+stats_caption <- paste("Wilcoxon global vs. selection",
+  paste("Ni_Pr:", format(ni_pr_test$p.value, digits=8),
+        "Cohen D:", round(ni_pr_effect$estimate, digits = 4),
+        "(", ni_pr_effect$magnitude, ")"),
+  paste("Ni_EZH2i:", format(ni_ezh2i_test$p.value, digits=8),
+        "Cohen D:", round(ni_ezh2i_effect$estimate, digits = 4),
+        "(", ni_ezh2i_effect$magnitude, ")"),
+  paste("Pr_EZH2i:", format(pr_ezh2i_test$p.value, digits=8),
+        "Cohen D:", round(pr_ezh2i_effect$estimate, digits = 4),
+        "(", pr_ezh2i_effect$magnitude, ")"),
+  sep = "\n")
+
+k27_up_color <- "#4463b9"
+
+ggplot(data=df_long, aes(x = group, y = fc)) +
+  geom_violin(size = 0.8) +
+  stat_compare_means(
+    data=df_long_k27, comparisons = my_comparisons,
+    method = "wilcox.test", paired = TRUE) +
+  rasterize(
+    geom_jitter(data=df_long_k27, color = k27_up_color, alpha = 0.7, size = 0.1),
+    dpi = 300) +
+  geom_hline (yintercept = 0, linetype = "dashed") + 
+  coord_cartesian(ylim = c(-13, 24)) +
+  theme_default(base_size = 14) + 
+  labs(x = "Condition",
+       y = "Log2 FC",
+       title = "RNASeq expression changes",
+       subtitle = "Global vs H3K27m3 H3K27m3 always up TSS",
+       caption = stats_caption)
+
+
+write.table(df_long[!is.na(df_long$fc), ],
+  file = "./figures_data/fig3_violin_k27_always_up_violin.tsv",
+  col.names = T, sep = "\t", quote = F, row.names = F)
+
+write.table(df_long_k27[!is.na(df_long_k27$fc), ],
+  file = "./figures_data/fig3_violin_k27_always_up_jitter_k27_values.tsv",
+  col.names = T, sep = "\t", quote = F, row.names = F)
+
+
+```
+
+Download values: `r embed_df(df_long_k27[!is.na(df_long_k27$fc), ], name="k27_always_up_jitter.tsv", text = "K27 always up points")`. 
+
+
 # Combined heatmaps
 
 ## Naive markers
 
-```{r combined-summarized-heatmaps-naive, warning=F, message=F}
+```{r combined-summarized-heatmaps-naive, warning=F, message=F, fig.width = 7, fig.height = 8}
 naive_markers <-
   c("KLF17",
     "DPPA5",
@@ -501,7 +605,6 @@ naive_markers <-
     "ZNF729",
     "TRIM60"
   )
-combined_heatmap(genes, naive_markers, rnaseq_limits = c(0, 11.5), k4m3_limits = c(0, 90), k27m3_limits = c(0, 8), ub_limits = c(0, 11)) 
 
 tpm_cols <- grep("RNASeq_TPM", colnames(genes), value = T)
 cols_used <- c("name", "H3K27m3_Ni_mean_cov", "H3K27m3_Pr_mean_cov", "H3K27m3_Ni_EZH2i_mean_cov", "H3K27m3_Pr_EZH2i_mean_cov",
@@ -513,11 +616,25 @@ values <- genes[genes$name %in% naive_markers, cols_used]
 values[, tpm_cols] <- log2(values[, tpm_cols] + 1)
 
 write.table(values, "./figures_data/fig3_messmer_naive_heatmap_global_scale.tsv")
+
+fig <- combined_heatmap(
+  genes,
+  naive_markers,
+  rnaseq_limits = c(0, 11.5),
+  k4m3_limits = c(0, 90),
+  k27m3_limits = c(0, 8),
+  ub_limits = c(0, 11)
+)
+
+fig 
+
+orca(fig, "./output/fig3_messmer_naive_heatmap_global_scale.svg", width = 9, height = 9, more_args = c('--disable-gpu'))
+
 ```
 
 ## Primed markers
 
-```{r combined-summarized-heatmaps-primed, warning=F, message=F}
+```{r combined-summarized-heatmaps-primed, warning=F, message=F, fig.width = 7, fig.height = 8}
 primed_markers <-
   c("CD24",
     "ZIC2",
@@ -529,10 +646,22 @@ primed_markers <-
     "DUSP6",
     "PTPRZ1"
   )
-combined_heatmap(genes, primed_markers, rnaseq_limits = c(0, 11.5), k4m3_limits = c(0, 90), k27m3_limits = c(0, 8), ub_limits = c(0, 11))
 
 values <- genes[genes$name %in% primed_markers, cols_used]
 values[, tpm_cols] <- log2(values[, tpm_cols] + 1)
 
 write.table(values, "./figures_data/fig3_messmer_primed_heatmap_global_scale.tsv")
+
+fig <- combined_heatmap(
+  genes,
+  primed_markers,
+  rnaseq_limits = c(0, 11.5),
+  k4m3_limits = c(0, 90),
+  k27m3_limits = c(0, 8),
+  ub_limits = c(0, 11)
+)
+
+fig
+
+orca(fig, "./output/fig3_messmer_primed_heatmap_global_scale.svg", width = 9, height = 9, more_args = c('--disable-gpu'))
 ```
