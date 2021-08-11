@@ -1,0 +1,146 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(elsasserlib)
+library(ggpubr)
+library(reshape)
+library(dplyr)
+library(ggrepel)
+```
+
+```{r fig.width=8, fig.height=5}
+tbl <- read.table('Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.tsv',sep = "\t",header = T)
+tbl <- tbl[!duplicated(tbl$name),]
+
+tbl$sig_Ni_EZH2i_up <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > 1) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05)
+tbl$sig_Ni_EZH2i_down <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange < -1) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05)
+
+tbl$sig_Ni_EZH2i_up[is.na(tbl$sig_Ni_EZH2i_up)] <- F
+tbl$sig_Ni_EZH2i_down[is.na(tbl$sig_Ni_EZH2i_down)] <- F
+
+X.up <- select(tbl[tbl$sig_Ni_EZH2i_up,],"name","k27_bivalency_grp",contains("mean_cov"))
+X.down <- select(tbl[tbl$sig_Ni_EZH2i_down,],"name","k27_bivalency_grp",contains("mean_cov"))
+               
+X.up$class <- "Ni_EZH2i_up"
+X.down$class <- "Ni_EZH2i_down"
+
+mdf <- melt(rbind(X.up,X.down))
+
+mdf <- cbind(mdf,colsplit(mdf$variable,"_",c("mark","state","treatment")))
+mdf$treatment <- gsub(mdf$treatment,pattern = "mean",replacement = "_NT") 
+mdf$sample <- as.factor(paste0(mdf$state," ",mdf$treatment))
+
+K27m3 <- mdf[mdf$mark=="H3K27m3",]
+#K27m3 <- mdf[mdf$mark=="H3K27m3" & mdf$state=="Ni",]
+
+give.n <- function(x){
+  return(c(y = 9, label = length(x))) 
+  # experiment with the multiplier to find the perfect position
+}
+
+ggboxplot(K27m3,x="sample",y="value",fill="sample", facet.by = c("class","k27_bivalency_grp"), outlier.shape = NULL, add="jitter",add.params =  list(alpha = 0.2,size=0.2)) +  
+  stat_summary(fun.data = give.n, geom = "text", fun.y = median, position = position_dodge(width = 0.75)) +  
+  theme_elsasserlab_print()
+```
+
+```{r fig.width=8, fig.height=5}
+H2Aub <- mdf[mdf$mark=="H2Aub",]
+
+ggboxplot(H2Aub,x="sample",y="value",fill="sample", facet.by = c("class","k27_bivalency_grp"), outlier.shape = NULL,  palette="npg", add="jitter",add.params =  list(alpha = 0.2,size=0.2)) +  
+  theme_elsasserlab_print()
+```
+
+```{r fig.width=10, fig.height=6}
+tbl <- read.table('Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.tsv',sep = "\t",header = T)
+tbl <- tbl[!duplicated(tbl$name),]
+
+tbl$sig_Ni_EZH2i_up <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > 1) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05)
+tbl$sig_Ni_EZH2i_down <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange < -1) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05)
+
+tbl$sig_Ni_EZH2i_up[is.na(tbl$sig_Ni_EZH2i_up)] <- F
+tbl$sig_Ni_EZH2i_down[is.na(tbl$sig_Ni_EZH2i_down)] <- F
+
+X.up <- select(tbl[tbl$sig_Ni_EZH2i_up,],"name","k27_bivalency_grp",contains("TPM") & contains("R1"))
+X.down <- select(tbl[tbl$sig_Ni_EZH2i_down,],"name","k27_bivalency_grp",contains("TPM") & contains("R1"))
+               
+X.up$class <- "Ni_EZH2i_up"
+X.down$class <- "Ni_EZH2i_down"
+
+mdf <- melt(rbind(X.up,X.down))
+
+mdf <- cbind(mdf,colsplit(mdf$variable,"_",c("RNASeq","TPM","state","treatment")))
+mdf$treatment <- gsub(mdf$treatment,pattern = "R1",replacement = "_NT") 
+mdf$sample <- as.factor(paste0(mdf$state," ",mdf$treatment))
+mdf$lg2 <- log2(mdf$value)
+
+TPM <- mdf[mdf$state=="Ni",]
+
+ggboxplot(TPM,x="sample",y="lg2",fill="sample", facet.by = c("class","k27_bivalency_grp"), outlier.shape = NULL, add="jitter",add.params =  list(alpha = 0.2,size=0.2)) + theme_elsasserlab_print()
+```
+
+```{r fig.width=3, fig.height=2}
+tbl <- read.table('Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.tsv',sep = "\t",header = T)
+tbl <- tbl[!duplicated(tbl$name),]
+
+tbl$sig_Ni_EZH2i_up <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > 1) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05)
+tbl$sig_Ni_EZH2i_down <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange < -1) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05)
+
+tbl$sig_Ni_EZH2i_up[is.na(tbl$sig_Ni_EZH2i_up)] <- F
+tbl$sig_Ni_EZH2i_down[is.na(tbl$sig_Ni_EZH2i_down)] <- F
+
+X.up <- select(tbl[tbl$sig_Ni_EZH2i_up,],"name","k27_bivalency_grp","H2Aub_DS_EZH2i_vs_Ni_log2FoldChange")
+X.down <- select(tbl[tbl$sig_Ni_EZH2i_down,],"name","k27_bivalency_grp","H2Aub_DS_EZH2i_vs_Ni_log2FoldChange")
+               
+X.up$class <- "Ni_EZH2i_up"
+X.down$class <- "Ni_EZH2i_down"
+
+mdf <- rbind(X.up,X.down)
+
+ggdensity(mdf,x = "H2Aub_DS_EZH2i_vs_Ni_log2FoldChange", y = "..count..", color="k27_bivalency_grp", facet.by = "class", add = "median", fill=NA,palette = c("#222288","#008822","#AAAAAA","#FF3333")) + scale_x_continuous(limits=c(-2.5,2.5))
+ggsave("Fig3F_EZH2i_H2Aub_density_full.pdf")
+```
+
+```{r fig.width=3, fig.height=2}
+
+mdf$k27pos <- "H3K27me3"
+mdf$k27pos[mdf$k27_bivalency_grp=="None"] <- "none"
+mdf$k27pos[mdf$k27_bivalency_grp=="Pr_higher_than_Ni"] <- "none"
+
+ggdensity(mdf,x = "H2Aub_DS_EZH2i_vs_Ni_log2FoldChange", y = "..count..", color="k27pos", facet.by = "class", add = "median", palette = c("#FF3333","#AAAAAA")) + scale_x_continuous(limits=c(-2.5,2.5))
+ggsave("Fig3F_EZH2i_H2Aub_density.pdf")
+median(mdf$H2Aub_DS_EZH2i_vs_Ni_log2FoldChange[mdf$k27pos=="H3K27me3"])
+median(mdf$H2Aub_DS_EZH2i_vs_Ni_log2FoldChange[mdf$k27pos=="none"])
+```
+
+```{r fig.width=3, fig.height=2}
+
+table(select(mdf,"k27pos","class"))
+table(select(mdf,"k27_bivalency_grp","class"))
+```
+```{r fig.width=3, fig.height=2}
+X.up <- select(tbl[tbl$sig_Ni_EZH2i_up,],"name","k27_bivalency_grp","H3K27m3_Ni_mean_cov")
+X.down <- select(tbl[tbl$sig_Ni_EZH2i_down,],"name","k27_bivalency_grp","H3K27m3_Ni_mean_cov")
+               
+X.up$class <- "Ni_EZH2i_up"
+X.down$class <- "Ni_EZH2i_down"
+
+mdf <- rbind(X.up,X.down)
+
+ggdensity(mdf,x = "H3K27m3_Ni_mean_cov", y = "..count..", color="k27_bivalency_grp", facet.by = "class", add = "median", fill=NA,palette = c("#222288","#008822","#AAAAAA","#FF3333")) + scale_x_continuous(limits=c(0,9))
+```
+
+```{r fig.width=3, fig.height=2}
+X.up <- select(tbl[tbl$sig_Ni_EZH2i_up,],"name","k27_bivalency_grp","RNASeq_DS_EZH2i_vs_Ni_log2FoldChange")
+X.down <- select(tbl[tbl$sig_Ni_EZH2i_down,],"name","k27_bivalency_grp","RNASeq_DS_EZH2i_vs_Ni_log2FoldChange")
+               
+X.up$class <- "Ni_EZH2i_up"
+X.down$class <- "Ni_EZH2i_down"
+
+mdf <- rbind(X.up,X.down)
+
+ggdensity(mdf,x = "RNASeq_DS_EZH2i_vs_Ni_log2FoldChange", y = "..density..", color="k27_bivalency_grp", facet.by = "class", add = "median", fill=NA,palette = c("#222288","#008822","#AAAAAA","#FF3333")) + scale_x_continuous(limits=c(-5,10))
+```

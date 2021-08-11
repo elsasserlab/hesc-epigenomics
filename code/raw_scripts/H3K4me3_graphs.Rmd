@@ -1,0 +1,287 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(elsasserlib)
+library(ggpubr)
+library(reshape)
+library(dplyr)
+library(ggrepel)
+```
+
+```{r fig.width=2, fig.height=2}
+tbl <- read.table('Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.tsv',sep = "\t",header = T)
+tbl <- tbl[!duplicated(tbl$name),]
+
+mdf <- select(tbl,"name","court_bivalent","RNASeq_DS_EZH2i_vs_Ni_baseMean","k27_bivalency_grp","H3K4m3_DS_EZH2i_vs_Ni_log2FoldChange")
+mdf$k27_bivalency_grp<-as.factor(mdf$k27_bivalency_grp)
+
+ggboxplot(mdf,x="k27_bivalency_grp",y="H3K4m3_DS_EZH2i_vs_Ni_log2FoldChange",fill="k27_bivalency_grp", add="median") + scale_y_continuous(limits=c(-5,5))
+
+aggregate( H3K4m3_DS_EZH2i_vs_Ni_log2FoldChange ~ k27_bivalency_grp, mdf, FUN="median")
+```
+
+```{r fig.width=5, fig.height=5}
+
+mdf <- select(tbl,"name","court_bivalent","RNASeq_TPM_Ni_R1","k27_bivalency_grp","H3K4m3_DS_EZH2i_vs_Ni_log2FoldChange","H3K4m3_DS_EZH2i_vs_Ni_baseMean")
+
+ggscatter(mdf,x="RNASeq_TPM_Ni_R1",y="H3K4m3_DS_EZH2i_vs_Ni_log2FoldChange",size=1,alpha=0.1,color="k27_bivalency_grp") + scale_x_continuous(trans="log2") + scale_y_continuous(limits=c(-5,5))
+
+ggscatter(mdf,x="RNASeq_TPM_Ni_R1",y="H3K4m3_DS_EZH2i_vs_Ni_baseMean",size=1,alpha=0.1,color="k27_bivalency_grp") + scale_x_continuous(trans="log2") + scale_y_continuous(trans="log2")
+
+```
+
+```{r fig.width=8, fig.height=8}
+
+ggpaired(lanner.set,cond1="RNASeq_TPM_Ni_R1",cond2="RNASeq_TPM_Ni_EZH2i_R1",facet.by = "Lanner_germlayer",fill = "condition") + scale_y_continuous(trans='log2')
+ggsave("pairplot_RNASeq.pdf")
+```
+
+## Intermediate population
+
+```{r fig.width=5, fig.height=5}
+
+EZH2i.tbl <- data.frame(name=tbl$name,lfc=tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange)
+
+Messmer_tbl <- read.table("Messmer_CellRep2019_TableS2_IntermediatePop.tsv",header=T, sep="\t")
+inter.tbl <- select(Messmer_tbl[Messmer_tbl$P.Value<0.0001 ,],"Gene","vsNaive")
+colnames(inter.tbl) <- c("name","lfc")
+
+inter.tbl <- inter.tbl[inter.tbl$name %in% EZH2i.tbl$name,]
+inter.tbl <- inter.tbl[order(inter.tbl$lfc),]
+#inter.tbl <- rbind(head(inter.tbl,50),tail(inter.tbl,50))
+
+inter.down50 <- head(inter.tbl$name,50)
+inter.up50 <- tail(inter.tbl$name,50)
+inter.down25 <- head(inter.tbl$name,25)
+inter.up25 <- tail(inter.tbl$name,25)
+
+write.table(inter.down25,"Messmer_intermediate_down.top25.txt",sep="\t",quote=F,row.names=F,col.names=F)
+write.table(inter.up25,"Messmer_intermediate_up.top25.txt",sep="\t",quote=F,row.names=F,col.names=F)
+ 
+EZH2i.tbl <- EZH2i.tbl[EZH2i.tbl$name %in% inter.tbl$name,]
+
+EZH2i.tbl$set <- "Ni_EZH2i" 
+inter.tbl$set <- "Messmer_intermediate" 
+
+mdf <- rbind(EZH2i.tbl,inter.tbl)
+mdf$lfc <- mdf$lfc
+
+cor.tbl <- cast(mdf,formula = name ~ set, value = "lfc")
+
+ggscatter(cor.tbl <- cast(mdf,formula = name ~ set, value = "lfc")
+,x="Ni_EZH2i",y="Messmer_intermediate", size=1, add = "reg.line", conf.int = TRUE) +  stat_cor(method = "pearson", label.x = 3) + scale_x_continuous(limits=c(-7,7)) + scale_y_continuous(limits=c(-7,7))
+```
+
+```{r fig.width=3, fig.height=3}
+
+cor.tbl
+
+cor.tbl$quantile <- cut(cor.tbl$Messmer_intermediate, 10, include.lowest=TRUE, labels = seq(1,10))
+
+
+ggboxplot(cor.tbl,x = "quantile",y="Ni_EZH2i",fill = "quantile")
+```
+
+
+```{r fig.width=3, fig.height=3}
+
+EZH2i.tbl <- data.frame(name=tbl$name,lfc=tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange)
+inter_up.tbl <- EZH2i.tbl[EZH2i.tbl$name %in% inter.up50,]
+inter_down.tbl <- EZH2i.tbl[EZH2i.tbl$name %in% inter.down50,]
+
+inter_up.tbl$set <- "Intermediate"
+
+ggscatter(test,x="Ni_EZH2i",y="Messmer_intermediate", size=1, add = "reg.line", conf.int = TRUE) +  stat_cor(method = "pearson", label.x = 3)
+```
+
+```{r fig.width=3, fig.height=3}
+
+inter.set <- select(tbl[tbl$name %in% inter.down50,], "Lanner_germlayer",contains("TPM") & contains("R1"))
+
+mdf <- melt(inter.set)
+
+mdf <- cbind(mdf,colsplit(mdf$variable,"_",c("RNASeq","TPM","state","treatment")))
+mdf$treatment <- gsub(mdf$treatment,pattern = "mean",replacement = "NT") 
+mdf$sample <- paste0(mdf$state," ",mdf$treatment)
+mdf$lg2 <- log2(mdf$value)
+
+ggpaired(inter.set,cond1="RNASeq_TPM_Ni_R1",cond2="RNASeq_TPM_Ni_EZH2i_R1",fill = "condition") + scale_y_continuous(trans='log2')
+```
+```{r fig.width=3, fig.height=3}
+
+inter.set <- select(tbl[tbl$name %in% inter.up50,], "Lanner_germlayer",contains("TPM") & contains("R1"))
+
+mdf <- melt(inter.set)
+mdf$value <- log2(mdf$value)
+
+mdf <- cbind(mdf,colsplit(mdf$variable,"_",c("RNASeq","TPM","state","treatment")))
+mdf$treatment <- gsub(mdf$treatment,pattern = "mean",replacement = "NT") 
+mdf$sample <- paste0(mdf$state," ",mdf$treatment)
+mdf$lg2 <- log2(mdf$value)
+
+ggpaired(inter.set,cond1="RNASeq_TPM_Ni_R1",cond2="RNASeq_TPM_Ni_EZH2i_R1",fill = "condition") + scale_y_continuous(trans='log2')
+```
+
+```{r fig.width=3, fig.height=3}
+
+Messmer_pop <- unlist(read.table(file = "Messmer_intermediate_top500.txt"))
+
+inter.set <- select(tbl[tbl$name %in% Messmer_pop[1:50],], "Lanner_germlayer",contains("TPM") & contains("R1"))
+
+mdf <- melt(inter.set)
+
+mdf <- cbind(mdf,colsplit(mdf$variable,"_",c("RNASeq","TPM","state","treatment")))
+mdf$treatment <- gsub(mdf$treatment,pattern = "mean",replacement = "NT") 
+mdf$sample <- paste0(mdf$state," ",mdf$treatment)
+mdf$lg2 <- log2(mdf$value)
+
+ggpaired(inter.set,cond1="RNASeq_TPM_Ni_R1",cond2="RNASeq_TPM_Ni_EZH2i_R1",fill = "condition") + scale_y_continuous(trans='log2')
+```
+
+```{r fig.width=2, fig.height=2}
+
+ggsave("pairplot_Messmer_interm.pdf")
+ggboxplot(mdf,x="sample",y="lg2",fill="sample")
+
+ggsave("boxplot_Messmer_interm.pdf")
+```
+
+```{r fig.width=5, fig.height=5}
+
+Messmer_pop <- unlist(read.table(file = "Messmer_intermediate_top500.txt"))
+KRT7_genes <- unlist(read.table('Zuchida2020_KRT7pop_genes.txt',sep = "\t",header = F))
+
+inter.set <- select(tbl[tbl$name %in% inter.up25,], "Lanner_germlayer","name",contains("mean_cov"))
+
+inter.set$K4K27ratio_Ni_mean_cov <- log2(inter.set$H3K4m3_Ni_mean_cov / inter.set$H3K27m3_Ni_mean_cov)
+inter.set$K4K27ratio_Pr_mean_cov <- log2(inter.set$H3K4m3_Pr_mean_cov / inter.set$H3K27m3_Pr_mean_cov)
+
+mdf <- melt(inter.set)
+
+mdf <- cbind(mdf,colsplit(mdf$variable,"_",c("mark","state","treatment")))
+mdf$treatment <- gsub(mdf$treatment,pattern = "mean",replacement = "NT") 
+mdf$sample <- paste0(mdf$state," ",mdf$treatment)
+
+ggstripchart(mdf[mdf$mark=="H3K27m3",],x="sample",y="value",color="sample",label="name",repel=T)
+```
+
+```{r fig.width=3, fig.height=3}
+
+inter.up50 <- unlist(read.table(file = "Messmer_intermediate_up.top50.txt"))
+inter.down0 <- unlist(read.table(file = "Messmer_intermediate_down.top50.txt"))
+
+inter.set.up <- select(tbl[tbl$name %in% inter.up50,], "name","Lanner_germlayer",contains("TPM") & contains("R1"))
+inter.set.down <- select(tbl[tbl$name %in% inter.down50,], "name","Lanner_germlayer",contains("TPM") & contains("R1"))
+inter.set.up$dir <- "up"
+inter.set.down$dir <- "down"
+inter.set <- rbind(inter.set.up,inter.set.down)
+
+mdf <- melt(inter.set)
+
+mdf <- cbind(mdf,colsplit(mdf$variable,"_",c("RNASeq","TPM","state","treatment")))
+mdf$treatment <- gsub(mdf$treatment,pattern = "R1",replacement = "NT") 
+mdf$sample <- paste0(mdf$state," ",mdf$treatment)
+
+ggpaired(inter.set,cond1="RNASeq_TPM_Ni_R1",cond2="RNASeq_TPM_Ni_EZH2i_R1",fill = "condition", facet.by = "dir", label="name", label.select = c("GATA3","KRT19")) + scale_y_continuous(trans="log2")
+ggsave("Messmer_top50_RNASeq_paired_Ni_only.pdf")
+```
+
+```{r fig.width=3, fig.height=3}
+ggstripchart(mdf,x="sample",y="value",fill="sample",add="boxplot",size=0.8,alpha=0.4,facet.by="dir")  + scale_y_continuous(trans="log2")
+ggsave("Messmer_top50_RNASeq_boxplot.pdf")
+```
+```{r fig.width=3, fig.height=3}
+ggstripchart(mdf[mdf$state=="Ni",],x="sample",y="value",fill="sample",add="boxplot",size=0.8,alpha=0.4,facet.by="dir")  + scale_y_continuous(trans="log2")
+ggsave("Messmer_top50_RNASeq_boxplot_Ni_only.pdf")
+```
+
+```{r fig.width=3, fig.height=3}
+
+inter.up50 <- unlist(read.table(file = "Messmer_intermediate_up.top50.txt"))
+inter.down0 <- unlist(read.table(file = "Messmer_intermediate_down.top50.txt"))
+
+inter.set.up <- select(tbl[tbl$name %in% inter.up50,], "Lanner_germlayer",contains("mean_cov"))
+inter.set.down <- select(tbl[tbl$name %in% inter.down50,], "Lanner_germlayer",contains("mean_cov"))
+inter.set.up$dir <- "up"
+inter.set.down$dir <- "down"
+inter.set <- rbind(inter.set.up,inter.set.down)
+
+mdf <- melt(inter.set)
+
+mdf <- cbind(mdf,colsplit(mdf$variable,"_",c("mark","state","treatment")))
+mdf$treatment <- gsub(mdf$treatment,pattern = "mean",replacement = "NT") 
+mdf$sample <- paste0(mdf$state," ",mdf$treatment)
+
+ggpaired(inter.set,cond1="H3K27m3_Ni_mean_cov",cond2="H3K27m3_Pr_mean_cov",fill = "condition", facet.by = "dir")
+```
+
+```{r fig.width=3, fig.height=3}
+ggstripchart(mdf[mdf$mark=="H3K27m3",],x="sample",y="value",fill="sample",add="boxplot",size=0.8,alpha=0.4,facet.by="dir")
+ggsave("Messmer_top50_H3K27me3_boxplot.pdf")
+```
+```{r fig.width=3, fig.height=3}
+ggstripchart(mdf[mdf$mark=="H3K4m3",],x="sample",y="value",fill="sample",add="boxplot",size=0.8,alpha=0.4,facet.by="dir")
+ggsave("Messmer_top50_H3K4me3_boxplot.pdf")
+```
+
+```{r fig.width=3, fig.height=3}
+ggstripchart(mdf[mdf$mark=="H2Aub",],x="sample",y="value",fill="sample",add="boxplot",size=0.8,alpha=0.4,facet.by="dir")
+ggsave("Messmer_top50_H2Aub_boxplot.pdf")
+```
+```{r fig.width=3, fig.height=3}
+
+ggscatter(inter.set,x="H3K27m3_Ni_mean_cov",y="H3K4m3_Ni_mean_cov",color="dir",size=0.8,alpha=0.4)
+```
+
+```{r fig.width=3, fig.height=3}
+
+Messmer_pop <- unlist(read.table(file = "Messmer_intermediate_up.top50.txt"))
+
+inter.set <- select(tbl[tbl$name %in% inter.down50,], "Lanner_germlayer",contains("mean_cov"))
+
+inter.set$K4K27ratio_Ni_mean_cov <- log2(inter.set$H3K4m3_Ni_mean_cov / inter.set$H3K27m3_Ni_mean_cov)
+inter.set$K4K27ratio_Pr_mean_cov <- log2(inter.set$H3K4m3_Pr_mean_cov / inter.set$H3K27m3_Pr_mean_cov)
+
+mdf <- melt(inter.set)
+
+mdf <- cbind(mdf,colsplit(mdf$variable,"_",c("mark","state","treatment")))
+mdf$treatment <- gsub(mdf$treatment,pattern = "mean",replacement = "NT") 
+mdf$sample <- paste0(mdf$state," ",mdf$treatment)
+
+ggpaired(inter.set,cond1="H3K27m3_Ni_mean_cov",cond2="H3K27m3_Pr_mean_cov",fill = "condition")
+```
+```{r fig.width=3, fig.height=3}
+ggstripchart(mdf[mdf$mark=="H3K27m3",],x="sample",y="value",fill="sample",add="boxplot",size=0.8,alpha=0.4)
+ggsave("Messmer_top50down_H3K27me3_boxplot.pdf")
+```
+
+```{r fig.width=3, fig.height=3}
+ggstripchart(mdf[mdf$mark=="H3K4m3",],x="sample",y="value",fill="sample",add="boxplot",size=0.8,alpha=0.4)
+ggsave("Messmer_top50down_H3K4me3_boxplot.pdf")
+```
+
+```{r fig.width=3, fig.height=3}
+ggstripchart(mdf[mdf$mark=="H2Aub",],x="sample",y="value",fill="sample",add="boxplot",size=0.8,alpha=0.4)
+ggsave("Messmer_top50down_H2Aub_boxplot.pdf")
+```
+
+
+```{r fig.width=3, fig.height=3}
+
+Messmer_pop <- unlist(read.table(file = "Messmer_intermediate_top500.txt"))
+
+inter.set <- select(tbl[tbl$name %in% Messmer_pop[1:50],], "Lanner_germlayer",contains("TPM") & contains("R1"))
+
+mdf <- melt(inter.set)
+
+mdf <- cbind(mdf,colsplit(mdf$variable,"_",c("RNASeq","TPM","state","treatment")))
+mdf$treatment <- gsub(mdf$treatment,pattern = "mean",replacement = "NT") 
+mdf$sample <- paste0(mdf$state," ",mdf$treatment)
+mdf$lg2 <- log2(mdf$value)
+
+ggpaired(inter.set,cond1="RNASeq_TPM_Ni_R1",cond2="RNASeq_TPM_Ni_EZH2i_R1",fill = "condition") + scale_y_continuous(trans='log2')
+```

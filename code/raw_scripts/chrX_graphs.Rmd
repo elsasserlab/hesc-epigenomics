@@ -1,0 +1,79 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(elsasserlib)
+library(ggpubr)
+library(reshape)
+library(dplyr)
+library(ggrepel)
+```
+
+```{r fig.width=2, fig.height=2}
+tbl <- read.table('Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.tsv',sep = "\t",header = T)
+tbl <- tbl[!duplicated(tbl$name),]
+
+tbl$sig_Ni_EZH2i_up <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > 1) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05) # & (tbl$seqnames == "chrX")
+tbl$sig_Ni_EZH2i_down <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange < -1) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05) # & (tbl$seqnames == "chrX")
+
+tbl$seqnames[tbl$seqnames != "chrX"] <- "auto"
+
+tbl$sig_Ni_EZH2i_up[is.na(tbl$sig_Ni_EZH2i_up)] <- F
+tbl$sig_Ni_EZH2i_down[is.na(tbl$sig_Ni_EZH2i_down)] <- F
+
+X.up <- select(tbl[tbl$sig_Ni_EZH2i_up,],"name","seqnames",contains("mean_cov"))
+X.down <- select(tbl[tbl$sig_Ni_EZH2i_down,],"name","seqnames",contains("mean_cov"))
+               
+X.up$class <- "Ni_EZH2i_up"
+X.down$class <- "Ni_EZH2i_down"
+
+mdf <- melt(rbind(X.up,X.down))
+
+mdf <- cbind(mdf,colsplit(mdf$variable,"_",c("mark","state","treatment")))
+mdf$treatment <- gsub(mdf$treatment,pattern = "mean",replacement = "NT") 
+mdf$sample <- paste0(mdf$state," ",mdf$treatment)
+
+K27m3 <- mdf[mdf$mark=="H3K27m3" & mdf$state=="Ni",]
+
+ggboxplot(K27m3,x="sample",y="value",fill="sample", facet.by = c("class","seqnames"), outlier.shape = NULL, add="jitter",add.params =  list(alpha = 0.2,size=0.2))
+```
+
+```{r fig.width=2, fig.height=2}
+#tbl <- read.table('Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.tsv',sep = "\t",header = T)
+#tbl <- tbl[!duplicated(tbl$name),]
+
+#tbl$sig_Ni_EZH2i_up <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > 1) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05)
+#tbl$sig_Ni_EZH2i_down <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange < -1) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05) 
+#tbl$seqnames[tbl$seqnames != "chrX"] <- "auto"
+
+#tbl$sig_Ni_EZH2i_up[is.na(tbl$sig_Ni_EZH2i_up)] <- F
+#tbl$sig_Ni_EZH2i_down[is.na(tbl$sig_Ni_EZH2i_down)] <- F
+
+X.up <- select(tbl[tbl$sig_Ni_EZH2i_up,],"name","seqnames",contains("TPM") & contains("R1"))
+X.down <- select(tbl[tbl$sig_Ni_EZH2i_down,],"name","seqnames",contains("TPM") & contains("R1"))
+               
+X.up$class <- "Ni_EZH2i_up"
+X.down$class <- "Ni_EZH2i_down"
+
+mdf <- melt(rbind(X.up,X.down))
+
+mdf <- cbind(mdf,colsplit(mdf$variable,"_",c("RNASeq","TPM","state","treatment")))
+mdf$treatment <- gsub(mdf$treatment,pattern = "mean",replacement = "NT") 
+mdf$sample <- paste0(mdf$state," ",mdf$treatment)
+mdf$lg2 <- log2(mdf$value)
+
+TPM <- mdf[mdf$state=="Ni",]
+
+ggboxplot(TPM,x="sample",y="lg2",fill="sample", facet.by = c("class","seqnames"), outlier.shape = NULL, add="jitter",add.params =  list(alpha = 0.2,size=0.2))
+```
+
+```{r}
+sum((tbl$seqnames == "chrX") & (tbl$sig_Ni_EZH2i_up))
+sum((tbl$seqnames == "chrX") & (tbl$sig_Ni_EZH2i_down))
+sum((tbl$seqnames == "auto") & (tbl$sig_Ni_EZH2i_up))
+sum((tbl$seqnames == "auto") & (tbl$sig_Ni_EZH2i_down))
+```
+log
