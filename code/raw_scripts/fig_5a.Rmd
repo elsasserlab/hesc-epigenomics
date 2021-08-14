@@ -1,0 +1,172 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(elsasserlib)
+library(ggpubr)
+library(reshape)
+library(dplyr)
+library(ggrepel)
+```
+
+```{r fig.width=3.3, fig.height=3}
+tbl <- read.table('Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.tsv',sep = "\t",header = T)
+tbl <- tbl[!duplicated(tbl$name),]
+
+
+tbl$sig_Ni_EZH2i_up <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > 0) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05)
+tbl$sig_Ni_EZH2i_down <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange < -0) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05)
+tbl$sig_summary <- "ns"
+tbl$sig_summary[tbl$sig_Ni_EZH2i_up] <- "Ni_EZH2i_up"
+tbl$sig_summary[tbl$sig_Ni_EZH2i_down] <- "Ni_EZH2i_down"
+
+tbl$sig_Pr_EZH2i_up <- (tbl$RNASeq_DS_EZH2i_vs_Pr_log2FoldChange > 0) & (tbl$RNASeq_DS_EZH2i_vs_Pr_padj < 0.05)
+tbl$sig_Pr_EZH2i_down <- (tbl$RNASeq_DS_EZH2i_vs_Pr_log2FoldChange < -0) & (tbl$RNASeq_DS_EZH2i_vs_Pr_padj < 0.05)
+tbl$sig_summary_Pr <- "ns"
+tbl$sig_summary_Pr [tbl$sig_Pr_EZH2i_up] <- "Pr_EZH2i_up"
+tbl$sig_summary_Pr [tbl$sig_Pr_EZH2i_down] <- "Pr_EZH2i_down"
+
+markers <- read.table('Cheng.UsingPublishedAnno.lineage.marker.tsv',sep="\t",header=T)
+marker.sets <- markers$set
+names(marker.sets) <- markers$gene
+
+marker.tbl <- select(tbl[tbl$name %in% markers$gene,], "name","Lanner_germlayer","sig_summary","sig_summary_Pr", contains("Log2FoldChange") & contains("RNASeq") )
+
+marker.tbl$set <- marker.sets[marker.tbl$name]
+
+goi <- c("GATA3","GATA2","CDX2","TP63","CGA","CGB","CGB8","CGB5","POU5F1","DPPA3","VGLL1","BMP4","VIM","DPPA2","NANOG","SOX2","KRT19","FGF4","TFAP2A","TFAP2C","KRT7","ENPEP","IGF2","FRZB","ERP27","KRT23","DNMT3A","DNMT3L","XAGE2","HAND1","KRT18","KLF6","NUAK2","EPAS1", "SDC1", "SLC40A1","CLDN4","DCN","NOTUM","COL4A1","AMOTL1","CAMK2D","AP1S2","ADM","ANPEP","NUAK1","UTF1","SOX15","DPPA3","DPPA5")
+
+marker.tbl$set[marker.tbl$set=="Early"]<-"Prelineage"
+marker.tbl$set[marker.tbl$set=="PE"]<-"PrE"
+marker.tbl$set <- factor(marker.tbl$set, levels=
+c("Prelineage","ICM","EarlyEpi","MidEpi","Early/Mid Epi","LateEpi","PrE","Endoderm","TE","CTB","STB","EVT","Amnion","YsMes","EmMes","NasMes","AxMes","AdvMes","PriS")
+)
+
+#remove groups: Early/Mid Epi redundant with Early and Mid as separate groups; mesoderms not well defined, PriS three markers only
+marker.tbl <- marker.tbl[! marker.tbl$set %in% c("Early/Mid Epi","Endoderm","EmMes","NasMes","AxMes","AdvMes","PriS"), ]
+
+ggstripchart(marker.tbl,x="set",y="RNASeq_DS_EZH2i_vs_Ni_log2FoldChange", 
+             orientation="horizontal", 
+             color = "sig_summary", 
+             palette=c("#88AAFF","#EE8844","#DDDDDD"), 
+             size = 1, jitter=0.2,
+             ggtheme=theme_bw(),
+             label="name", font.label = list(size = 7), repel=T, label.select = goi , label.rectangle = F) + scale_x_discrete(limits=rev) + scale_y_continuous(limits=c(-5,7.5))
+ggsave("fig_5a_strip.pdf")
+```
+
+```{r fig.width=3.3, fig.height=3}
+
+
+ggstripchart(marker.tbl,x="set",y="RNASeq_DS_EZH2i_vs_Pr_log2FoldChange", 
+             orientation="horizontal", 
+             color = "sig_summary_Pr", 
+             palette=c("#DDDDDD","#88AAFF","#EE8844"), 
+             size = 1, jitter=0.2,
+             ggtheme=theme_bw(), 
+             label="name", font.label = list(size = 7), repel=T, label.select = goi , label.rectangle = F) + scale_x_discrete(limits=rev)  + scale_y_continuous(limits=c(-5,7.5))
+ggsave("fig_5a_primed_strip.pdf")
+```
+
+```{r fig.width=3, fig.height=3}
+ggstripchart(marker.tbl,x="set",y="RNASeq_DS_Pr_vs_Ni_log2FoldChange", 
+             orientation="horizontal", 
+             color = "sig_summary", 
+             palette=c("#88AAFF","#EE8844","#DDDDDD"), 
+             size = 1, jitter=0.2,
+             ggtheme=theme_bw(),
+             label="name", font.label = list(size = 7), repel=T, label.select = goi , label.rectangle = F) + scale_x_discrete(limits=rev)  
+ggsave("lanner_germlayer_ni_vs_pr_strip.pdf")
+```
+
+```{r fig.width=8, fig.height=8}
+
+
+tbl <- read.table('Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.tsv',sep = "\t",header = T)
+tbl <- tbl[!duplicated(tbl$name),]
+
+
+tbl$sig_Ni_EZH2i_up <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > 1) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05)
+tbl$sig_Ni_EZH2i_down <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange < -1) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05)
+tbl$sig_Pr_EZH2i_up <- (tbl$RNASeq_DS_EZH2i_vs_Pr_log2FoldChange > 1) & (tbl$RNASeq_DS_EZH2i_vs_Pr_padj < 0.05)
+tbl$sig_Pr_EZH2i_down <- (tbl$RNASeq_DS_EZH2i_vs_Pr_log2FoldChange < -1) & (tbl$RNASeq_DS_EZH2i_vs_Pr_padj < 0.05)
+
+
+tbl$sig_summary <- "ns"
+tbl$sig_summary[tbl$sig_Ni_EZH2i_up] <- "Ni_EZH2i_up"
+tbl$sig_summary[tbl$sig_Ni_EZH2i_down] <- "Ni_EZH2i_down"
+tbl$sig_summary[tbl$sig_Pr_EZH2i_up] <- "Pr_EZH2i_up"
+tbl$sig_summary[tbl$sig_Pr_EZH2i_up] <- "Pr_EZH2i_down"
+tbl$sig_summary[tbl$sig_Ni_EZH2i_up & tbl$sig_Pr_EZH2i_up] <- "NP_EZH2i_up"
+tbl$sig_summary[tbl$sig_Ni_EZH2i_down & tbl$sig_Pr_EZH2i_down] <- "NP_EZH2i_down"
+
+lanner.set <- select(tbl[tbl$Lanner_germlayer != "None",], c("Lanner_germlayer","sig_summary"))
+mdf <- melt(table(lanner.set))
+
+mdf$sig_summary <- as.factor(mdf$sig_summary)
+
+ggbarplot(mdf,x="Lanner_germlayer",y="value",fill="sig_summary", palette= "Paired",orientation="horizontal")
+```
+```{r fig.width=6, fig.height=6}
+
+lanner.set <- select(tbl[tbl$Lanner_germlayer != "None",], "Lanner_germlayer","name", contains("mean_cov"))
+
+lanner.set$K4K27ratio_Ni_mean_cov <- log2(lanner.set$H3K4m3_Ni_mean_cov / lanner.set$H3K27m3_Ni_mean_cov)
+lanner.set$K4K27ratio_Pr_mean_cov <- log2(lanner.set$H3K4m3_Pr_mean_cov / lanner.set$H3K27m3_Pr_mean_cov)
+
+mdf <- melt(lanner.set)
+
+mdf <- cbind(mdf,colsplit(mdf$variable,"_",c("mark","state","treatment")))
+mdf$treatment <- gsub(mdf$treatment,pattern = "mean",replacement = "NT") 
+mdf$sample <- paste0(mdf$state," ",mdf$treatment)
+
+ggstripchart(mdf[mdf$mark=="H3K4m3",],x="sample",y="value",color="sample", facet.by = "Lanner_germlayer")
+```
+
+```{r fig.width=6, fig.height=6}
+
+tbl <- read.table('Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.tsv',sep = "\t",header = T)
+tbl <- tbl[!duplicated(tbl$name),]
+
+tbl$K4_EZH2i_up <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > 0) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05) & (tbl$H3K4m3_Ni_EZH2i_mean_cov/tbl$H3K4m3_Ni_mean_cov > 2)
+
+K4.set <- select(tbl[tbl$K4_EZH2i_up,], "Lanner_germlayer","name", contains("mean_cov"))
+
+mdf <- melt(K4.set)
+
+mdf <- cbind(mdf,colsplit(mdf$variable,"_",c("mark","state","treatment")))
+mdf$treatment <- gsub(mdf$treatment,pattern = "mean",replacement = "NT") 
+mdf$sample <- paste0(mdf$state," ",mdf$treatment)
+
+ggstripchart(mdf[mdf$mark=="H3K4m3",],x="sample",y="value",fill="sample", label="name",repel=T)
+```
+
+```{r fig.width=6, fig.height=6}
+
+lanner.set <- select(tbl[tbl$Lanner_germlayer != "None",], "Lanner_germlayer",contains("TPM") & contains("R1") )
+
+mdf <- melt(lanner.set)
+
+mdf <- cbind(mdf,colsplit(mdf$variable,"_",c("RNASeq","TPM","state","treatment")))
+mdf$treatment <- gsub(mdf$treatment,pattern = "mean",replacement = "NT") 
+mdf$sample <- paste0(mdf$state," ",mdf$treatment)
+mdf$lg2 <- log2(mdf$value)
+
+ggboxplot(mdf,x="sample",y="lg2",fill="sample", facet.by = "Lanner_germlayer")
+```
+
+```{r fig.width=8, fig.height=8}
+
+ggpaired(lanner.set,cond1="RNASeq_TPM_Ni_R1",cond2="RNASeq_TPM_Ni_EZH2i_R1",facet.by = "Lanner_germlayer",fill = "condition") + scale_y_continuous(trans='log2')
+ggsave("pairplot_RNASeq.pdf")
+```
+
+```{r fig.width=8, fig.height=8}
+
+ggpaired(lanner.set,cond1="RNASeq_TPM_Ni_R1",cond2="RNASeq_TPM_Ni_EZH2i_R1",facet.by = "Lanner_germlayer",fill = "condition") + scale_y_continuous(trans='log2')
+ggsave("pairplot_RNASeq.pdf")
+```
+
