@@ -43,8 +43,10 @@ from UCSC data tables exists, then corresponding isoform is used. If more than
 one identifier corresponds, the longest annotation is selected. For the rest,
 longest annotation is selected.
 
-* [**Master gene table**](../data/meta/Kumar_2020_master_gene_table.tsv).
+* [**Master gene table**](../data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.tsv).
 
+Bivalent genes are further annotated by H3K27m3 status, bivalency status and
+germlayer.
 
 ```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(wigglescout)
@@ -405,18 +407,96 @@ expr_results_all <- reduce(dfs, full_join, by = "name")
 
 ```
 
+# H3K27m3 groups
+
+```{r group-selection}
+select_groups <- function(df, pval_col, fc_col, basemean_col, quantile,
+                          p_cutoff = 0.05, fc_cutoff = 1, basemean_quantile = 0.1) {
+  # I don't want to discard the NAs as they will go to the unenriched group.
+  df[is.na(df[[pval_col]]), pval_col] <- 1
+  min_mean <- quantile(df[[basemean_col]], probs = basemean_quantile)
+
+  signif_up_tss <- df %>% filter(.data[[pval_col]] <= p_cutoff & .data[[fc_col]] > fc_cutoff & .data[[basemean_col]] > min_mean)
+  signif_down_tss <- df %>% filter(.data[[pval_col]] <= p_cutoff & .data[[fc_col]] < -fc_cutoff & .data[[basemean_col]] > min_mean)
+
+  not_signif <- df %>% filter(.data[[pval_col]] > p_cutoff)
+
+  # Top
+  mean_cutoff <- quantile(not_signif[[basemean_col]], quantile)
+  always_up <- not_signif %>% filter(.data[[basemean_col]] >= mean_cutoff)
+
+  rest <- not_signif %>% filter(.data[[basemean_col]] < mean_cutoff)
+
+  list(up = signif_up_tss,
+       down = signif_down_tss,
+       always_up = always_up,
+       not_enriched = rest)
+}
+
+select_groups_bivalent <- function(df, quantile = 0.8, p_cutoff = 0.05, fc_cutoff = 1, basemean_quantile = 0.1, min_k4 = 2) {
+  select_k4 <- function(df, min_k4) {
+    df %>% filter(.data[["H3K4m3_Pr_mean_cov"]] > min_k4 | .data[["H3K4m3_Ni_mean_cov"]] > min_k4)
+  }
+
+  groups <- select_groups(
+    df,
+    "H3K27m3_DS_Pr_vs_Ni_padj",
+    "H3K27m3_DS_Pr_vs_Ni_log2FoldChange",
+    "H3K27m3_DS_Pr_vs_Ni_baseMean",
+    quantile,
+    p_cutoff,
+    fc_cutoff,
+    basemean_quantile
+  )
+
+  lapply(groups, select_k4, min_k4 = min_k4)
+}
+
+k27_groups <- select_groups_bivalent(master_df, fc_cutoff = log2(1.5), p_cutoff = 0.05)
+
+# Annotate our groups
+master_df$k27_bivalency_grp <- "None"
+master_df[master_df$name %in% k27_groups$up$name, "k27_bivalency_grp"] <- "Pr_higher_than_Ni"
+master_df[master_df$name %in% k27_groups$down$name, "k27_bivalency_grp"] <- "Ni_higher_than_Pr"
+master_df[master_df$name %in% k27_groups$always_up$name, "k27_bivalency_grp"] <- "Always_up"
+master_df[master_df$name %in% k27_groups$not_enriched$name, "k27_bivalency_grp"] <- "K4_only"
+
+```
+
+# External annotations
+```{r gene-annotations}
+# Annotate Court
+genes_loci <- import("./data/bed/Kumar_2020/Kumar_2020_genes_hg38_UCSC.bed")
+genes_tss <- promoters(genes_loci, upstream = 2500, downstream = 2500)
+
+court_bivalent <- rtracklayer::import("./data/bed/Bivalent_Court2017.hg38.bed")
+court_biv_genes <- subsetByOverlaps(genes_tss, court_bivalent)
+
+master_df$court_bivalent <- "No"
+master_df[master_df$name %in% court_biv_genes$name, "court_bivalent"] <- "Yes"
+
+# Annotate Lanner
+marker_genes <- read.table("./data/other/Lanner/Fig1C.temp.lineagemarker.genes.highlight.csv", sep = "\t", header = T)
+colnames(marker_genes) <- c("Lanner_germlayer", "name", "anno")
+marker_genes$anno <- NULL
+
+master_df <- left_join(master_df, marker_genes, by = "name")
+master_df[is.na(master_df$Lanner_germlayer), "Lanner_germlayer"] <- "None"
+```
+
 # Final table
 
 ```{r final-table}
-final <- full_join(master_df, expr_results_all, by = "name")
+final <- left_join(master_df, expr_results_all, by = "name")
 # Add TSS broad coords
 loci <- data.frame(genes_tss_broad)
-final <- full_join(final, loci, by = "name")
+final <- left_join(final, loci, by = "name")
 
 columns <- colnames(final)
+first_cols <- c("name", "seqnames", "start", "end", "strand", "k27_bivalency_grp", "court_bivalent", "Lanner_germlayer")
 order <-
-  c(c("name", "seqnames", "start", "end", "strand"),
-    sort(columns[!(columns %in% c("name", "seqnames", "start", "end", "strand"))]))
+  c(first_cols,
+    sort(columns[!(columns %in% first_cols)]))
 
 filename <- "./data/meta/Kumar_2020_master_gene_table"
 if (params$shrink_rnaseq == TRUE) {
@@ -425,7 +505,7 @@ if (params$shrink_rnaseq == TRUE) {
 if (params$shrink_histones == TRUE) {
   filename <- paste(filename, "hist_shrunk", sep = "_")
 }
-filename <- paste0(filename, ".tsv")
+filename <- paste0(filename, "_annotated.tsv")
 
 write.table(
   format(final[, order], digits = 4),
