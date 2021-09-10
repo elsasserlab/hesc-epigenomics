@@ -1,5 +1,6 @@
 ---
 title: "H3K27me3 hESC Epigenomics data"
+author: "Carmen Navarro"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
@@ -8,7 +9,18 @@ editor_options:
   chunk_output_type: console
 ---
 
-Supplementary code and analysis for publication.
+Supplementary code for publication. A large proportion of the figures shown in
+this publication can be obtained directly from values in the main tables.
+
+
+Upon publication, a link to a comprehensive set of files, including bigWig
+files, will be provided.
+
+Main tables and analysis can be generated running this code. 
+
+See GitHub repository for more information about software requirements.
+This website was generated using [workflowr](https://jdblischak.github.io/workflowr/),
+an R package for science reproducibility.
 
 # Publication figures
 
@@ -31,19 +43,17 @@ activates trophectoderm and placental gene expression programs.
 generates the master gene table. 
 * [Master bins table](master_bins_table.html). Notebook with the code that 
 generates the master bins table.
+* [Replicates analysis](sup_01_replicates.Rmd). Notebook with some figures
+showing replicates data.
 
 # Main data files
-
-A large proportion of the figures shown in this publication can be drawn directly
-from values in the main tables:
 
 * [Gene table](../data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.zip).
  Contains histone mark values across 5kb regions around gene TSS in the hg38 genome, RNA-seq
  plus statistics on differentially decorated promoters and differentially expressed
- genes across conditions.
-differentially decorated regions.
-* [Bins table](../data/meta/Kumar_2020_master_bins_10kb_table_final_raw.zip). Gathers
-histone mark values across 10kb windows in the hg38 genome, plus statistics on
-differentially decorated regions across conditions.
+ genes across conditions. Extra annotations on Court 2017 bivalency, lineage
+ marker genes and H3K27m3 bivalency group are added.
+* Bins table. Gathers histone mark values across 10kb windows in the hg38 genome,
+plus statistics on differentially decorated regions across conditions.
 
 
