@@ -1,7 +1,5 @@
 ---
-title: "X-chromosome analysis"
-author: "Carmen Navarro"
-date: "2021-07-06"
+title: "Figure 2. X chromosome analysis."
 output:
   workflowr::wflow_html:
     code_folding: hide
@@ -30,6 +28,8 @@ library(scales)
 source("./code/globals.R")
 source("./code/embed_functions.R")
 
+dir.create("./figures_data")
+dir.create("./output")
 
 my_svg <- function(file, width, height) {
   library(svglite)
@@ -141,13 +141,13 @@ get_long_format_heatmap_data <- function(df, mark) {
 Read the main tables:
 
 ```{r table-data-input}
-genes <- read.table("./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk.tsv",
-                    header = T, sep = "\t",
-                    colClasses = c(rep("character", 5), rep("numeric", 86)))
+genes <- read.table("./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.tsv",
+  header = T, sep = "\t",
+  colClasses = c(rep("character", 5), rep("factor", 3), rep("numeric", 86)))
 
-bins <- read.table("./data/meta/Kumar_2020_master_bins_5kb_table_raw.tsv",
-                   header = T, sep = "\t",
-                   colClasses = c(rep("character", 4), rep("numeric", 112)))
+bins <- read.table("./data/meta/Kumar_2020_master_bins_10kb_table_final_raw.tsv",
+  header = T, sep = "\t",
+  colClasses = c(rep("character", 5), rep("numeric", 112)))
 
 ```
 
@@ -226,7 +226,7 @@ ggplot(to_plot_melt, aes(color = ip, x = condition, y = value, label = seqnames)
                "H3K27m3" = gl_mark_colors$H3K27m3,
                "H3K4m3" = gl_mark_colors$H3K4m3)) +
   labs(y="FPGC", title =
-         "Mean 5kb bin RPGC per chromosome and histone mark",
+         "Mean 10kb bin RPGC per chromosome and histone mark",
        subtitle = "Chromosome X in black")
 
 ```
@@ -506,6 +506,7 @@ ggplot(genes, aes(x=RNASeq_DS_Pr_vs_Ni_baseMean, y=RNASeq_DS_Pr_vs_Ni_log2FoldCh
 ggplot(genes, aes(x=RNASeq_DS_EZH2i_vs_Ni_baseMean, y=RNASeq_DS_EZH2i_vs_Ni_log2FoldChange)) +
   rasterise(geom_point(size = 0.5, alpha = 0.8, color = "gray"), dpi = 300) +
   rasterise(geom_point(data = genes %>% filter(seqnames == "chrX"), color = "black", size = 1.6), dpi = 300) +
+  rasterise(geom_point(data = genes %>% filter(seqnames == "chrX" & RNASeq_DS_EZH2i_vs_Ni_padj < 0.05), color = "red", size = 1.6), dpi = 300) +
   theme_default(base_size = 12) +
   labs(x = "Base mean",
        y = "Log2 FC",
@@ -573,15 +574,6 @@ kp <-
 
 kpPlotDensity(
   kp,
-  rtracklayer::import(bwfiles$k4[[1]]),
-  data.panel = 1,
-  col = "#e76e3b",
-  chromosomes = c("chr7", "chrX"),
-  window.size = 500000
-)
-
-kpPlotDensity(
-  kp,
   rtracklayer::import(bwfiles$k4[[3]]),
   data.panel = 2,
   col =
@@ -589,6 +581,16 @@ kpPlotDensity(
   chromosomes = c("chr7", "chrX"),
   window.size = 500000
 )
+
+kpPlotDensity(
+  kp,
+  rtracklayer::import(bwfiles$k4[[1]]),
+  data.panel = 1,
+  col = "#e76e3b",
+  chromosomes = c("chr7", "chrX"),
+  window.size = 500000
+)
+
 ```
 
 
