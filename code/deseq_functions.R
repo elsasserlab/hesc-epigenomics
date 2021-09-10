@@ -1,15 +1,9 @@
-merge_granges_plus_name <- function(granges_c1, granges_c2) {
+merge_equal_granges_plus_name <- function(granges_c1, granges_c2) {
+  df_1 <- data.frame(sort(granges_c1))
+  df_2 <- data.frame(sort(granges_c2))
+  df_2 <- df_2[, c(6:ncol(df_2))]
 
-  df_1 <- data.frame(granges_c1)
-  df_2 <- data.frame(granges_c2)
-
-  merged_df <- dplyr::full_join(
-    df_1, df_2,
-    by = c("seqnames", "start", "end", "width", "strand")
-  ) %>% dplyr::select(!dplyr::starts_with("name"))
-
-  merged_df
-
+  cbind(df_1, df_2) %>% dplyr::select(!dplyr::starts_with("name") & !dplyr::contains("gene_id"))
 }
 
 get_names_values <- function(granges) {
@@ -20,7 +14,7 @@ get_names_values <- function(granges) {
   names_values
 }
 
-#' Get DESeq2 results for a pair of GRanges lists.
+#' Get DESeq2 results for a pair of GRanges
 #'
 #' Loci in condition 1 and 2 must match. If a name file exists, it will be kept.
 #' This also needs to match. Names from condition 1 are kept.
@@ -52,15 +46,16 @@ bw_granges_diff_analysis <- function(granges_c1,
     length(setdiff(names_list, skip_fields))
   }
 
-  cts_df <- merge_granges_plus_name(granges_c1, granges_c2)
+  cts_df <- merge_equal_granges_plus_name(granges_c1, granges_c2)
   names_values <- get_names_values(granges_c1)
+
   if (! is.null(names_values)) {
     rownames(cts_df) <- names_values
   }
+
   # Needs to drop non-complete cases and match rows
   complete <- complete.cases(cts_df)
   cts_df <- cts_df[complete, ]
-
 
   values_df <- cts_df[, 6:ncol(cts_df)] %>% dplyr::select(where(is.numeric))
 

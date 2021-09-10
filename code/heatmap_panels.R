@@ -3,23 +3,6 @@ library(wigglescout)
 library(rtracklayer)
 library(cowplot)
 library(ggplot2)
-#
-# params <- list(datadir = "~/work/publications/hesc-epigenomics/data/")
-# bed1 <- "~/work/publications/hesc-epigenomics/output/Kumar_2020/tss_2kb_up_k27m3_primed.bed"
-# bed2 <- "~/work/publications/hesc-epigenomics/output/Kumar_2020/tss_2kb_down_k27m3_primed.bed"
-#
-# genes_signif_up <- import("~/work/publications/hesc-epigenomics/output/Kumar_2020/tss_2kb_up_k27m3_primed.bed")
-# genes_signif_down <- import("~/work/publications/hesc-epigenomics/output/Kumar_2020/tss_2kb_down_k27m3_primed.bed")
-#
-#
-# bwdir <- file.path(params$datadir, "bw/Kumar_2020")
-# bwfiles <- list(k4 = list.files(bwdir, pattern = "H3K4m3.*pooled.hg38.scaled.*", full.names = T),
-#                 k27 = list.files(bwdir, pattern = "H3K27m3.*pooled.hg38.scaled.*", full.names = T),
-#                 ub = list.files(bwdir, pattern = "H2Aub.*pooled.hg38.scaled.*", full.names = T),
-#                 input = list.files(bwdir, pattern = "IN.*pooled.hg38.*", full.names = T))
-#
-#
-# bwlist <- bwfiles$k4
 
 plot_bw_profile_row <- function(bwfiles, loci, bwnames, locinames, global_scale = FALSE, zmin = NULL, zmax = NULL, ...) {
   plot_list <- list()

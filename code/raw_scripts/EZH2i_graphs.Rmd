@@ -13,7 +13,7 @@ library(ggrepel)
 ```
 
 ```{r fig.width=8, fig.height=5}
-tbl <- read.table('Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.tsv',sep = "\t",header = T)
+tbl <- read.table('./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.tsv',sep = "\t",header = T)
 tbl <- tbl[!duplicated(tbl$name),]
 
 tbl$sig_Ni_EZH2i_up <- (tbl$RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > 1) & (tbl$RNASeq_DS_EZH2i_vs_Ni_padj < 0.05)

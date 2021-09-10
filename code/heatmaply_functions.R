@@ -9,7 +9,8 @@ combined_heatmap <-
            cluster_rows = T,
            rnaseq_limits = NULL,
            k27m3_limits = NULL,
-           k4m3_limits = NULL) {
+           k4m3_limits = NULL,
+           ub_limits = NULL) {
 
     # Fixes the order in which I want the RNAseq to show
     cols <- c("name",
@@ -50,7 +51,7 @@ combined_heatmap <-
 
     # Make the RNA seq heatmap
     h <- heatmaply(log2(subgroup+1), Colv = F, Rowv = cluster_rows,
-                   colorbar_xanchor='left', colorbar_yanchor='top', colorbar_xpos=1.1, colorbar_ypos=0.8, plot_method = "plotly",
+                   colorbar_xanchor='left', colorbar_yanchor='top', colorbar_xpos=1.1, colorbar_ypos=0.9, plot_method = "plotly",
                    fontsize_row = row_font, fontsize_col = col_font, limits = rnaseq_limits,
                    key.title = "log2(TPM + 1)")
     # Get the order
@@ -76,7 +77,7 @@ combined_heatmap <-
     k27 <- heatmaply(k27_subgroup[rev(genes_ordered), ], Rowv = F, Colv = F,
                      colors = k27_colors,
                      fontsize_row = row_font, fontsize_col = col_font,
-                     colorbar_xanchor='left',colorbar_yanchor='top', colorbar_xpos=1.1, colorbar_ypos=0.4, plot_method = "plotly",
+                     colorbar_xanchor='left',colorbar_yanchor='top', colorbar_xpos=1.1, colorbar_ypos=0.6, plot_method = "plotly",
                      key.title = "H3K27m3", limits = k27m3_limits)
 
     k4_cols <- c("name",
@@ -101,9 +102,38 @@ combined_heatmap <-
     k4 <- heatmaply(k4_subgroup[rev(genes_ordered), ], Rowv = F, Colv = F,
                     colors = k4_colors,
                     fontsize_row = row_font, fontsize_col = col_font,
-                    colorbar_xanchor='left',colorbar_yanchor='top', colorbar_xpos=1.1, colorbar_ypos=0, colorbar_thickness = 30, plot_method = "plotly",
+                    colorbar_xanchor='left',colorbar_yanchor='top', colorbar_xpos=1.1, colorbar_ypos=0.3, colorbar_thickness = 30, plot_method = "plotly",
                     key.title = "H3K4m3", limits = k4m3_limits)
 
-    fig <- subplot(k4, k27, h, widths = c(0.17, 0.2, 0.63), shareY = T)
+
+    ub_cols <- c("name",
+                 "H2Aub_Ni_mean_cov",
+                 "H2Aub_Ni_EZH2i_mean_cov",
+                 "H2Aub_Pr_mean_cov",
+                 "H2Aub_Pr_EZH2i_mean_cov")
+
+    ub_colors <- colorRampPalette(c("white", "#8140c1"))(n = 1000)
+
+    ub_subgroup <- values[indices, ub_cols]
+
+    rownames(ub_subgroup) <- ub_subgroup$name
+    ub_subgroup$name <- NULL
+    colnames(ub_subgroup) <- c("H2Aub_Ni" ,
+                               "H2Aub_Ni_EZH2i",
+                               "H2Aub_Pr",
+                               "H2Aub_Pr_EZH2i")
+
+    ub_labels <- ub_subgroup[rev(genes_ordered), ]
+
+
+    ub <- heatmaply(ub_subgroup[rev(genes_ordered), ], Rowv = F, Colv = F,
+                    colors = ub_colors,
+                    fontsize_row = row_font, fontsize_col = col_font,
+                    colorbar_xanchor='left',colorbar_yanchor='top', colorbar_xpos=1.1, colorbar_ypos=0, colorbar_thickness = 30, plot_method = "plotly",
+                    key.title = "H2Aub", limits = ub_limits)
+
+
+
+    fig <- subplot(ub, k4, k27, h, widths = c(0.17, 0.17, 0.17, 0.49), shareY = T)
     fig
   }
