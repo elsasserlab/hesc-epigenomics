@@ -1,7 +1,5 @@
 ---
 title: "Figure 1. Global histone levels."
-author: "Carmen Navarro"
-date: "Updated: 2021-07-01"
 output:
   workflowr::wflow_html:
     code_folding: show
@@ -22,7 +20,9 @@ library(ggplot2)
 library(reshape2)
 library(dplyr)
 library(ggpubr)
+library(ggrastr)
 library(knitr)
+library(rtracklayer)
 
 my_svg <- function(file, width, height) {
   library(svglite)
@@ -31,6 +31,10 @@ my_svg <- function(file, width, height) {
 
 knitr::opts_chunk$set(dev = c('png', 'my_svg'), fig.ext = c("png", "svg"), fig.width = 8, fig.height = 8)
 source("./code/embed_functions.R")
+source("./code/globals.R")
+
+dir.create("./figures_data")
+dir.create("./output")
 ```
 
 ## Helper functions
@@ -210,3 +214,76 @@ plot_bw_loci_summary_heatmap(bwfiles, chromhmm, labels = labels, remove_top=0.00
 ```
 
 You can download data values here: `r embed_last_plot_data(name="H2Aub_chromhmm.tsv")`.
+
+# Genome-wide 10kb bins
+
+## H3K27m3 Naïve vs Primed
+
+```{r h3k27m3-ni-vs-pr-10kb-bins, warning = F, fig.width = 5, fig.height = 5}
+bins_table <- "./data/meta/Kumar_2020_master_bins_10kb_table_final_raw.tsv"
+bins <- read.table(bins_table, header = T, sep = "\t")
+points_color <- "#112233"
+points_shape <- "."
+raster_dpi <- 300
+
+ggplot(bins, aes(x=log2(H3K27m3_Ni_mean_cov), y=log2(H3K27m3_Pr_mean_cov))) +
+    rasterise(geom_point(size = 1, alpha = 0.2, color = points_color, shape = points_shape), dpi = raster_dpi) +
+    geom_density2d(binwidth = 0.1) +
+    geom_abline(slope = 1, linetype = "dashed") +
+    theme_default() +
+    labs(x = "Log2 H3K27m3 Naïve - FPGC",
+         y = "Log2 H3K27m3 Primed - FPGC", title = "H3K27m3", subtitle = "10kb bins") + 
+    coord_cartesian(xlim = c(-8, 8), ylim = c(-8, 8))
+```
+
+## H2AUb Naïve vs Primed
+
+```{r h2aub-ni-vs-pr-10kb-bins, warning = F, fig.width = 5, fig.height = 5}
+ggplot(bins, aes(x=log2(H2Aub_Ni_mean_cov), y=log2(H2Aub_Pr_mean_cov))) +
+    rasterise(geom_point(size = 1, alpha = 0.2, color = "#2f1547", shape = points_shape), dpi = raster_dpi) +
+    geom_abline(slope = 1, linetype = "dashed") +
+    geom_density2d(binwidth = 0.1) +
+    theme_default() +
+    labs(x = "Log2 H2Aub Naïve - FPGC",
+         y = "Log2 H2Aub Primed - FPGC", title = "H2Aub", subtitle = "10kb bins") + 
+    coord_cartesian(xlim = c(-8, 8), ylim = c(-8, 8))
+```
+
+## H3K4m3 Naïve vs Primed
+
+```{r h3k4m3-ni-vs-pr-10kb-bins, warning = F, fig.width = 5, fig.height = 5}
+ggplot(bins, aes(x=log2(H3K4m3_Ni_mean_cov), y=log2(H3K4m3_Pr_mean_cov))) +
+    rasterise(geom_point(size = 1, alpha = 0.2, color = "#614925", shape = points_shape), dpi = raster_dpi) +
+    geom_abline(slope = 1, linetype = "dashed") +
+    geom_density2d(binwidth = 0.1) +
+    theme_default() +
+    labs(x = "Log2 H3K4m3 Naïve - FPGC",
+         y = "Log2 H3K4m3 Primed - FPGC", title = "H3K4m3", subtitle = "10kb bins") + 
+    coord_cartesian(xlim = c(-8, 8), ylim = c(-8, 8))
+```
+
+## H2Aub EZH2i vs Naïve
+
+```{r h2aub-ezh2i-vs-ni-10kb-bins, warning = F, fig.width = 5, fig.height = 5}
+genes_file <- "./data/bed/Kumar_2020/Kumar_2020_genes_hg38_UCSC.bed"
+court_file <- "./data/bed/Bivalent_Court2017.hg38.bed"
+genes_tss <- promoters(import(genes_file), upstream = 2500, downstream = 2500)
+court_peaks <- import(court_file)
+court_tss <- subsetByOverlaps(genes_tss, court_peaks)
+bins_gr <- makeGRangesFromDataFrame(bins, keep.extra.columns = T)
+bivalent_bins <- subsetByOverlaps(bins_gr, court_tss)
+bivalent_df <- data.frame(bivalent_bins)
+signif_df <- bins %>% filter(as.numeric(H2Aub_DS_EZH2i_vs_Ni_padj) < 0.05)
+
+ggplot(bins, aes(x=log2(H2Aub_Ni_mean_cov), y=log2(H2Aub_Ni_EZH2i_mean_cov))) +
+    rasterise(geom_point(size = 1, alpha = 0.2, color = "#2f1547", shape = points_shape), dpi = raster_dpi) +
+    rasterise(geom_point(data=signif_df, size = 1.2, alpha = 0.8, color = "#d4797f", shape = points_shape), dpi = raster_dpi) +
+    rasterise(geom_point(data=bivalent_df, size = 1.2, alpha = 0.8, color = "#4dbfb4", shape = points_shape), dpi = raster_dpi) +
+    geom_abline(slope = 1, linetype = "dashed") +
+    theme_default() +
+    labs(x = "Log2 H2Aub Naïve - FPGC",
+         y = "Log2 H2Aub Naïve + EZH2i - FPGC", title = "H2Aub", subtitle = "10kb bins") + 
+    coord_cartesian(xlim = c(-8, 8), ylim = c(-8, 8))
+```
+
+
