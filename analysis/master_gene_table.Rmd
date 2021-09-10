@@ -476,7 +476,7 @@ master_df$court_bivalent <- "No"
 master_df[master_df$name %in% court_biv_genes$name, "court_bivalent"] <- "Yes"
 
 # Annotate Lanner
-marker_genes <- read.table("./data/other/Lanner/Fig1C.temp.lineagemarker.genes.highlight.csv", sep = "\t", header = T)
+marker_genes <- read.table("./data/Lanner_lineagemarker_genes.csv", sep = "\t", header = T)
 colnames(marker_genes) <- c("Lanner_germlayer", "name", "anno")
 marker_genes$anno <- NULL
 
@@ -498,14 +498,7 @@ order <-
   c(first_cols,
     sort(columns[!(columns %in% first_cols)]))
 
-filename <- "./data/meta/Kumar_2020_master_gene_table"
-if (params$shrink_rnaseq == TRUE) {
-  filename <- paste(filename, "rnaseq_shrunk", sep = "_")
-}
-if (params$shrink_histones == TRUE) {
-  filename <- paste(filename, "hist_shrunk", sep = "_")
-}
-filename <- paste0(filename, "_annotated.tsv")
+filename <- "./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.tsv"
 
 write.table(
   format(final[, order], digits = 4),
