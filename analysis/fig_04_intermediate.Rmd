@@ -1,7 +1,5 @@
 ---
-title: "Figures 4 and 5"
-author: "Carmen Navarro"
-date: "2021-07-01"
+title: "Figures 4 and 5. Marker genes expression analyses."
 output: workflowr::wflow_html
 editor_options:
   chunk_output_type: console
@@ -19,6 +17,7 @@ library(tidyverse)
 library(ggrastr)
 library(DESeq2)
 library(cowplot)
+library(wigglescout)
 
 source("./code/globals.R")
 source("./code/embed_functions.R")
@@ -28,15 +27,72 @@ knitr::opts_chunk$set(dev = c('png', 'my_svg'), fig.ext = c("png", "svg"), fig.w
 
 genes <-
   read.table(
-    "./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_plus_annotations.tsv",
+    "./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.tsv",
     header = T,
     sep = "\t",
-    colClasses = c(rep("character", 5), rep("numeric", 86), rep("factor", 4))
+    colClasses = c(rep("character", 2), rep("numeric", 2), rep("factor", 4), rep("numeric", 86))
   )
 
+dir.create("./figures_data")
+dir.create("./output")
+
+p_cutoff <- 0.05
+fc_cutoff <- 1
 ```
 
 # Figure 4
+
+## RNA-seq EZH2i Naive and Primed
+
+```{r barplot-rnaseq-ezh2i-all, fig.height = 3, fig.width = 6}
+t <- rbind(genes %>% mutate(
+   ezh2i = factor(case_when(
+     RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > fc_cutoff ~ "EZH2i up",
+     RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange < -fc_cutoff ~ "EZH2i down",
+     TRUE ~ "unchanged")
+   )) %>% dplyr::count(ezh2i) %>% mutate(type = "Naive"),
+  genes %>% mutate(
+     ezh2i = factor(case_when(
+       RNASeq_DS_EZH2i_vs_Pr_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Pr_log2FoldChange > fc_cutoff ~ "EZH2i up",
+       RNASeq_DS_EZH2i_vs_Pr_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Pr_log2FoldChange < -fc_cutoff ~ "EZH2i down",
+       TRUE ~ "unchanged")
+     )) %>% dplyr::count(ezh2i) %>% mutate(type = "Primed"))
+
+t$ezh2i <- factor(t$ezh2i, levels = c("EZH2i up", "unchanged", "EZH2i down"))
+t$type <- factor(t$type, levels = c("Primed", "Naive"))
+
+ggplot(t, aes(x=type, y=n, fill=ezh2i)) + 
+  geom_bar(stat="identity", position = "fill", color = "black") +
+  theme_default() +
+  scale_fill_manual(values = c("#ff9027", "#eeeeee", "#00b9f2" )) +
+  coord_flip() + labs(y = "Fraction of TSS", x = "All genes", title = "RNA-Seq: EZH2i in naive and primed")
+
+```
+
+```{r barplot-rnaseq-ezh2i-bivalent, fig.height = 3, fig.width = 6}
+t <- rbind(genes %>%  filter(court_bivalent == "Yes") %>% mutate(
+   ezh2i = factor(case_when(
+     RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > fc_cutoff ~ "EZH2i up",
+     RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange < -fc_cutoff ~ "EZH2i down",
+     TRUE ~ "unchanged")
+   )) %>% dplyr::count(ezh2i) %>% mutate(type = "Naive"),
+  genes %>% filter(court_bivalent == "Yes") %>% mutate(
+     ezh2i = factor(case_when(
+       RNASeq_DS_EZH2i_vs_Pr_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Pr_log2FoldChange > fc_cutoff ~ "EZH2i up",
+       RNASeq_DS_EZH2i_vs_Pr_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Pr_log2FoldChange < -fc_cutoff ~ "EZH2i down",
+       TRUE ~ "unchanged")
+     )) %>% dplyr::count(ezh2i) %>% mutate(type = "Primed"))
+
+t$ezh2i <- factor(t$ezh2i, levels = c("EZH2i up", "unchanged", "EZH2i down"))
+t$type <- factor(t$type, levels = c("Primed", "Naive"))
+
+ggplot(t, aes(x=type, y=n, fill=ezh2i)) + 
+  geom_bar(stat="identity", position = "fill", color = "black") +
+  theme_default() +
+  scale_fill_manual(values = c("#ff9027", "#eeeeee", "#00b9f2" )) +
+  coord_flip() + labs(y = "Fraction of TSS", x = "Bivalent", title = "RNA-Seq: EZH2i in naive and primed")
+```
+
 
 ## PCA analysis
 
@@ -87,26 +143,82 @@ plotPCA(vst, ntop=Inf, returnData = F) +
   theme_default() + 
   labs(title = "RNA-Seq PCA")
 
-df <-plotPCA(vst, ntop=Inf, returnData = T)
+df <- plotPCA(vst, ntop=Inf, returnData = T)
 ```
 
 Download PCA data `r embed_df(df, name="pca_values.tsv", text = "here")`.
 
 
+## Venn diagram counts
+
+```{r groups-counts}
+ni_ezh2i_up_rnaseq <- genes %>% filter(RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > fc_cutoff)
+pr_ezh2i_up_rnaseq <- genes %>% filter(RNASeq_DS_EZH2i_vs_Pr_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Pr_log2FoldChange > fc_cutoff)
+
+genes$class <- "None"
+
+common <- intersect(ni_ezh2i_up_rnaseq$name, pr_ezh2i_up_rnaseq$name)
+genes[genes$name %in% common, "class"] <- "Both_EZH2i_up"
+
+genes[genes$name %in% setdiff(ni_ezh2i_up_rnaseq$name, common), "class"] <- "Ni_EZH2i_up"
+genes[genes$name %in% setdiff(pr_ezh2i_up_rnaseq$name, common), "class"] <- "Pr_EZH2i_up"
+
+
+class_tab <- table(dplyr::select(genes, "k27_bivalency_grp", "class"))
+
+colSums(class_tab)
+
+mean_cutoff_pr <- quantile(genes[["H3K27m3_Pr_mean_cov"]], 0.8)
+mean_cutoff_ni <- quantile(genes[["H3K27m3_Ni_mean_cov"]], 0.8)
+
+# genes$has_ni_k27 <- "No"
+# genes[genes$H3K27m3_Ni_mean_cov > mean_cutoff_ni, "has_ni_k27"] <- "Yes"
+# 
+# genes$has_pr_k27 <- "No"
+# genes[genes$H3K27m3_Pr_mean_cov > mean_cutoff_pr, "has_pr_k27"] <- "Yes"
+
+
+genes$has_ni_k27 <- "No_K27_Ni"
+genes[genes$H3K27m3_Ni_mean_cov > mean_cutoff_ni, "has_ni_k27"] <- "Yes_K27_Ni"
+
+genes$has_pr_k27 <- "No_K27_Pr"
+genes[genes$H3K27m3_Pr_mean_cov > mean_cutoff_pr, "has_pr_k27"] <- "Yes_K27_Pr"
+
+dplyr::count(genes, has_ni_k27, has_pr_k27, class) %>% arrange(class)
+```
+
 ## Expression of intermediate population genes 
 
 ### Top 50 up-regulated
 ```{r messmer-heatmap-up-50, message=F, warning=F}
-genes_list <- read.table("./data/other/Messmer_2019/Messmer_intermediate_down_top50.txt",
+genes_list <- read.table("./data/Messmer_intermediate_down_top50.txt",
                          header = F)
-combined_heatmap(genes, genes_list[,1])
+fig <- combined_heatmap(
+  genes,
+  genes_list[, 1],
+  rnaseq_limits = c(0, 12.5),
+  k4m3_limits = c(0, 80),
+  k27m3_limits = c(0, 11),
+  ub_limits = c(0, 11)
+)
+fig
+orca(fig, "./output/fig5_messmer_intermediate_top_50_up_global_scale.svg", width = 9, height = 9, more_args = c('--disable-gpu'))
 ```
 
 ### Top 50 down-regulated
 ```{r messmer-heatmap-down-50, message=F, warning=F}
-genes_list <- read.table("./data/other/Messmer_2019/Messmer_intermediate_up_top50.txt",
+genes_list <- read.table("./data/Messmer_intermediate_up_top50.txt",
                          header = F)
-combined_heatmap(genes, genes_list[,1])
+fig <- combined_heatmap(
+  genes,
+  genes_list[, 1],
+  rnaseq_limits = c(0, 12.5),
+  k4m3_limits = c(0, 80),
+  k27m3_limits = c(0, 11),
+  ub_limits = c(0, 11)
+)
+fig
+orca(fig, "./output/fig4_messmer_intermediate_top_50_down_global_scale.svg", width = 9, height = 9, more_args = c('--disable-gpu'))
 ```
 
 # Figure 5
@@ -118,6 +230,7 @@ genes_list <-
   c("EPAS1",
     "MSX2",
     "GATA3",
+    "NR2F2",
     "CLDN4",
     "GATA2",
     "IGF2",
@@ -133,6 +246,12 @@ genes_list <-
     "ENPEP",
     "TP63"
 )
-combined_heatmap(genes, genes_list, cluster_rows = F)
+fig <- combined_heatmap(genes, genes_list, cluster_rows = F,
+  rnaseq_limits = c(0, 12.5),
+  k4m3_limits = c(0, 80),
+  k27m3_limits = c(0, 12),
+  ub_limits = c(0, 12))
+fig
+orca(fig, "./output/fig5_heatmap_lineage_specific_global_scale_new.svg", width = 9, height = 9, more_args = c('--disable-gpu'))
 ```
 
