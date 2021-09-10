@@ -38,16 +38,8 @@ source("./code/globals.R")
 knitr::opts_chunk$set(dev = c('png'))
 knitr::opts_chunk$set(class.source='fold-show')
 
-table_name <- "Kumar_2020_master_bins_10kb_table_final"
-
-if (params$shrink) {
-  table_name <- paste(table_name, "_shrunk", ".tsv", sep = "")
-} else {
-  table_name <- paste(table_name, "_raw", ".tsv", sep = "")
-}
-
+table_name <- "Kumar_2020_master_bins_10kb_table_final_raw.tsv"
 table_file <- file.path("./data/meta", table_name)
-
 table_path_html <- file.path("../data/meta", table_name)
 ```
 
@@ -88,7 +80,6 @@ make_diff_df <- function(diff_lfc, loci, prefix) {
   df_diff <- data.frame(diff_lfc)
   # DS stands for DeSeq
   colnames(df_diff) <- paste(prefix, colnames(df_diff), sep = "_")
-  # df_diff$name <- rownames(df_diff)
 
   cbind(data.frame(loci)[, c("seqnames", "start", "end", "strand")], df_diff)
 }
@@ -139,7 +130,6 @@ get_bw_files <- function(pattern) {
   list.files(bwdir, pattern = pattern, full.names = T)
 }
 
-bivalent_gr <- import(file.path(params$datadir, "bed/Bivalent_Court2017.hg38.bed"))
 bins_gr <- build_bins(bin_size = params$bin_size, genome = "hg38")
 
 # Subsample for testing
