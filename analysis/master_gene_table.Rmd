@@ -465,7 +465,6 @@ master_df[master_df$name %in% k27_groups$not_enriched$name, "k27_bivalency_grp"]
 
 # External annotations
 ```{r gene-annotations}
-# Annotate Court
 genes_loci <- import("./data/bed/Kumar_2020/Kumar_2020_genes_hg38_UCSC.bed")
 genes_tss <- promoters(genes_loci, upstream = 2500, downstream = 2500)
 
@@ -474,14 +473,6 @@ court_biv_genes <- subsetByOverlaps(genes_tss, court_bivalent)
 
 master_df$court_bivalent <- "No"
 master_df[master_df$name %in% court_biv_genes$name, "court_bivalent"] <- "Yes"
-
-# Annotate Lanner
-marker_genes <- read.table("./data/Lanner_lineagemarker_genes.csv", sep = "\t", header = T)
-colnames(marker_genes) <- c("Lanner_germlayer", "name", "anno")
-marker_genes$anno <- NULL
-
-master_df <- left_join(master_df, marker_genes, by = "name")
-master_df[is.na(master_df$Lanner_germlayer), "Lanner_germlayer"] <- "None"
 ```
 
 # Final table
@@ -493,7 +484,7 @@ loci <- data.frame(genes_tss_broad)
 final <- left_join(final, loci, by = "name")
 
 columns <- colnames(final)
-first_cols <- c("name", "seqnames", "start", "end", "strand", "k27_bivalency_grp", "court_bivalent", "Lanner_germlayer")
+first_cols <- c("name", "seqnames", "start", "end", "strand", "k27_bivalency_grp", "court_bivalent")
 order <-
   c(first_cols,
     sort(columns[!(columns %in% first_cols)]))
