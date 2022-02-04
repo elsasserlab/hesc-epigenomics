@@ -1,0 +1,356 @@
+---
+title: "Figure 4. Trophectoderm and placental-specific genes"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+params:
+  datadir: "./data/microscopy"
+---
+
+# Summary
+
+This is the supplementary notebook for figure 4.
+
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+library(rtracklayer)
+library(tidyverse)
+library(ggrastr)
+library(DESeq2)
+library(cowplot)
+library(wigglescout)
+library(readxl)
+library(ggplot2)
+library(ggpubr)
+library(gtools)
+
+source("./code/globals.R")
+source("./code/embed_functions.R")
+source("./code/heatmaply_functions.R")
+
+knitr::opts_chunk$set(dev = c('png', 'my_svg'), fig.ext = c("png", "svg"), fig.width = 6, fig.height = 6)
+genes <-
+  read.table(
+    "./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.tsv",
+    header = T,
+    sep = "\t",
+    colClasses = c(rep("character", 2), rep("numeric", 2), rep("factor", 4), rep("numeric", 86))
+  )
+
+dir.create("./figures_data")
+dir.create("./output")
+
+```
+
+# Expression of trophectoderm and placental-specific genes
+
+```{r lineage-markers-heatmap, message = F, warning = F}
+genes_list <- c("EPAS1", "MSX2", "GATA3", "NR2F2", "CLDN4", "GATA2", "IGF2",
+    "CDX2", "SLC40A1", "KRT7", "FRZB", "CGA", "ERP27", "KRT23", "CGB5", "VGLL1",
+    "ENPEP", "TP63" )
+
+fig <- combined_heatmap(genes, genes_list, cluster_rows = F,
+  rnaseq_limits = c(0, 12.5),
+  k4m3_limits = c(0, 80),
+  k27m3_limits = c(0, 12),
+  ub_limits = c(0, 12))
+
+fig
+```
+
+# Image analysis
+
+## 2 Inhibitors comparison
+
+Channels:
+-   c1: NANOG
+-   c2: K27m3
+-   c3: GATA3
+-   c4: DAPI
+
+`Metadata_Well`:
+
+-   A05: Wildtype
+-   B05: EZH2i_d7
+-   C05: EEDi_d7
+
+`Metadata_Site` represents a cluster of cells, where each cell has a number
+assigned `ObjectNumber`.
+
+```{r warning=F, message=F}
+library(tidyverse)
+library(ggplot2)
+library(ggpubr)
+
+source("./code/globals.R")
+
+knitr::opts_chunk$set(error=FALSE, warning=FALSE, message=FALSE)
+knitr::opts_chunk$set(dev = c('png', 'my_svg'), fig.ext = c("png", "svg"), fig.width = 8, fig.height = 8)
+old <- theme_set(theme_classic())
+
+expr <- read.table(file.path(params$datadir, "INH_well5_Nuclei.txt"), header = TRUE)
+
+expr$Metadata_Well <-
+  factor(
+    expr$Metadata_Well,
+    levels = c("A05", "B05", "C05"),
+    labels = c("WT", "EZH2i", "EEDi")
+  )
+
+well <- filter(expr, expr$Intensity_MeanIntensity_c4_raw < 0.025 
+               & Intensity_IntegratedIntensity_c4_raw < 30)
+```
+
+## H3K27m3 vs GATA3
+
+```{r fig5c-channels-boxplot, fig.width = 7, fig.height = 3.5}
+df <-
+  well %>% dplyr::select(
+    Metadata_Well,
+    ObjectNumber,
+    Metadata_Site,
+    Intensity_MeanIntensity_c1_raw,
+    Intensity_MeanIntensity_c2_raw,
+    Intensity_MeanIntensity_c3_raw,
+    Intensity_MeanIntensity_c4_raw
+  ) %>%
+  rename(
+    NANOG = Intensity_MeanIntensity_c1_raw,
+    H3K27m3 = Intensity_MeanIntensity_c2_raw,
+    GATA3 = Intensity_MeanIntensity_c3_raw,
+    DAPI = Intensity_MeanIntensity_c4_raw,
+    Well = Metadata_Well,
+    Cell = ObjectNumber,
+    Site = Metadata_Site
+  )
+
+df_long <- df %>% pivot_longer(!c(Well, Cell, Site), names_to = "channel", values_to = "value")
+
+my_comparisons <- list(c("EZH2i", "WT"), c("EEDi", "WT"))
+
+ggplot(df_long %>% filter(channel != "DAPI"), aes(y=value, x=Well, color=Well)) + 
+  geom_boxplot() + 
+  facet_wrap(. ~ channel, scales = "free_y", nrow = 1) + 
+  stat_compare_means(comparisons = my_comparisons, method = "t.test") +
+  scale_color_manual(values = c("grey", "#4682B4", "#8B0000"))
+
+
+summaries <- df %>% group_by(Well) %>% summarise(cutoff = mean(GATA3)*1.5)
+cutoff <- summaries[summaries$Well == "WT", "cutoff"][[1]]
+```
+
+
+## GATA3 vs NANOG and H3K27m3
+
+GATA3 vs H3K27m3 per nucleus
+
+```{r fig5d-gata3-vs-h3k27m3, fig.width = 6, fig.height = 6}
+ggplot(df, aes(x = H3K27m3, y = GATA3, color = Well)) + 
+  geom_point(alpha = 0.7, size = 2) + 
+  scale_color_manual(values = c("grey", "#4682B4", "#8B0000"))  + 
+  geom_hline(yintercept =cutoff, linetype = "dotted")
+
+```
+
+GATA3 vs NANOG per nucleus
+
+```{r fig5d-gata3-vs-nanog, fig.width = 6, fig.height = 6}
+ggplot(df, aes(x = NANOG, y = GATA3, color = Well)) + 
+  geom_point(alpha = 0.7, size = 2) + 
+  scale_color_manual(values = c("grey", "#4682B4", "#8B0000")) + 
+  geom_hline(yintercept =cutoff, linetype = "dotted")
+
+```
+
+```{r calculate-perc-cells}
+# Total number of cells
+perc_positive <- right_join(df %>% group_by(Well) %>% summarise(n_total = n()),
+                            df %>% group_by(Well) %>% filter(GATA3 > cutoff) %>% 
+                              summarise(n_positive = n()), by="Well") %>%
+  mutate(perc_positive = (n_positive / n_total)*100)
+
+perc_positive
+```
+
+
+## H3K27m3 Timecourse
+
+Channels:
+
+-   c1: NANOG
+-   c2: H3K37m3
+-   c3: OCT3/4
+-   c4: DAPI
+
+`Metadata_Well`:
+
+-   A05: Wildtype
+-   B05: EZH2i_d2
+-   C05: EZH2i_d4
+-   D05: EZH2i_d7
+
+```{r warning=F, message=F}
+expr <- read.table(file.path(params$datadir, "./Timecourse_Well5Nuclei.txt") ,header = TRUE)
+
+expr$Metadata_Well <- factor(
+    expr$Metadata_Well,
+    levels = c("A05", "B05", "C05", "D05"),
+    labels = c("WT", "EZH2i_D2", "EZH2i_D4", "EZH2i_D7")
+  )
+
+df <-
+  expr %>% dplyr::select(
+    Metadata_Well,
+    ObjectNumber,
+    Metadata_Site,
+    Intensity_MeanIntensity_c1_raw,
+    Intensity_MeanIntensity_c2_raw,
+    Intensity_MeanIntensity_c3_raw,
+    Intensity_MeanIntensity_c4_raw
+  ) %>%
+  rename(
+    NANOG = Intensity_MeanIntensity_c1_raw,
+    H3K27m3 = Intensity_MeanIntensity_c2_raw,
+    OCT = Intensity_MeanIntensity_c3_raw,
+    DAPI = Intensity_MeanIntensity_c4_raw,
+    Well = Metadata_Well,
+    Cell = ObjectNumber,
+    Site = Metadata_Site
+  )
+```
+
+
+```{r fig5e-h3k27m3-timecourse, fig.width = 5, fig.height = 5}
+df_long <- df %>% pivot_longer(c(NANOG, H3K27m3, OCT, DAPI),
+                               names_to = "channel", values_to = "value")
+
+my_comparisons <- list(c("EZH2i_D2", "WT"), c("EZH2i_D4", "WT"), c("EZH2i_D7", "WT"))
+
+ggplot(df_long %>% filter(channel == "H3K27m3"),
+       aes(y=value, x=Well, color = channel)) + 
+  geom_boxplot() + 
+  stat_compare_means(comparisons = my_comparisons, method = "t.test") +
+  labs(title = "Time course - mean H3K27m3 intensity", y = "Mean intensity", x = "") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  scale_color_manual(values = c("navy"))
+```
+
+## CRISPR/Cas targeting 
+
+```{r merge-crispr-rounds}
+g1_eed <- read.csv(file.path(params$datadir, "g1_eed.csv"))
+g2_eed <- read.csv(file.path(params$datadir, "g2_eed.csv"))
+
+median_1 <- median(g1_eed[g1_eed$Well == "WT", "EED"])
+median_2 <- median(g2_eed[g2_eed$Well == "NTgRNA", "EED"])
+
+median_1_gata3 <- median(g1_eed[g1_eed$Well == "WT", "GATA3"])
+median_2_gata3 <- median(g2_eed[g2_eed$Well == "NTgRNA", "GATA3"])
+
+merged_rounds <- 
+  rbind(g1_eed %>% mutate(round = "1", EED_norm = EED / median_1, GATA3_norm = GATA3 / median_1_gata3), 
+        g2_eed %>% mutate(round = "2", EED_norm = EED / median_2, GATA3_norm = GATA3 / median_2_gata3) %>% 
+  dplyr::select(!contains("GATA6")))
+```
+
+
+```{r calculate-positive-crispr}
+library(ggrastr)
+merged_rounds <- merged_rounds %>% mutate(condition = ifelse(Well == "Transfected", "Transfected", "Control"))
+
+summaries <- merged_rounds %>% 
+  group_by(condition) %>% summarise(cutoff = mean(GATA3_norm)*1.5)
+
+cutoff <- summaries[summaries$condition == "Control", "cutoff"][[1]]
+
+# Total number of cells
+perc_positive <- right_join(
+  merged_rounds %>% group_by(condition, round) %>% summarise(n_total = n()),
+  merged_rounds %>% group_by(condition, round) %>% filter(GATA3_norm > cutoff) %>%
+    summarise(n_positive = n())) %>%
+  mutate(perc_positive = (n_positive / n_total)*100)
+
+perc_positive
+```
+
+```{r fig5g-crispr-cas-targeting, fig.height = 5, fig.width = 5}
+ggplot(merged_rounds, 
+       aes(x = EED_norm, y = GATA3_norm, color = interaction(Well, round))) + 
+  rasterise(geom_point(size = 0.7, alpha = 0.5), dpi = 300) + 
+  scale_color_manual(values = c("#f58e8e", "grey", "#99AABB", "#CD5C5C")) +
+  labs(title = "Normalized mean intensity across rounds") +
+  theme(legend.title = element_blank()) + geom_hline(yintercept = cutoff, linetype = "dotted")
+```
+
+
+```{r boxplot-merged-crispr-facet}
+mr_long <- merged_rounds %>% select(Well, Site, round, EED_norm, GATA3_norm) %>% pivot_longer(c(EED_norm, GATA3_norm), names_to = "channel", values_to = "norm_intensity") %>% mutate(condition = ifelse(Well == "Transfected", "Transfected", "Control"))
+
+my_comp <- list(c("Transfected", "Control"))
+mr_long$Site <- as.factor(mr_long$Site)
+ggplot(mr_long %>% filter(channel == "GATA3_norm"), aes(x=Site, y=norm_intensity, color = condition)) + 
+  geom_boxplot() + facet_wrap(round ~ condition)
+```
+
+
+## Extended 10a. HS975
+
+```{r warning=F, message=F}
+old <- theme_set(theme_classic())
+
+expr <- read.table(file.path(params$datadir, "HS975_20xNuclei.txt"), header = TRUE)
+expr$Metadata_Site <- sapply(expr$Metadata_Site, as.factor)
+
+# Rename wells for readability
+expr$Metadata_Well <- factor(expr$Metadata_Well, levels = c("A01", "B01"),
+                             labels = c("WT", "EZH2i"))
+well <- filter(expr, expr$Intensity_MeanIntensity_c4_raw >= 0.025)
+```
+
+
+```{r}
+df <-
+  well %>% select(
+    Metadata_Well,
+    ObjectNumber,
+    Metadata_Site,
+    Intensity_MeanIntensity_c1_raw,
+    Intensity_MeanIntensity_c2_raw,
+    Intensity_MeanIntensity_c3_raw,
+    Intensity_MeanIntensity_c4_raw
+  ) %>%
+  rename(
+    GATA6 = Intensity_MeanIntensity_c1_raw,
+    H3K27m3 = Intensity_MeanIntensity_c2_raw,
+    GATA3 = Intensity_MeanIntensity_c3_raw,
+    DAPI = Intensity_MeanIntensity_c4_raw,
+    Well = Metadata_Well,
+    Cell = ObjectNumber,
+    Site = Metadata_Site
+  )
+
+noise_cutoff <- 0.007
+df <- df %>% filter(GATA3 > noise_cutoff)
+```
+
+```{r perc-positive-hs975}
+summaries <- df %>% 
+  group_by(Well) %>% summarise(cutoff = mean(GATA3)*1.5)
+cutoff <- summaries[summaries$Well == "WT", "cutoff"][[1]]
+perc_positive <- right_join(df %>% group_by(Well) %>% summarise(n_total = n()),
+                            df %>% group_by(Well) %>% filter(GATA3 > cutoff) %>%
+                              summarise(n_positive = n())) %>%
+  mutate(perc_positive = (n_positive / n_total)*100)
+
+perc_positive
+```
+
+```{r extfig10-boxplot}
+df_long <- df %>% pivot_longer(!c(Well, Cell, Site),
+                               names_to = "channel", values_to = "value")
+
+ggplot(df_long %>% filter(channel %in% c("GATA3", "H3K27m3")), aes(y=value, x=Well, color=Well)) + 
+  geom_boxplot() + facet_grid(. ~ channel, scales = "free_y") + 
+  stat_compare_means(method="t.test")
+```
+
