@@ -47,8 +47,7 @@ combined_heatmap <-
                             "Pr_EZH2i_R2",
                             "Pr_EZH2i_R3")
 
-    message("Missing : ", paste(values[!gene_list %in% rownames(subgroup), "gene"], sep = ","))
-
+    message("Missing : ", paste(setdiff(gene_list, rownames(subgroup)), sep = ",", collapse = ","))
     # Make the RNA seq heatmap
     h <- heatmaply(log2(subgroup+1), Colv = F, Rowv = cluster_rows,
                    colorbar_xanchor='left', colorbar_yanchor='top', colorbar_xpos=1.1, colorbar_ypos=0.9, plot_method = "plotly",
