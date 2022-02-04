@@ -1,6 +1,5 @@
 ---
-title: "H3K27me3 hESC Epigenomics data"
-author: "Carmen Navarro"
+title: "PRC2 shields naïve human pluripotent cells from trophectoderm and mesoderm differentiation"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
@@ -12,30 +11,28 @@ editor_options:
 Supplementary code for publication. A large proportion of the figures shown in
 this publication can be obtained directly from values in the main tables.
 
-
-Upon publication, a link to a comprehensive set of files, including bigWig
-files, will be provided.
-
-Main tables and analysis can be generated running this code. 
-
-See GitHub repository for more information about software requirements.
-This website was generated using [workflowr](https://jdblischak.github.io/workflowr/),
-an R package for science reproducibility.
-
 # Publication figures
 
-* [Figure 1](fig_01_quantitative_chip.html). High levels of H3K27m3
-and H2AUb broadly cover the naïve pluripotent genome.
-* [Figure 2](fig_02_x_chromosome.html). X chromosome in naïve hESCs 
-accumulate exceptional amounts of H3K27m3 without a globally repressive function.
-* [Figure 3](fig_03_h3k27m3_groups.html). H3K27m3 is adaptive to gene expression
-changes between naïve and primed pluripotent state and contributes to repression
+* [Figure 1](fig_01_genome_wide_marks_chr_x.html). Diffuse H3K27me3 and H2Aub cover
+the naïve pluripotent genome. Chromosome-wide H3K27me3 hypermethylation does
+not impact transcription from the naïve X chromosomes.
+
+* [Figure 2](fig_02_h3k27m3_specific_groups.html). H3K27me3 is adaptive to gene expression
+changes between naïve and primed pluripotent states and contributes to repression
 of non-state specific genes.
-* [Figure 4](fig_04_intermediate.html). Loss of H3K27m3 in naïve hESCs derepresses
-a set of genes that drive hESCs towards a rare naturally ocurring intermediate
-pluripotent state.
-* [Figure 5](fig_04_intermediate.html). Loss of H3K27m3 in naïve hESCs 
-activates trophectoderm and placental gene expression programs.
+
+* [Figure 3](fig_03_ezh2i_expression.html). PRC2 inhibition derepresses a
+naïve-specific subset of bivalent genes.
+
+* [Figure 4](fig_04_microscopy.html). Loss of H3K27me3 in naïve hESCs activates
+trophectoderm gene expression programs.
+
+* Figure 5. Single-cell transcriptomic profiling of EZH2i treated naïve and
+primed cells. Code provided on the repository under code folder. Data can be
+browsed at: LINK
+
+* Figure 6. Trajectory inference and gene expression dynamics for EZH2i treated
+naïve hESCs. Code provided on the repository under code folder. 
 
 # Supplementary data and analyses
 
@@ -43,7 +40,7 @@ activates trophectoderm and placental gene expression programs.
 generates the master gene table. 
 * [Master bins table](master_bins_table.html). Notebook with the code that 
 generates the master bins table.
-* [Replicates analysis](sup_01_replicates.Rmd). Notebook with some figures
+* [Replicates analysis](sup_01_replicates.html). Notebook with some figures
 showing replicates data.
 
 # Main data files
@@ -54,6 +51,18 @@ showing replicates data.
  genes across conditions. Extra annotations on Court 2017 bivalency, lineage
  marker genes and H3K27m3 bivalency group are added.
 * Bins table. Gathers histone mark values across 10kb windows in the hg38 genome,
-plus statistics on differentially decorated regions across conditions.
+plus statistics on differentially marked regions across conditions.
 
+# Raw data
 
+Raw data can be obtained at GEO database:
+[GSE181244](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE181244).
+
+Main tables and analysis can be generated running this code. 
+Primary processed and scaled bigWig files and metadata including a pre-generated
+version of such tables can be found [here](). They should
+be put under data/ in the same directory where the repository was cloned.
+
+See GitHub repository for more information about software requirements.
+This website was generated using [workflowr](https://jdblischak.github.io/workflowr/),
+an R package for science reproducibility.
