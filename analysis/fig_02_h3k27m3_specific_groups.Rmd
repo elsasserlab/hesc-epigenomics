@@ -35,7 +35,7 @@ genes <-
     "./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.tsv",
     header = T,
     sep = "\t",
-    colClasses = c(rep("character", 5), rep("factor", 3), rep("numeric", 86))
+    colClasses = c(rep("character", 5), rep("factor", 2), rep("numeric", 86))
   )
 
 make_gr_from_table <- function(df) {
