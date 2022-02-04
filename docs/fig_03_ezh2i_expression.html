@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Figure 3. Expression changes upon EZH2i treatment.</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/lumen.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">hesc-epigenomics</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/elsasserlab/hesc-epigenomics">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Figure 3. Expression changes upon EZH2i treatment.</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-02-04
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>hesc-epigenomics/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20210202code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20210202)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20210202code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20210202)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree0fa7154e177181db580b4c51b4b8204edef66ec0targetblank0fa7154a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/0fa7154e177181db580b4c51b4b8204edef66ec0" target="_blank">0fa7154</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree0fa7154e177181db580b4c51b4b8204edef66ec0targetblank0fa7154a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/0fa7154e177181db580b4c51b4b8204edef66ec0" target="_blank">0fa7154</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/fig_01_quantitative_chip_extended.Rmd
+    Ignored:    analysis/rnaseq_comparsion_extended.Rmd
+    Ignored:    analysis/scRNAseq_downstream_extended.Rmd
+    Ignored:    analysis/scRNAseq_downstream_traj_extended.Rmd
+    Ignored:    analysis/scraps_extended.Rmd
+    Ignored:    data/bed/
+    Ignored:    data/bw/
+    Ignored:    data/rnaseq/
+    Ignored:    data_backup/
+    Ignored:    figures_data/
+
+Untracked files:
+    Untracked:  Fig3F_EZH2i_H2Aub_density.pdf
+    Untracked:  Kumar_2021_hESC_data.zip
+    Untracked:  Rplot001.jpeg
+    Untracked:  Rplot002.jpeg
+    Untracked:  analysis/fig_03_ezh2i_expression_naive.Rmd
+    Untracked:  analysis/fig_05_microscopy.Rmd
+    Untracked:  analysis/review_figures.Rmd
+    Untracked:  code/211203_summary_figures_nfcore.R
+    Untracked:  code/raw_scripts/Fig4d_fromSimon.zip
+    Untracked:  code/raw_scripts/Fig4d_fromSimon/
+    Untracked:  data/Cheng.UsingPublishedAnno.lineage.marker.tsv
+    Untracked:  data/Lanner_lineagemarker_genes.csv
+    Untracked:  data/Messmer_intermediate_all_pval_05.txt
+    Untracked:  data/Messmer_intermediate_down_top50.txt
+    Untracked:  data/Messmer_intermediate_up_top50.txt
+    Untracked:  data/meta/Kumar_2020_master_bins_10kb_table_final_raw.tsv
+    Untracked:  data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.tsv
+    Untracked:  data/microscopy/
+    Untracked:  data/scrnaseq/
+    Untracked:  excel_datasheets/
+    Untracked:  output/
+
+Unstaged changes:
+    Modified:   .gitignore
+    Modified:   analysis/fig_02_h3k27m3_specific_groups.Rmd
+    Modified:   analysis/fig_03_h3k27m3_groups.Rmd
+    Modified:   analysis/fig_04_intermediate.Rmd
+    Modified:   analysis/index.Rmd
+    Modified:   analysis/rnaseq_comparison.Rmd
+    Modified:   code/heatmaply_functions.R
+    Deleted:    data/README.md
+    Deleted:    data/meta/Court_2017_gene_names_uniq.txt
+    Deleted:    data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.zip
+    Deleted:    data/meta/Kumar_2020_public_data_plus_layout.csv
+    Deleted:    data/meta/biblio.bib
+    Deleted:    data/meta/colors.R
+    Deleted:    data/meta/style_info.csv
+    Deleted:    data/other/Messmer_2019/Messmer_intermediate_down_top50.txt
+    Deleted:    data/other/Messmer_2019/Messmer_intermediate_up_top50.txt
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/fig_03_ezh2i_expression.Rmd</code>) and HTML (<code>docs/fig_03_ezh2i_expression.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/0fa7154e177181db580b4c51b4b8204edef66ec0/analysis/fig_03_ezh2i_expression.Rmd" target="_blank">0fa7154</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2022-02-04
+</td>
+<td>
+fig3 expression
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="summary" class="section level1">
+<h1>Summary</h1>
+<p>This is the supplementary notebook for figure 3.</p>
+</div>
+<div id="volcano-plot-ezh2i-vs-naive" class="section level1">
+<h1>Volcano plot EZH2i vs Naive</h1>
+<pre class="r"><code>gene_list &lt;- c(&quot;IGF2&quot;, &quot;EPAS1&quot;, &quot;GATA2&quot;, &quot;FMN&quot;, &quot;RELN&quot;, &quot;FRZB&quot;, &quot;WNT2&quot;, &quot;H19&quot;,
+    &quot;KRT18&quot;, &quot;HAND1&quot;, &quot;UTF1&quot;, &quot;FGF4&quot;, &quot;DPPA2&quot;, &quot;NANOG&quot;, &quot;ZNF157&quot;, &quot;TDGF1&quot;,
+    &quot;DPPA5&quot;, &quot;NODAL&quot;, &quot;EPAS1&quot;, &quot;IGF2&quot;, &quot;MME&quot;, &quot;GATA2&quot;, &quot;PITX1&quot;, &quot;HAND1&quot;,
+    &quot;MAN1A1&quot;, &quot;LAMB1&quot;, &quot;SLC7A2&quot;, &quot;DRD2&quot;, &quot;KCTD12&quot;, &quot;MMP2&quot;, &quot;COLEC12&quot;, &quot;THBD&quot;,
+    &quot;ADAMTS1&quot;, &quot;CD99&quot;, &quot;EGFL6&quot;, &quot;COL5A2&quot;, &quot;VCAN&quot;, &quot;COL15A1&quot;, &quot;VIM&quot;, &quot;CCKBR&quot;,
+    &quot;MAGED1&quot;, &quot;FN1&quot;, &quot;COL6A3&quot;, &quot;ADGRA2&quot;, &quot;MT1G&quot;)
+
+to_plot &lt;- genes %&gt;% mutate(color = case_when(
+  RNASeq_DS_EZH2i_vs_Ni_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Ni_log2FoldChange &lt; -fc_cutoff ~ &quot;#555555&quot;,
+  RNASeq_DS_EZH2i_vs_Ni_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Ni_log2FoldChange &gt; fc_cutoff ~ &quot;#555555&quot;,
+  TRUE ~ &quot;darkgray&quot;)) %&gt;% 
+    mutate(label = ifelse(name %in% gene_list &amp; color != &quot;darkgray&quot;, name, &quot;&quot;)) %&gt;% 
+    filter(!is.na(RNASeq_DS_EZH2i_vs_Ni_log2FoldChange) &amp; !is.na(RNASeq_DS_EZH2i_vs_Ni_padj))
+
+subset_up &lt;- to_plot %&gt;% filter(k27_bivalency_grp == &quot;Always_up&quot;)
+subset_ni &lt;- to_plot %&gt;% filter(k27_bivalency_grp == &quot;Ni_higher_than_Pr&quot;)
+subset_pr &lt;- to_plot %&gt;% filter(k27_bivalency_grp == &quot;Pr_higher_than_Ni&quot;)
+
+ggplot(to_plot, aes(x = RNASeq_DS_EZH2i_vs_Ni_log2FoldChange, y = -log10(RNASeq_DS_EZH2i_vs_Ni_padj), label = label)) + 
+  rasterise(geom_point(alpha = 0.5, size = 1, color =&quot;gray&quot;), dpi=300) +
+  rasterise(geom_point(data = subset_up, color = &quot;navy&quot;, size = 0.5, alpha = 0.8), dpi=300) +
+  rasterise(geom_point(data = subset_ni, color = &quot;cyan4&quot;, size = 0.5, alpha = 0.8), dpi=300) +
+  rasterise(geom_point(data = subset_pr, color = &quot;brown1&quot;, size = 0.5, alpha = 0.8), dpi=300) +
+  geom_vline(xintercept = c(0, -fc_cutoff, fc_cutoff), linetype = &quot;dotted&quot;) + 
+  geom_hline(yintercept = -log10(p_cutoff), linetype = &quot;dotted&quot;) +
+  labs(x = &quot;log2FC&quot;, y = &quot;-log10(p_adj)&quot;, title = &quot;Naïve EZH2i vs Naïve&quot;, subtitle = &quot;All bivalent&quot;) +
+  scale_color_identity() +
+  geom_text_repel(min.segment.length = 0, box.padding = 0.2) +
+  coord_cartesian(xlim = c(-10, 10)) + theme_default()</code></pre>
+<pre><code>Warning: ggrepel: 15 unlabeled data points (too many overlaps). Consider
+increasing max.overlaps</code></pre>
+<p><img src="figure/fig_03_ezh2i_expression.Rmd/volcano-fig4-naive-merged-1.png" width="576" style="display: block; margin: auto;" /></p>
+</div>
+<div id="rna-seq-ezh2i-naive-and-primed" class="section level1">
+<h1>RNA-seq EZH2i Naive and Primed</h1>
+<pre class="r"><code>t &lt;- rbind(genes %&gt;% mutate(
+   ezh2i = factor(case_when(
+     RNASeq_DS_EZH2i_vs_Ni_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Ni_log2FoldChange &gt; fc_cutoff ~ &quot;EZH2i up&quot;,
+     RNASeq_DS_EZH2i_vs_Ni_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Ni_log2FoldChange &lt; -fc_cutoff ~ &quot;EZH2i down&quot;,
+     TRUE ~ &quot;unchanged&quot;)
+   )) %&gt;% dplyr::count(ezh2i) %&gt;% mutate(type = &quot;Naive&quot;),
+  genes %&gt;% mutate(
+     ezh2i = factor(case_when(
+       RNASeq_DS_EZH2i_vs_Pr_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Pr_log2FoldChange &gt; fc_cutoff ~ &quot;EZH2i up&quot;,
+       RNASeq_DS_EZH2i_vs_Pr_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Pr_log2FoldChange &lt; -fc_cutoff ~ &quot;EZH2i down&quot;,
+       TRUE ~ &quot;unchanged&quot;)
+     )) %&gt;% dplyr::count(ezh2i) %&gt;% mutate(type = &quot;Primed&quot;))
+
+t$ezh2i &lt;- factor(t$ezh2i, levels = c(&quot;EZH2i up&quot;, &quot;unchanged&quot;, &quot;EZH2i down&quot;))
+t$type &lt;- factor(t$type, levels = c(&quot;Primed&quot;, &quot;Naive&quot;))
+
+ggplot(t, aes(x=type, y=n, fill=ezh2i)) + 
+  geom_bar(stat=&quot;identity&quot;, position = &quot;fill&quot;, color = &quot;black&quot;) +
+  theme_default() +
+  scale_fill_manual(values = c(&quot;#ff9027&quot;, &quot;#eeeeee&quot;, &quot;#00b9f2&quot; )) +
+  coord_flip() + labs(y = &quot;Fraction of TSS&quot;, x = &quot;All genes&quot;, title = &quot;RNA-Seq: EZH2i in naive and primed&quot;)</code></pre>
+<p><img src="figure/fig_03_ezh2i_expression.Rmd/barplot-rnaseq-ezh2i-all-1.png" width="576" style="display: block; margin: auto;" /></p>
+<div id="per-h3k27m3-group" class="section level2">
+<h2>Per H3K27m3 group</h2>
+<pre class="r"><code>t &lt;- rbind(genes %&gt;%  filter(k27_bivalency_grp == &quot;Ni_higher_than_Pr&quot;) %&gt;% mutate(
+   ezh2i = factor(case_when(
+     RNASeq_DS_EZH2i_vs_Ni_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Ni_log2FoldChange &gt; fc_cutoff ~ &quot;EZH2i up&quot;,
+     RNASeq_DS_EZH2i_vs_Ni_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Ni_log2FoldChange &lt; -fc_cutoff ~ &quot;EZH2i down&quot;,
+     TRUE ~ &quot;unchanged&quot;)
+   )) %&gt;% dplyr::count(ezh2i) %&gt;% mutate(type = &quot;Naive&quot;),
+  genes %&gt;% filter(k27_bivalency_grp == &quot;Ni_higher_than_Pr&quot;) %&gt;% mutate(
+     ezh2i = factor(case_when(
+       RNASeq_DS_EZH2i_vs_Pr_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Pr_log2FoldChange &gt; fc_cutoff ~ &quot;EZH2i up&quot;,
+       RNASeq_DS_EZH2i_vs_Pr_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Pr_log2FoldChange &lt; -fc_cutoff ~ &quot;EZH2i down&quot;,
+       TRUE ~ &quot;unchanged&quot;)
+     )) %&gt;% dplyr::count(ezh2i) %&gt;% mutate(type = &quot;Primed&quot;))
+
+t$ezh2i &lt;- factor(t$ezh2i, levels = c(&quot;EZH2i up&quot;, &quot;unchanged&quot;, &quot;EZH2i down&quot;))
+t$type &lt;- factor(t$type, levels = c(&quot;Primed&quot;, &quot;Naive&quot;))
+
+ggplot(t, aes(x=type, y=n, fill=ezh2i)) + 
+  geom_bar(stat=&quot;identity&quot;, position = &quot;fill&quot;, color = &quot;black&quot;) +
+  theme_default() +
+  scale_fill_manual(values = c(&quot;#ff9027&quot;, &quot;#eeeeee&quot;, &quot;#00b9f2&quot; )) +
+  coord_flip() + labs(y = &quot;Fraction of TSS&quot;, x = &quot;H3K27m3 Nï &gt;&gt; Pr&quot;, title = &quot;RNA-Seq: EZH2i in naive and primed&quot;)</code></pre>
+<p><img src="figure/fig_03_ezh2i_expression.Rmd/barplot-rnaseq-ezh2i-ni-up-1.png" width="576" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>t &lt;- rbind(genes %&gt;%  filter(k27_bivalency_grp == &quot;Pr_higher_than_Ni&quot;) %&gt;% mutate(
+   ezh2i = factor(case_when(
+     RNASeq_DS_EZH2i_vs_Ni_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Ni_log2FoldChange &gt; fc_cutoff ~ &quot;EZH2i up&quot;,
+     RNASeq_DS_EZH2i_vs_Ni_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Ni_log2FoldChange &lt; -fc_cutoff ~ &quot;EZH2i down&quot;,
+     TRUE ~ &quot;unchanged&quot;)
+   )) %&gt;% dplyr::count(ezh2i) %&gt;% mutate(type = &quot;Naive&quot;),
+  genes %&gt;% filter(k27_bivalency_grp == &quot;Pr_higher_than_Ni&quot;) %&gt;% mutate(
+     ezh2i = factor(case_when(
+       RNASeq_DS_EZH2i_vs_Pr_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Pr_log2FoldChange &gt; fc_cutoff ~ &quot;EZH2i up&quot;,
+       RNASeq_DS_EZH2i_vs_Pr_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Pr_log2FoldChange &lt; -fc_cutoff ~ &quot;EZH2i down&quot;,
+       TRUE ~ &quot;unchanged&quot;)
+     )) %&gt;% dplyr::count(ezh2i) %&gt;% mutate(type = &quot;Primed&quot;))
+
+t$ezh2i &lt;- factor(t$ezh2i, levels = c(&quot;EZH2i up&quot;, &quot;unchanged&quot;, &quot;EZH2i down&quot;))
+t$type &lt;- factor(t$type, levels = c(&quot;Primed&quot;, &quot;Naive&quot;))
+
+ggplot(t, aes(x=type, y=n, fill=ezh2i)) + 
+  geom_bar(stat=&quot;identity&quot;, position = &quot;fill&quot;, color = &quot;black&quot;) +
+  theme_default() +
+  scale_fill_manual(values = c(&quot;#ff9027&quot;, &quot;#eeeeee&quot;, &quot;#00b9f2&quot; )) +
+  coord_flip() + labs(y = &quot;Fraction of TSS&quot;, x = &quot;H3K27m3 Pr &gt;&gt; Nï&quot;,
+                      title = &quot;RNA-Seq: EZH2i in naive and primed&quot;)</code></pre>
+<p><img src="figure/fig_03_ezh2i_expression.Rmd/barplot-rnaseq-ezh2i-pr-up-1.png" width="576" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>t &lt;- rbind(genes %&gt;%  filter(k27_bivalency_grp == &quot;Always_up&quot;) %&gt;% mutate(
+   ezh2i = factor(case_when(
+     RNASeq_DS_EZH2i_vs_Ni_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Ni_log2FoldChange &gt; fc_cutoff ~ &quot;EZH2i up&quot;,
+     RNASeq_DS_EZH2i_vs_Ni_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Ni_log2FoldChange &lt; -fc_cutoff ~ &quot;EZH2i down&quot;,
+     TRUE ~ &quot;unchanged&quot;)
+   )) %&gt;% dplyr::count(ezh2i) %&gt;% mutate(type = &quot;Naive&quot;),
+  genes %&gt;% filter(k27_bivalency_grp == &quot;Always_up&quot;) %&gt;% mutate(
+     ezh2i = factor(case_when(
+       RNASeq_DS_EZH2i_vs_Pr_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Pr_log2FoldChange &gt; fc_cutoff ~ &quot;EZH2i up&quot;,
+       RNASeq_DS_EZH2i_vs_Pr_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Pr_log2FoldChange &lt; -fc_cutoff ~ &quot;EZH2i down&quot;,
+       TRUE ~ &quot;unchanged&quot;)
+     )) %&gt;% dplyr::count(ezh2i) %&gt;% mutate(type = &quot;Primed&quot;))
+
+t$ezh2i &lt;- factor(t$ezh2i, levels = c(&quot;EZH2i up&quot;, &quot;unchanged&quot;, &quot;EZH2i down&quot;))
+t$type &lt;- factor(t$type, levels = c(&quot;Primed&quot;, &quot;Naive&quot;))
+
+ggplot(t, aes(x=type, y=n, fill=ezh2i)) + 
+  geom_bar(stat=&quot;identity&quot;, position = &quot;fill&quot;, color = &quot;black&quot;) +
+  theme_default() +
+  scale_fill_manual(values = c(&quot;#ff9027&quot;, &quot;#eeeeee&quot;, &quot;#00b9f2&quot; )) +
+  coord_flip() + labs(y = &quot;Fraction of TSS&quot;, x = &quot;H3K27m3 always up&quot;,
+                      title = &quot;RNA-Seq: EZH2i in naive and primed&quot;)</code></pre>
+<p><img src="figure/fig_03_ezh2i_expression.Rmd/barplot-rnaseq-ezh2i-always-up-1.png" width="576" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="venn-diagram-counts" class="section level1">
+<h1>Venn diagram counts</h1>
+<pre class="r"><code>gr_annot &lt;- genes %&gt;% mutate(
+   EZH2i = factor(case_when(
+     RNASeq_DS_EZH2i_vs_Ni_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Ni_log2FoldChange &gt; fc_cutoff &amp; RNASeq_DS_EZH2i_vs_Pr_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Pr_log2FoldChange &gt; fc_cutoff ~ &quot;EZH2i both up&quot;,
+     RNASeq_DS_EZH2i_vs_Ni_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Ni_log2FoldChange &gt; fc_cutoff ~ &quot;EZH2i Ni Up&quot;,
+     RNASeq_DS_EZH2i_vs_Pr_padj &lt; p_cutoff &amp; RNASeq_DS_EZH2i_vs_Pr_log2FoldChange &gt; fc_cutoff ~ &quot;EZH2i Pr Up&quot;,
+     TRUE ~ &quot;None&quot;)
+   ))
+
+dplyr::count(gr_annot, EZH2i, k27_bivalency_grp)</code></pre>
+<pre><code>           EZH2i k27_bivalency_grp     n
+1  EZH2i both up         Always_up   102
+2  EZH2i both up           K4_only    12
+3  EZH2i both up Ni_higher_than_Pr    10
+4  EZH2i both up              None    14
+5  EZH2i both up Pr_higher_than_Ni    31
+6    EZH2i Ni Up         Always_up   533
+7    EZH2i Ni Up           K4_only   653
+8    EZH2i Ni Up Ni_higher_than_Pr   276
+9    EZH2i Ni Up              None   212
+10   EZH2i Ni Up Pr_higher_than_Ni    51
+11   EZH2i Pr Up         Always_up   196
+12   EZH2i Pr Up           K4_only    37
+13   EZH2i Pr Up Ni_higher_than_Pr    20
+14   EZH2i Pr Up              None    27
+15   EZH2i Pr Up Pr_higher_than_Ni    69
+16          None         Always_up  2572
+17          None           K4_only 11689
+18          None Ni_higher_than_Pr  1245
+19          None              None  8355
+20          None Pr_higher_than_Ni   382</code></pre>
+</div>
+<div id="early-embryo-scrna-seq-lineage-marker-genes" class="section level1">
+<h1>Early embryo scRNA-Seq lineage marker genes</h1>
+<pre class="r"><code>tbl &lt;- genes
+tbl &lt;- tbl[!duplicated(tbl$name),]
+
+tbl &lt;- genes %&gt;% mutate(
+  sig_summary = case_when(
+    RNASeq_DS_EZH2i_vs_Ni_log2FoldChange &gt; 0 &amp; RNASeq_DS_EZH2i_vs_Ni_padj &lt; 0.05 ~ &quot;Ni_EZH2i_up&quot;,
+    RNASeq_DS_EZH2i_vs_Ni_log2FoldChange &lt; -0 &amp; RNASeq_DS_EZH2i_vs_Ni_padj &lt; 0.05 ~ &quot;Ni_EZH2i_down&quot;,
+    TRUE ~ &quot;ns&quot;),
+  sig_summary_pr = case_when(
+    RNASeq_DS_EZH2i_vs_Pr_log2FoldChange &gt; 0 &amp; RNASeq_DS_EZH2i_vs_Pr_padj &lt; 0.05 ~ &quot;Pr_EZH2i_up&quot;,
+    RNASeq_DS_EZH2i_vs_Pr_log2FoldChange &lt; -0 &amp; RNASeq_DS_EZH2i_vs_Pr_padj &lt; 0.05 ~ &quot;Pr_EZH2i_down&quot;,
+    TRUE ~ &quot;ns&quot;))
+
+markers &lt;- read.table(&#39;./data/Cheng.UsingPublishedAnno.lineage.marker.tsv&#39;,sep=&quot;\t&quot;,header=T)
+marker.sets &lt;- markers$set
+names(marker.sets) &lt;- markers$gene
+
+marker.tbl &lt;- select(tbl[tbl$name %in% markers$gene,], &quot;name&quot;,&quot;Lanner_germlayer&quot;,
+                     &quot;sig_summary&quot;,&quot;sig_summary_pr&quot;, contains(&quot;Log2FoldChange&quot;) &amp; contains(&quot;RNASeq&quot;) )
+
+marker.tbl$set &lt;- marker.sets[marker.tbl$name]
+
+goi &lt;- c(&quot;GATA3&quot;,&quot;GATA2&quot;,&quot;TP63&quot;,&quot;CGA&quot;,&quot;CGB&quot;,&quot;CGB8&quot;,&quot;CGB5&quot;,&quot;POU5F1&quot;,&quot;DPPA3&quot;,
+         &quot;VGLL1&quot;,&quot;BMP4&quot;,&quot;VIM&quot;,&quot;DPPA2&quot;,&quot;NANOG&quot;,&quot;SOX2&quot;,&quot;FGF4&quot;,&quot;TFAP2C&quot;,&quot;KRT7&quot;,
+         &quot;ENPEP&quot;,&quot;IGF2&quot;,&quot;FRZB&quot;,&quot;ERP27&quot;,&quot;KRT23&quot;,&quot;DNMT3A&quot;,&quot;DNMT3L&quot;,&quot;XAGE2&quot;,&quot;HAND1&quot;,
+         &quot;KRT18&quot;,&quot;KLF6&quot;,&quot;NUAK2&quot;,&quot;EPAS1&quot;, &quot;SLC40A1&quot;,&quot;CLDN4&quot;,&quot;DCN&quot;,&quot;NOTUM&quot;,&quot;CAMK2D&quot;,
+         &quot;AP1S2&quot;,&quot;ANPEP&quot;,&quot;NUAK1&quot;,&quot;UTF1&quot;,&quot;SOX15&quot;,&quot;DPPA3&quot;,&quot;DPPA5&quot;,&quot;GATA4&quot;,&quot;NR2F2&quot;,
+         &quot;CDX1&quot;,&quot;T&quot;,&quot;TBXT&quot;,&quot;MIXL1&quot;,&quot;LIX1&quot;,&quot;TMEM28&quot;,&quot;ANXA1&quot;,&quot;POSTN&quot;,&quot;TBXT&quot;,
+         &quot;GATA4&quot;,&quot;LDH&quot;,&quot;TMEM88&quot;, &quot;TBXT&quot;)
+
+marker.tbl$set[marker.tbl$set==&quot;Early&quot;]&lt;-&quot;Prelineage&quot;
+marker.tbl$set[marker.tbl$set==&quot;PE&quot;]&lt;-&quot;PrE&quot;
+marker.tbl$set &lt;- factor(marker.tbl$set, levels=
+c(&quot;Prelineage&quot;,&quot;ICM&quot;,&quot;EarlyEpi&quot;,&quot;MidEpi&quot;,&quot;Early/Mid Epi&quot;,&quot;LateEpi&quot;,&quot;PrE&quot;,
+  &quot;Endoderm&quot;,&quot;TE&quot;,&quot;CTB&quot;,&quot;STB&quot;,&quot;EVT&quot;,&quot;Amnion&quot;,&quot;YsMes&quot;,&quot;AdvMes&quot;,&quot;EmMes&quot;,&quot;NasMes&quot;,
+  &quot;AxMes&quot;,&quot;PriS&quot;)
+)
+
+#remove groups: Early/Mid Epi redundant with Early and Mid as separate groups; mesoderms not well defined, PriS three markers only
+marker.tbl &lt;- marker.tbl[! marker.tbl$set %in% c(&quot;Early/Mid Epi&quot;), ]
+
+ggstripchart(marker.tbl,x=&quot;set&quot;,y=&quot;RNASeq_DS_EZH2i_vs_Ni_log2FoldChange&quot;, 
+             orientation=&quot;horizontal&quot;, 
+             color = &quot;sig_summary&quot;, 
+             palette=c(&quot;#88AAFF&quot;,&quot;#EE8844&quot;,&quot;#DDDDDD&quot;), 
+             size = 1, jitter=0.2,
+             ggtheme=theme_bw(),
+             label=&quot;name&quot;, font.label = list(size = 8), repel=T,
+             label.select = goi, label.rectangle = F, ) + 
+  scale_x_discrete(limits=rev) + scale_y_continuous(limits=c(-5,7.5))</code></pre>
+<pre><code>Warning: Removed 23 rows containing missing values (geom_point).</code></pre>
+<p><img src="figure/fig_03_ezh2i_expression.Rmd/scrnaseq-lineage-stripchart-1.png" width="604.8" style="display: block; margin: auto;" /></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.2 (2021-11-01)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 20.04.3 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=sv_SE.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=sv_SE.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=sv_SE.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=sv_SE.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] svglite_2.0.0               heatmaply_1.3.0            
+ [3] viridis_0.6.2               viridisLite_0.4.0          
+ [5] plotly_4.10.0               wigglescout_0.13.5         
+ [7] ggpubr_0.4.0                ggrepel_0.9.1              
+ [9] cowplot_1.1.1               DESeq2_1.34.0              
+[11] SummarizedExperiment_1.24.0 Biobase_2.54.0             
+[13] MatrixGenerics_1.6.0        matrixStats_0.61.0         
+[15] ggrastr_0.2.3               forcats_0.5.1              
+[17] stringr_1.4.0               dplyr_1.0.7                
+[19] purrr_0.3.4                 readr_2.1.0                
+[21] tidyr_1.1.4                 tibble_3.1.6               
+[23] ggplot2_3.3.5               tidyverse_1.3.1            
+[25] rtracklayer_1.54.0          GenomicRanges_1.46.0       
+[27] GenomeInfoDb_1.30.0         IRanges_2.28.0             
+[29] S4Vectors_0.32.2            BiocGenerics_0.40.0        
+[31] workflowr_1.6.2            
+
+loaded via a namespace (and not attached):
+  [1] readxl_1.3.1             backports_1.3.0          systemfonts_1.0.3       
+  [4] plyr_1.8.6               lazyeval_0.2.2           splines_4.1.2           
+  [7] BiocParallel_1.28.0      listenv_0.8.0            digest_0.6.28           
+ [10] foreach_1.5.1            htmltools_0.5.2          fansi_0.5.0             
+ [13] magrittr_2.0.1           memoise_2.0.0            tzdb_0.2.0              
+ [16] globals_0.14.0           Biostrings_2.62.0        annotate_1.72.0         
+ [19] modelr_0.1.8             colorspace_2.0-2         blob_1.2.2              
+ [22] rvest_1.0.2              haven_2.4.3              xfun_0.28               
+ [25] crayon_1.4.2             RCurl_1.98-1.5           jsonlite_1.7.2          
+ [28] genefilter_1.76.0        iterators_1.0.13         survival_3.2-13         
+ [31] glue_1.5.1               registry_0.5-1           gtable_0.3.0            
+ [34] zlibbioc_1.40.0          XVector_0.34.0           webshot_0.5.2           
+ [37] DelayedArray_0.20.0      car_3.0-12               abind_1.4-5             
+ [40] scales_1.1.1             DBI_1.1.1                rstatix_0.7.0           
+ [43] Rcpp_1.0.7               xtable_1.8-4             bit_4.0.4               
+ [46] htmlwidgets_1.5.4        httr_1.4.2               RColorBrewer_1.1-2      
+ [49] ellipsis_0.3.2           farver_2.1.0             pkgconfig_2.0.3         
+ [52] XML_3.99-0.8             sass_0.4.0               dbplyr_2.1.1            
+ [55] locfit_1.5-9.4           utf8_1.2.2               labeling_0.4.2          
+ [58] tidyselect_1.1.1         rlang_0.4.12             reshape2_1.4.4          
+ [61] later_1.3.0              AnnotationDbi_1.56.2     munsell_0.5.0           
+ [64] cellranger_1.1.0         tools_4.1.2              cachem_1.0.6            
+ [67] cli_3.1.0                generics_0.1.1           RSQLite_2.2.8           
+ [70] broom_0.7.10             evaluate_0.14            fastmap_1.1.0           
+ [73] yaml_2.2.1               knitr_1.36               bit64_4.0.5             
+ [76] fs_1.5.0                 dendextend_1.15.2        KEGGREST_1.34.0         
+ [79] future_1.23.0            whisker_0.4              xml2_1.3.2              
+ [82] compiler_4.1.2           rstudioapi_0.13          beeswarm_0.4.0          
+ [85] png_0.1-7                ggsignif_0.6.3           reprex_2.0.1            
+ [88] geneplotter_1.72.0       bslib_0.3.1              stringi_1.7.6           
+ [91] highr_0.9                lattice_0.20-45          Matrix_1.4-0            
+ [94] vctrs_0.3.8              pillar_1.6.4             lifecycle_1.0.1         
+ [97] furrr_0.2.3              jquerylib_0.1.4          data.table_1.14.2       
+[100] bitops_1.0-7             seriation_1.3.1          httpuv_1.6.3            
+[103] R6_2.5.1                 BiocIO_1.4.0             TSP_1.1-11              
+[106] promises_1.2.0.1         gridExtra_2.3            vipor_0.4.5             
+[109] parallelly_1.28.1        codetools_0.2-18         assertthat_0.2.1        
+[112] rprojroot_2.0.2          rjson_0.2.20             withr_2.4.2             
+[115] GenomicAlignments_1.30.0 Rsamtools_2.10.0         GenomeInfoDbData_1.2.7  
+[118] parallel_4.1.2           hms_1.1.1                grid_4.1.2              
+[121] rmarkdown_2.11           carData_3.0-4            Cairo_1.5-12.2          
+[124] git2r_0.28.0             lubridate_1.8.0          ggbeeswarm_0.6.0        
+[127] restfulr_0.0.13         </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
