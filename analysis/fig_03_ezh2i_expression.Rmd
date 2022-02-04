@@ -1,0 +1,252 @@
+---
+title: "Figure 3. Expression changes upon EZH2i treatment."
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+params:
+  rnaseqdir: "./data/rnaseq/"
+---
+
+# Summary
+
+This is the supplementary notebook for figure 3.
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+library(rtracklayer)
+library(tidyverse)
+library(ggrastr)
+library(DESeq2)
+library(cowplot)
+library(ggrepel)
+library(ggpubr)
+library(wigglescout)
+
+source("./code/globals.R")
+source("./code/embed_functions.R")
+source("./code/heatmaply_functions.R")
+
+knitr::opts_chunk$set(dev = c('png', 'my_svg'), fig.ext = c("png", "svg"), fig.width = 6, fig.height = 6)
+
+genes <-
+  read.table(
+    "./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.tsv",
+    header = T,
+    sep = "\t",
+    colClasses = c(rep("character", 2), rep("numeric", 2), rep("factor", 4), rep("numeric", 86))
+  )
+
+dir.create("./figures_data")
+dir.create("./output")
+
+p_cutoff <- 0.05
+fc_cutoff <- 1
+```
+
+# Volcano plot EZH2i vs Naive
+
+```{r volcano-fig4-naive-merged, fig.width = 6, fig.height = 6}
+gene_list <- c("IGF2", "EPAS1", "GATA2", "FMN", "RELN", "FRZB", "WNT2", "H19",
+    "KRT18", "HAND1", "UTF1", "FGF4", "DPPA2", "NANOG", "ZNF157", "TDGF1",
+    "DPPA5", "NODAL", "EPAS1", "IGF2", "MME", "GATA2", "PITX1", "HAND1",
+    "MAN1A1", "LAMB1", "SLC7A2", "DRD2", "KCTD12", "MMP2", "COLEC12", "THBD",
+    "ADAMTS1", "CD99", "EGFL6", "COL5A2", "VCAN", "COL15A1", "VIM", "CCKBR",
+    "MAGED1", "FN1", "COL6A3", "ADGRA2", "MT1G")
+
+to_plot <- genes %>% mutate(color = case_when(
+  RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange < -fc_cutoff ~ "#555555",
+  RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > fc_cutoff ~ "#555555",
+  TRUE ~ "darkgray")) %>% 
+    mutate(label = ifelse(name %in% gene_list & color != "darkgray", name, "")) %>% 
+    filter(!is.na(RNASeq_DS_EZH2i_vs_Ni_log2FoldChange) & !is.na(RNASeq_DS_EZH2i_vs_Ni_padj))
+
+subset_up <- to_plot %>% filter(k27_bivalency_grp == "Always_up")
+subset_ni <- to_plot %>% filter(k27_bivalency_grp == "Ni_higher_than_Pr")
+subset_pr <- to_plot %>% filter(k27_bivalency_grp == "Pr_higher_than_Ni")
+
+ggplot(to_plot, aes(x = RNASeq_DS_EZH2i_vs_Ni_log2FoldChange, y = -log10(RNASeq_DS_EZH2i_vs_Ni_padj), label = label)) + 
+  rasterise(geom_point(alpha = 0.5, size = 1, color ="gray"), dpi=300) +
+  rasterise(geom_point(data = subset_up, color = "navy", size = 0.5, alpha = 0.8), dpi=300) +
+  rasterise(geom_point(data = subset_ni, color = "cyan4", size = 0.5, alpha = 0.8), dpi=300) +
+  rasterise(geom_point(data = subset_pr, color = "brown1", size = 0.5, alpha = 0.8), dpi=300) +
+  geom_vline(xintercept = c(0, -fc_cutoff, fc_cutoff), linetype = "dotted") + 
+  geom_hline(yintercept = -log10(p_cutoff), linetype = "dotted") +
+  labs(x = "log2FC", y = "-log10(p_adj)", title = "Naïve EZH2i vs Naïve", subtitle = "All bivalent") +
+  scale_color_identity() +
+  geom_text_repel(min.segment.length = 0, box.padding = 0.2) +
+  coord_cartesian(xlim = c(-10, 10)) + theme_default()
+```
+
+# RNA-seq EZH2i Naive and Primed
+
+```{r barplot-rnaseq-ezh2i-all, fig.height = 2.5, fig.width = 6}
+t <- rbind(genes %>% mutate(
+   ezh2i = factor(case_when(
+     RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > fc_cutoff ~ "EZH2i up",
+     RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange < -fc_cutoff ~ "EZH2i down",
+     TRUE ~ "unchanged")
+   )) %>% dplyr::count(ezh2i) %>% mutate(type = "Naive"),
+  genes %>% mutate(
+     ezh2i = factor(case_when(
+       RNASeq_DS_EZH2i_vs_Pr_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Pr_log2FoldChange > fc_cutoff ~ "EZH2i up",
+       RNASeq_DS_EZH2i_vs_Pr_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Pr_log2FoldChange < -fc_cutoff ~ "EZH2i down",
+       TRUE ~ "unchanged")
+     )) %>% dplyr::count(ezh2i) %>% mutate(type = "Primed"))
+
+t$ezh2i <- factor(t$ezh2i, levels = c("EZH2i up", "unchanged", "EZH2i down"))
+t$type <- factor(t$type, levels = c("Primed", "Naive"))
+
+ggplot(t, aes(x=type, y=n, fill=ezh2i)) + 
+  geom_bar(stat="identity", position = "fill", color = "black") +
+  theme_default() +
+  scale_fill_manual(values = c("#ff9027", "#eeeeee", "#00b9f2" )) +
+  coord_flip() + labs(y = "Fraction of TSS", x = "All genes", title = "RNA-Seq: EZH2i in naive and primed")
+
+```
+
+## Per H3K27m3 group
+
+```{r barplot-rnaseq-ezh2i-ni-up, fig.height = 2.5, fig.width = 6}
+t <- rbind(genes %>%  filter(k27_bivalency_grp == "Ni_higher_than_Pr") %>% mutate(
+   ezh2i = factor(case_when(
+     RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > fc_cutoff ~ "EZH2i up",
+     RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange < -fc_cutoff ~ "EZH2i down",
+     TRUE ~ "unchanged")
+   )) %>% dplyr::count(ezh2i) %>% mutate(type = "Naive"),
+  genes %>% filter(k27_bivalency_grp == "Ni_higher_than_Pr") %>% mutate(
+     ezh2i = factor(case_when(
+       RNASeq_DS_EZH2i_vs_Pr_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Pr_log2FoldChange > fc_cutoff ~ "EZH2i up",
+       RNASeq_DS_EZH2i_vs_Pr_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Pr_log2FoldChange < -fc_cutoff ~ "EZH2i down",
+       TRUE ~ "unchanged")
+     )) %>% dplyr::count(ezh2i) %>% mutate(type = "Primed"))
+
+t$ezh2i <- factor(t$ezh2i, levels = c("EZH2i up", "unchanged", "EZH2i down"))
+t$type <- factor(t$type, levels = c("Primed", "Naive"))
+
+ggplot(t, aes(x=type, y=n, fill=ezh2i)) + 
+  geom_bar(stat="identity", position = "fill", color = "black") +
+  theme_default() +
+  scale_fill_manual(values = c("#ff9027", "#eeeeee", "#00b9f2" )) +
+  coord_flip() + labs(y = "Fraction of TSS", x = "H3K27m3 Nï >> Pr", title = "RNA-Seq: EZH2i in naive and primed")
+
+```
+
+```{r barplot-rnaseq-ezh2i-pr-up, fig.height = 2.5, fig.width = 6}
+t <- rbind(genes %>%  filter(k27_bivalency_grp == "Pr_higher_than_Ni") %>% mutate(
+   ezh2i = factor(case_when(
+     RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > fc_cutoff ~ "EZH2i up",
+     RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange < -fc_cutoff ~ "EZH2i down",
+     TRUE ~ "unchanged")
+   )) %>% dplyr::count(ezh2i) %>% mutate(type = "Naive"),
+  genes %>% filter(k27_bivalency_grp == "Pr_higher_than_Ni") %>% mutate(
+     ezh2i = factor(case_when(
+       RNASeq_DS_EZH2i_vs_Pr_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Pr_log2FoldChange > fc_cutoff ~ "EZH2i up",
+       RNASeq_DS_EZH2i_vs_Pr_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Pr_log2FoldChange < -fc_cutoff ~ "EZH2i down",
+       TRUE ~ "unchanged")
+     )) %>% dplyr::count(ezh2i) %>% mutate(type = "Primed"))
+
+t$ezh2i <- factor(t$ezh2i, levels = c("EZH2i up", "unchanged", "EZH2i down"))
+t$type <- factor(t$type, levels = c("Primed", "Naive"))
+
+ggplot(t, aes(x=type, y=n, fill=ezh2i)) + 
+  geom_bar(stat="identity", position = "fill", color = "black") +
+  theme_default() +
+  scale_fill_manual(values = c("#ff9027", "#eeeeee", "#00b9f2" )) +
+  coord_flip() + labs(y = "Fraction of TSS", x = "H3K27m3 Pr >> Nï",
+                      title = "RNA-Seq: EZH2i in naive and primed")
+```
+
+```{r barplot-rnaseq-ezh2i-always-up, fig.height = 2.5, fig.width = 6}
+t <- rbind(genes %>%  filter(k27_bivalency_grp == "Always_up") %>% mutate(
+   ezh2i = factor(case_when(
+     RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > fc_cutoff ~ "EZH2i up",
+     RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange < -fc_cutoff ~ "EZH2i down",
+     TRUE ~ "unchanged")
+   )) %>% dplyr::count(ezh2i) %>% mutate(type = "Naive"),
+  genes %>% filter(k27_bivalency_grp == "Always_up") %>% mutate(
+     ezh2i = factor(case_when(
+       RNASeq_DS_EZH2i_vs_Pr_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Pr_log2FoldChange > fc_cutoff ~ "EZH2i up",
+       RNASeq_DS_EZH2i_vs_Pr_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Pr_log2FoldChange < -fc_cutoff ~ "EZH2i down",
+       TRUE ~ "unchanged")
+     )) %>% dplyr::count(ezh2i) %>% mutate(type = "Primed"))
+
+t$ezh2i <- factor(t$ezh2i, levels = c("EZH2i up", "unchanged", "EZH2i down"))
+t$type <- factor(t$type, levels = c("Primed", "Naive"))
+
+ggplot(t, aes(x=type, y=n, fill=ezh2i)) + 
+  geom_bar(stat="identity", position = "fill", color = "black") +
+  theme_default() +
+  scale_fill_manual(values = c("#ff9027", "#eeeeee", "#00b9f2" )) +
+  coord_flip() + labs(y = "Fraction of TSS", x = "H3K27m3 always up",
+                      title = "RNA-Seq: EZH2i in naive and primed")
+
+```
+
+# Venn diagram counts
+
+```{r groups-counts}
+gr_annot <- genes %>% mutate(
+   EZH2i = factor(case_when(
+     RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > fc_cutoff & RNASeq_DS_EZH2i_vs_Pr_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Pr_log2FoldChange > fc_cutoff ~ "EZH2i both up",
+     RNASeq_DS_EZH2i_vs_Ni_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > fc_cutoff ~ "EZH2i Ni Up",
+     RNASeq_DS_EZH2i_vs_Pr_padj < p_cutoff & RNASeq_DS_EZH2i_vs_Pr_log2FoldChange > fc_cutoff ~ "EZH2i Pr Up",
+     TRUE ~ "None")
+   ))
+
+dplyr::count(gr_annot, EZH2i, k27_bivalency_grp)
+```
+
+# Early embryo scRNA-Seq lineage marker genes
+
+```{r scrnaseq-lineage-stripchart, fig.width=6.3, fig.height=6}
+tbl <- genes
+tbl <- tbl[!duplicated(tbl$name),]
+
+tbl <- genes %>% mutate(
+  sig_summary = case_when(
+    RNASeq_DS_EZH2i_vs_Ni_log2FoldChange > 0 & RNASeq_DS_EZH2i_vs_Ni_padj < 0.05 ~ "Ni_EZH2i_up",
+    RNASeq_DS_EZH2i_vs_Ni_log2FoldChange < -0 & RNASeq_DS_EZH2i_vs_Ni_padj < 0.05 ~ "Ni_EZH2i_down",
+    TRUE ~ "ns"),
+  sig_summary_pr = case_when(
+    RNASeq_DS_EZH2i_vs_Pr_log2FoldChange > 0 & RNASeq_DS_EZH2i_vs_Pr_padj < 0.05 ~ "Pr_EZH2i_up",
+    RNASeq_DS_EZH2i_vs_Pr_log2FoldChange < -0 & RNASeq_DS_EZH2i_vs_Pr_padj < 0.05 ~ "Pr_EZH2i_down",
+    TRUE ~ "ns"))
+
+markers <- read.table('./data/Cheng.UsingPublishedAnno.lineage.marker.tsv',sep="\t",header=T)
+marker.sets <- markers$set
+names(marker.sets) <- markers$gene
+
+marker.tbl <- select(tbl[tbl$name %in% markers$gene,], "name","Lanner_germlayer",
+                     "sig_summary","sig_summary_pr", contains("Log2FoldChange") & contains("RNASeq") )
+
+marker.tbl$set <- marker.sets[marker.tbl$name]
+
+goi <- c("GATA3","GATA2","TP63","CGA","CGB","CGB8","CGB5","POU5F1","DPPA3",
+         "VGLL1","BMP4","VIM","DPPA2","NANOG","SOX2","FGF4","TFAP2C","KRT7",
+         "ENPEP","IGF2","FRZB","ERP27","KRT23","DNMT3A","DNMT3L","XAGE2","HAND1",
+         "KRT18","KLF6","NUAK2","EPAS1", "SLC40A1","CLDN4","DCN","NOTUM","CAMK2D",
+         "AP1S2","ANPEP","NUAK1","UTF1","SOX15","DPPA3","DPPA5","GATA4","NR2F2",
+         "CDX1","T","TBXT","MIXL1","LIX1","TMEM28","ANXA1","POSTN","TBXT",
+         "GATA4","LDH","TMEM88", "TBXT")
+
+marker.tbl$set[marker.tbl$set=="Early"]<-"Prelineage"
+marker.tbl$set[marker.tbl$set=="PE"]<-"PrE"
+marker.tbl$set <- factor(marker.tbl$set, levels=
+c("Prelineage","ICM","EarlyEpi","MidEpi","Early/Mid Epi","LateEpi","PrE",
+  "Endoderm","TE","CTB","STB","EVT","Amnion","YsMes","AdvMes","EmMes","NasMes",
+  "AxMes","PriS")
+)
+
+#remove groups: Early/Mid Epi redundant with Early and Mid as separate groups; mesoderms not well defined, PriS three markers only
+marker.tbl <- marker.tbl[! marker.tbl$set %in% c("Early/Mid Epi"), ]
+
+ggstripchart(marker.tbl,x="set",y="RNASeq_DS_EZH2i_vs_Ni_log2FoldChange", 
+             orientation="horizontal", 
+             color = "sig_summary", 
+             palette=c("#88AAFF","#EE8844","#DDDDDD"), 
+             size = 1, jitter=0.2,
+             ggtheme=theme_bw(),
+             label="name", font.label = list(size = 8), repel=T,
+             label.select = goi, label.rectangle = F, ) + 
+  scale_x_discrete(limits=rev) + scale_y_continuous(limits=c(-5,7.5))
+
+```
