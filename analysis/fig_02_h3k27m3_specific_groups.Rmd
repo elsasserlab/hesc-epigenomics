@@ -9,7 +9,7 @@ params:
 
 # Summary
 
-This is the supplementary notebook for figure 3.
+This is the supplementary notebook for figure 2.
 
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 library(rtracklayer)
