@@ -32,7 +32,7 @@ genes <-
     "./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.tsv",
     header = T,
     sep = "\t",
-    colClasses = c(rep("character", 2), rep("numeric", 2), rep("factor", 4), rep("numeric", 86))
+    colClasses = c(rep("character", 5), rep("factor", 2), rep("numeric", 86))
   )
 
 dir.create("./figures_data")
@@ -211,22 +211,21 @@ tbl <- genes %>% mutate(
     RNASeq_DS_EZH2i_vs_Pr_log2FoldChange < -0 & RNASeq_DS_EZH2i_vs_Pr_padj < 0.05 ~ "Pr_EZH2i_down",
     TRUE ~ "ns"))
 
-markers <- read.table('./data/Cheng.UsingPublishedAnno.lineage.marker.tsv',sep="\t",header=T)
+markers <- read.table('./data/lineagemarker_genes.csv',sep="\t",header=T)
 marker.sets <- markers$set
 names(marker.sets) <- markers$gene
 
-marker.tbl <- select(tbl[tbl$name %in% markers$gene,], "name","Lanner_germlayer",
-                     "sig_summary","sig_summary_pr", contains("Log2FoldChange") & contains("RNASeq") )
-
-marker.tbl$set <- marker.sets[marker.tbl$name]
+marker.tbl <- inner_join(select(tbl, "name",
+                     "sig_summary","sig_summary_pr", contains("Log2FoldChange") & contains("RNASeq")),
+                     markers, by = c("name" = "gene"))
 
 goi <- c("GATA3","GATA2","TP63","CGA","CGB","CGB8","CGB5","POU5F1","DPPA3",
          "VGLL1","BMP4","VIM","DPPA2","NANOG","SOX2","FGF4","TFAP2C","KRT7",
          "ENPEP","IGF2","FRZB","ERP27","KRT23","DNMT3A","DNMT3L","XAGE2","HAND1",
          "KRT18","KLF6","NUAK2","EPAS1", "SLC40A1","CLDN4","DCN","NOTUM","CAMK2D",
          "AP1S2","ANPEP","NUAK1","UTF1","SOX15","DPPA3","DPPA5","GATA4","NR2F2",
-         "CDX1","T","TBXT","MIXL1","LIX1","TMEM28","ANXA1","POSTN","TBXT",
-         "GATA4","LDH","TMEM88", "TBXT")
+         "CDX1","T","TBXT","MIXL1","LIX1","TMEM28","ANXA1","POSTN","TBXT", "LOX",
+         "GATA4","LDH","TMEM88", "TBXT", "F10")
 
 marker.tbl$set[marker.tbl$set=="Early"]<-"Prelineage"
 marker.tbl$set[marker.tbl$set=="PE"]<-"PrE"
