@@ -34,7 +34,7 @@ genes <-
     "./data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.tsv",
     header = T,
     sep = "\t",
-    colClasses = c(rep("character", 2), rep("numeric", 2), rep("factor", 4), rep("numeric", 86))
+    colClasses = c(rep("character", 2), rep("numeric", 2), rep("factor", 3), rep("numeric", 86))
   )
 
 dir.create("./figures_data")
