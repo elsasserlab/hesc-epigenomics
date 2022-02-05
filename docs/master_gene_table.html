@@ -397,7 +397,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-02-04
+<strong>Last updated:</strong> 2022-02-05
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -488,22 +488,23 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree29a9327dcdbf5836a2a4281d19a0085306dd333ftargetblank29a9327a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/29a9327dcdbf5836a2a4281d19a0085306dd333f" target="_blank">29a9327</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree0b97db7d8a014a49456a256dfb06bb2370662ea5targetblank0b97db7a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/0b97db7d8a014a49456a256dfb06bb2370662ea5" target="_blank">0b97db7</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree29a9327dcdbf5836a2a4281d19a0085306dd333ftargetblank29a9327a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree0b97db7d8a014a49456a256dfb06bb2370662ea5targetblank0b97db7a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/29a9327dcdbf5836a2a4281d19a0085306dd333f" target="_blank">29a9327</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/0b97db7d8a014a49456a256dfb06bb2370662ea5" target="_blank">0b97db7</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 </p>
 <pre><code>
 Ignored files:
+    Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    output/
 
@@ -513,9 +514,6 @@ Untracked files:
     Untracked:  figures_data/
 
 Unstaged changes:
-    Modified:   analysis/fig_02_h3k27m3_specific_groups.Rmd
-    Modified:   analysis/fig_03_ezh2i_expression.Rmd
-    Modified:   analysis/fig_04_microscopy.Rmd
     Deleted:    data/meta/Kumar_2020_scaling_groups.csv
     Deleted:    data/meta/Kumar_2020_scalinginfo.csv
     Deleted:    data/meta/Kumar_2020_stats_summary.csv
@@ -557,6 +555,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/0b97db7d8a014a49456a256dfb06bb2370662ea5/analysis/master_gene_table.Rmd" target="_blank">0b97db7</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2022-02-05
+</td>
+<td>
+wflow_publish(“./analysis/master_gene_table.Rmd”, verbose = T)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/elsasserlab/hesc-epigenomics/c1fb0ef0f644ff2777154354455543e4dd66e596/docs/master_gene_table.html" target="_blank">c1fb0ef</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2022-02-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -854,11 +886,7 @@ make_diff_df &lt;- function(diff_lfc, prefix) {
 </div>
 <div id="config-analysis" class="section level1">
 <h1>Config analysis</h1>
-<pre class="r fold-show"><code># genes &lt;- genes_hg38()
-genes &lt;- canonical_genes_hg38(file.path(params$datadir, &quot;bed/Kumar_2020/refFlat.txt&quot;),
-                              file.path(params$datadir, &quot;bed/Kumar_2020/knownCanonical.txt&quot;))
-
-export(genes, &quot;./data/bed/Kumar_2020/Kumar_2020_genes_hg38_UCSC.bed&quot;)
+<pre class="r fold-show"><code>genes &lt;- rtracklayer::import( &quot;./data/bed/Kumar_2020/Kumar_2020_genes_hg38_UCSC_frozen.bed&quot;)
 
 genes_tss_broad &lt;- promoters(genes, upstream = params$tss_wide, downstream = params$tss_wide)
 genes_tss_narrow &lt;- promoters(genes, upstream = params$tss_narrow, downstream = params$tss_narrow)
@@ -951,6 +979,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/c1fb0ef0f644ff2777154354455543e4dd66e596/docs/figure/master_gene_table.Rmd/k27m3-diff-pr-ni-1.png" target="_blank">c1fb0ef</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2022-02-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/elsasserlab/hesc-epigenomics/blob/ba77468e1a5e65382bced7b66226ea1e1b05a12b/docs/figure/master_gene_table.Rmd/k27m3-diff-pr-ni-1.png" target="_blank">ba77468</a>
 </td>
 <td>
@@ -1021,6 +1060,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/c1fb0ef0f644ff2777154354455543e4dd66e596/docs/figure/master_gene_table.Rmd/k4m3-diff-pr-ni-1.png" target="_blank">c1fb0ef</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2022-02-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/elsasserlab/hesc-epigenomics/blob/ba77468e1a5e65382bced7b66226ea1e1b05a12b/docs/figure/master_gene_table.Rmd/k4m3-diff-pr-ni-1.png" target="_blank">ba77468</a>
 </td>
 <td>
@@ -1086,6 +1136,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/c1fb0ef0f644ff2777154354455543e4dd66e596/docs/figure/master_gene_table.Rmd/k4m3-diff-ezh2i-ni-1.png" target="_blank">c1fb0ef</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2022-02-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/elsasserlab/hesc-epigenomics/blob/3401e704094396ec956485cf607f672e5b8721b5/docs/figure/master_gene_table.Rmd/k4m3-diff-ezh2i-ni-1.png" target="_blank">3401e70</a>
@@ -1166,6 +1227,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/c1fb0ef0f644ff2777154354455543e4dd66e596/docs/figure/master_gene_table.Rmd/k4m3-diff-ezh2i-pr-1.png" target="_blank">c1fb0ef</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2022-02-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/elsasserlab/hesc-epigenomics/blob/ba77468e1a5e65382bced7b66226ea1e1b05a12b/docs/figure/master_gene_table.Rmd/k4m3-diff-ezh2i-pr-1.png" target="_blank">ba77468</a>
 </td>
 <td>
@@ -1237,6 +1309,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/c1fb0ef0f644ff2777154354455543e4dd66e596/docs/figure/master_gene_table.Rmd/h2aub-diff-pr-ni-1.png" target="_blank">c1fb0ef</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2022-02-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/elsasserlab/hesc-epigenomics/blob/ba77468e1a5e65382bced7b66226ea1e1b05a12b/docs/figure/master_gene_table.Rmd/h2aub-diff-pr-ni-1.png" target="_blank">ba77468</a>
 </td>
 <td>
@@ -1303,6 +1386,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/c1fb0ef0f644ff2777154354455543e4dd66e596/docs/figure/master_gene_table.Rmd/h2aub-diff-ezh2i-ni-1.png" target="_blank">c1fb0ef</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2022-02-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/elsasserlab/hesc-epigenomics/blob/ba77468e1a5e65382bced7b66226ea1e1b05a12b/docs/figure/master_gene_table.Rmd/h2aub-diff-ezh2i-ni-1.png" target="_blank">ba77468</a>
 </td>
 <td>
@@ -1367,6 +1461,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/c1fb0ef0f644ff2777154354455543e4dd66e596/docs/figure/master_gene_table.Rmd/h2aub-diff-ezh2i-pr-1.png" target="_blank">c1fb0ef</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2022-02-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/elsasserlab/hesc-epigenomics/blob/ba77468e1a5e65382bced7b66226ea1e1b05a12b/docs/figure/master_gene_table.Rmd/h2aub-diff-ezh2i-pr-1.png" target="_blank">ba77468</a>
@@ -1647,7 +1752,7 @@ master_df[master_df$name %in% k27_groups$not_enriched$name, &quot;k27_bivalency_
 </div>
 <div id="external-annotations" class="section level1">
 <h1>External annotations</h1>
-<pre class="r fold-show"><code>genes_loci &lt;- import(&quot;./data/bed/Kumar_2020/Kumar_2020_genes_hg38_UCSC.bed&quot;)
+<pre class="r fold-show"><code>genes_loci &lt;- import(&quot;./data/bed/Kumar_2020/Kumar_2020_genes_hg38_UCSC_frozen.bed&quot;)
 genes_tss &lt;- promoters(genes_loci, upstream = 2500, downstream = 2500)
 
 court_bivalent &lt;- rtracklayer::import(&quot;./data/bed/Bivalent_Court2017.hg38.bed&quot;)
