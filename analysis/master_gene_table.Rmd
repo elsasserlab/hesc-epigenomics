@@ -131,11 +131,7 @@ make_diff_df <- function(diff_lfc, prefix) {
 # Config analysis
 
 ```{r config-analysis}
-# genes <- genes_hg38()
-genes <- canonical_genes_hg38(file.path(params$datadir, "bed/Kumar_2020/refFlat.txt"),
-                              file.path(params$datadir, "bed/Kumar_2020/knownCanonical.txt"))
-
-export(genes, "./data/bed/Kumar_2020/Kumar_2020_genes_hg38_UCSC.bed")
+genes <- rtracklayer::import( "./data/bed/Kumar_2020/Kumar_2020_genes_hg38_UCSC_frozen.bed")
 
 genes_tss_broad <- promoters(genes, upstream = params$tss_wide, downstream = params$tss_wide)
 genes_tss_narrow <- promoters(genes, upstream = params$tss_narrow, downstream = params$tss_narrow)
@@ -465,7 +461,7 @@ master_df[master_df$name %in% k27_groups$not_enriched$name, "k27_bivalency_grp"]
 
 # External annotations
 ```{r gene-annotations}
-genes_loci <- import("./data/bed/Kumar_2020/Kumar_2020_genes_hg38_UCSC.bed")
+genes_loci <- import("./data/bed/Kumar_2020/Kumar_2020_genes_hg38_UCSC_frozen.bed")
 genes_tss <- promoters(genes_loci, upstream = 2500, downstream = 2500)
 
 court_bivalent <- rtracklayer::import("./data/bed/Bivalent_Court2017.hg38.bed")
