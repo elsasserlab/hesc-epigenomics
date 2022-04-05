@@ -1,4 +1,4 @@
-# hESC Multi-omics analysis
+# hESC analysis
 
 Supporting code for publication. A [workflowr][] project.
 
