@@ -1,5 +1,5 @@
-# hesc-epigenomics
+# hESC Multi-omics analysis
 
-A [workflowr][] project.
+Supporting code for publication. A [workflowr][] project.
 
 [workflowr]: https://github.com/jdblischak/workflowr
