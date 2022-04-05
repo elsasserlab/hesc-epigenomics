@@ -1,5 +1,5 @@
 ---
-title: "PRC2 shields naïve human pluripotent cells from trophectoderm and mesoderm differentiation"
+title: "PRC2 shields naïve human pluripotent cells from trophectoderm differentiation"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
@@ -29,10 +29,10 @@ trophectoderm gene expression programs.
 
 * Figure 5. Single-cell transcriptomic profiling of EZH2i treated naïve and
 primed cells. Code provided on the repository under code folder. Data can be
-browsed at: LINK
+browsed [here](https://petropoulos-lanner-labs.clintec.ki.se).
 
 * Figure 6. Trajectory inference and gene expression dynamics for EZH2i treated
-naïve hESCs. Code provided on the repository under code folder. 
+naïve hESC. Code provided on the repository under code folder. 
 
 # Supplementary data and analyses
 
