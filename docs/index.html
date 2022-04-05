@@ -11,7 +11,7 @@
 
 
 
-<title>PRC2 shields naïve human pluripotent cells from trophectoderm and mesoderm differentiation</title>
+<title>PRC2 shields naïve human pluripotent cells from trophectoderm differentiation</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -35,7 +35,7 @@
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
-<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
 <!-- Add a small amount of space between sections. -->
 <style type="text/css">
 div.section {
@@ -280,7 +280,7 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">PRC2 shields naïve human pluripotent cells from trophectoderm and mesoderm differentiation</h1>
+<h1 class="title toc-ignore">PRC2 shields naïve human pluripotent cells from trophectoderm differentiation</h1>
 
 </div>
 
@@ -305,7 +305,7 @@ $(document).ready(function () {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-02-04
+<strong>Last updated:</strong> 2022-04-05
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -314,8 +314,8 @@ $(document).ready(function () {
 <strong>Knit directory:</strong> <code>hesc-epigenomics/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
 </p>
 <p>
-This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
-  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version 1.7.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
 </p>
 <hr>
 </div>
@@ -336,16 +336,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree21ed358e9d38e7c567cc54eca83a944f194bafcatargetblank21ed358a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/21ed358e9d38e7c567cc54eca83a944f194bafca" target="_blank">21ed358</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree5c3a4993b07021b9bf109458dd1eec3cbd2d6841targetblank5c3a499a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/5c3a4993b07021b9bf109458dd1eec3cbd2d6841" target="_blank">5c3a499</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree21ed358e9d38e7c567cc54eca83a944f194bafcatargetblank21ed358a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomelsasserlabhescepigenomicstree5c3a4993b07021b9bf109458dd1eec3cbd2d6841targetblank5c3a499a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/21ed358e9d38e7c567cc54eca83a944f194bafca" target="_blank">21ed358</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/elsasserlab/hesc-epigenomics/tree/5c3a4993b07021b9bf109458dd1eec3cbd2d6841" target="_blank">5c3a499</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -354,34 +354,18 @@ Note that you need to be careful to ensure that all relevant files for the analy
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    analysis/fig_01_quantitative_chip_extended.Rmd
-    Ignored:    analysis/fig_04_intermediate_extended.Rmd
-    Ignored:    analysis/fig_05_microscopy_extended.Rmd
-    Ignored:    analysis/review_figures_extended.Rmd
-    Ignored:    analysis/rnaseq_comparsion_extended.Rmd
-    Ignored:    analysis/scRNAseq_downstream_extended.Rmd
-    Ignored:    analysis/scRNAseq_downstream_traj_extended.Rmd
-    Ignored:    analysis/scraps_extended.Rmd
-    Ignored:    data/bed/
-    Ignored:    data/bw/
-    Ignored:    data/rnaseq/
-    Ignored:    figures_data/
+    Ignored:    output/
 
 Untracked files:
-    Untracked:  Kumar_2021_data.zip
-    Untracked:  Kumar_2021_hESC_data_old.zip
-    Untracked:  data/Cheng.UsingPublishedAnno.lineage.marker.tsv
-    Untracked:  data/meta/Kumar_2020_master_bins_10kb_table_final_raw.tsv
-    Untracked:  data/meta/Kumar_2020_master_gene_table_rnaseq_shrunk_annotated.tsv
-    Untracked:  data/microscopy/
-    Untracked:  data/scrnaseq/
-    Untracked:  excel_datasheets/
-    Untracked:  output/
+    Untracked:  data
+    Untracked:  data_old/
+    Untracked:  figures_data/
 
 Unstaged changes:
-    Modified:   .gitignore
-    Modified:   analysis/rnaseq_comparison.Rmd
-    Modified:   code/heatmaply_functions.R
+    Modified:   analysis/fig_04_microscopy.Rmd
+    Deleted:    data/meta/Kumar_2020_scaling_groups.csv
+    Deleted:    data/meta/Kumar_2020_scalinginfo.csv
+    Deleted:    data/meta/Kumar_2020_stats_summary.csv
 
 </code></pre>
 <p>
@@ -420,6 +404,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/elsasserlab/hesc-epigenomics/blob/5c3a4993b07021b9bf109458dd1eec3cbd2d6841/analysis/index.Rmd" target="_blank">5c3a499</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2022-04-05
+</td>
+<td>
+wflow_publish(“./analysis/index.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/elsasserlab/hesc-epigenomics/5eb1b01ba66f7ab8606f3ca53d245c8f75826d89/docs/index.html" target="_blank">5eb1b01</a>
+</td>
+<td>
+C. Navarro
+</td>
+<td>
+2022-02-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -911,8 +929,8 @@ Start workflowr project.
 <li><p><a href="fig_02_h3k27m3_specific_groups.html">Figure 2</a>. H3K27me3 is adaptive to gene expression changes between naïve and primed pluripotent states and contributes to repression of non-state specific genes.</p></li>
 <li><p><a href="fig_03_ezh2i_expression.html">Figure 3</a>. PRC2 inhibition derepresses a naïve-specific subset of bivalent genes.</p></li>
 <li><p><a href="fig_04_microscopy.html">Figure 4</a>. Loss of H3K27me3 in naïve hESCs activates trophectoderm gene expression programs.</p></li>
-<li><p>Figure 5. Single-cell transcriptomic profiling of EZH2i treated naïve and primed cells. Code provided on the repository under code folder. Data can be browsed at: LINK</p></li>
-<li><p>Figure 6. Trajectory inference and gene expression dynamics for EZH2i treated naïve hESCs. Code provided on the repository under code folder.</p></li>
+<li><p>Figure 5. Single-cell transcriptomic profiling of EZH2i treated naïve and primed cells. Code provided on the repository under code folder. Data can be browsed <a href="https://petropoulos-lanner-labs.clintec.ki.se">here</a>.</p></li>
+<li><p>Figure 6. Trajectory inference and gene expression dynamics for EZH2i treated naïve hESC. Code provided on the repository under code folder.</p></li>
 </ul>
 </div>
 <div id="supplementary-data-and-analyses" class="section level1">
@@ -940,7 +958,7 @@ Start workflowr project.
 
 <!-- Adjust MathJax settings so that all math formulae are shown using
 TeX fonts only; see
-http://docs.mathjax.org/en/latest/configuration.html.  This will make
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
 the presentation more consistent at the cost of the webpage sometimes
 taking slightly longer to load. Note that this only works because the
 footer is added to webpages before the MathJax javascript. -->
